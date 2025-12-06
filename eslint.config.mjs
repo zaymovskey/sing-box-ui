@@ -8,38 +8,46 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
-export default defineConfig(
+export default defineConfig([
   eslint.configs.recommended,
-  tseslint.configs.recommended,
-  reactHooks.configs["recommended-latest"],
-  reactPlugin.configs.flat.recommended,
-  importPlugin.flatConfigs.recommended,
-  jsxA11y.flatConfigs.recommended,
+  ...tseslint.configs.recommended,
 
   {
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooks,
+      import: importPlugin,
+      "jsx-a11y": jsxA11y,
+      "simple-import-sort": simpleImportSort,
+      "unused-imports": unusedImports,
+    },
+
+    rules: {
+      ...reactPlugin.configs.flat.recommended.rules,
+      ...reactHooks.configs["recommended-latest"].rules,
+      ...importPlugin.configs.recommended.rules,
+      ...jsxA11y.configs.recommended.rules,
+
+      "@typescript-eslint/no-explicit-any": "error",
+
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
+
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+
+      "unused-imports/no-unused-imports": "error",
+
+      "import/newline-after-import": ["error", { count: 1 }],
+    },
+
     settings: {
-      "import/core-modules": ["eslint/config", "typescript-eslint"],
       "import/resolver": {
         typescript: {
           project: "./tsconfig.json",
         },
       },
     },
-    plugins: {
-      "simple-import-sort": simpleImportSort,
-      "unused-imports": unusedImports,
-    },
-    rules: {
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/explicit-function-return-type": "error",
-      "@typescript-eslint/explicit-module-boundary-types": "error",
-      "react/react-in-jsx-scope": "off",
-      "react/jsx-uses-react": "off",
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-      "unused-imports/no-unused-imports": "error",
-    },
   },
-
-  globalIgnores([".next/*", "node_modules/*", "public/*"]),
-);
+  globalIgnores([".next/**", "node_modules/**", "public/**"]),
+]);
