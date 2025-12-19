@@ -2,6 +2,7 @@ const config = {
   extends: ["stylelint-config-standard", "stylelint-config-recess-order"],
   plugins: ["stylelint-order"],
   rules: {
+    "import-notation": null,
     // Tailwind directives
     "at-rule-no-unknown": [
       true,
