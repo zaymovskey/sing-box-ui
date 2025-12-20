@@ -10,9 +10,7 @@ const config = {
         ignoreAtRules: [
           "tailwind",
           "apply",
-
           "layer",
-
           "config",
           "variants",
           "responsive",
