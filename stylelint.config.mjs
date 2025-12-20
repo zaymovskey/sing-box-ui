@@ -11,10 +11,7 @@ const config = {
           "tailwind",
           "apply",
 
-          "layer", 
-
-
-          
+          "layer",
 
           "config",
           "variants",
