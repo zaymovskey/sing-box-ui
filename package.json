@@ -13,8 +13,13 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": "eslint --fix",
-    "*.{ts,tsx,js,jsx,json,css,scss,mjs,cjs}": "prettier --write",
+    "**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ],
     "src/**/*.{css,scss}": [
       "stylelint --fix --config .stylelintrc.config.mjs",
       "prettier --write"
