@@ -21,7 +21,7 @@
       "prettier --write"
     ],
     "src/**/*.{css,scss}": [
-      "stylelint --fix --config .stylelintrc.config.mjs",
+      "stylelint --fix --config stylelintrc.config.mjs",
       "prettier --write"
     ]
   },
