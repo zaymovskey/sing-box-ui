@@ -47,6 +47,9 @@ export default defineConfig([
           project: "./tsconfig.json",
         },
       },
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
     },
   },
   globalIgnores([".next/**", "node_modules/**", "public/**"]),

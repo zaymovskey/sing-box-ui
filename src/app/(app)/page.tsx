@@ -1,3 +1,5 @@
+import { RqTest } from "../_debug/rq-test";
+
 export default function AppHome() {
-  return <div>App home</div>;
+  return <RqTest />;
 }
