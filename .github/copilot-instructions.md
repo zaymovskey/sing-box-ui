@@ -1,119 +1,103 @@
-# Инструкции для Copilot
+# Copilot Instructions for sing-box-ui
 
-## Технологический стек
+Говорить нужно всегда на русском языке, даже если пользователь спрашивает на другом языке.
 
-- **Framework**: Next.js 15+ (App Router)
-- **React**: 19+
-- **TypeScript**: 5+
-- **Styling**: Tailwind CSS v4
-- **Архитектура**: Feature-Sliced Design (FSD)
+## Project Overview
 
-## Структура проекта
+**sing-box-ui** is a Next.js 16 + React 19 UI application with TypeScript, styled with Tailwind CSS v4 and shadcn/ui components. The architecture separates concerns into:
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── (app)/             # Основное приложение (защищённые роуты)
-│   ├── (auth)/            # Аутентификация (публичные роуты)
-│   ├── providers.tsx      # React-провайдеры
-│   └── globals.css        # Глобальные стили
-├── features/              # Фичи (бизнес-логика)
-├── shared/                # Общие компоненты и утилиты
-│   ├── ui/               # UI-компоненты
-│   └── lib/              # Утилиты
-└── ...
-```
+- `src/app/`: Next.js App Router pages and layout
+- `src/shared/`: Reusable UI components and utilities
 
-## Правила написания кода
+## Key Stack & Conventions
 
-### Общие принципы
+### Framework & Language
 
-1. **Всегда использовать TypeScript** с явными типами
-2. **Server Components по умолчанию** — добавлять `'use client'` только когда необходимо
-3. **Async компоненты** для серверных компонентов с загрузкой данных
-4. **Композиция над наследованием**
+- **Next.js 16** with App Router (no Pages Router)
+- **React 19** with Server Components disabled (`"rsc": false` in components.json)
+- **TypeScript** with strict mode enabled and `@/` path alias pointing to `src/`
 
-### React-компоненты
+### Styling & Components
+
+- **Tailwind CSS v4** with `@tailwindcss/postcss` plugin
+- **shadcn/ui** components stored in `src/shared/ui/` (configured via components.json)
+- **CVA (class-variance-authority)** for component variants (see [button.tsx](src/shared/ui/button.tsx) for pattern)
+- **Utility function**: Use `cn()` from `@/shared/lib` to merge Tailwind classes safely (combines `clsx` + `twMerge`)
+
+### Component Pattern Example
 
 ```tsx
-// ✅ Правильно: Server Component
-export default async function Page() {
-  const data = await fetchData();
-  return <div>{data}</div>;
-}
+// src/shared/ui/button.tsx - Use cva() for variants
+const buttonVariants = cva("base-classes", {
+  variants: { variant: {...}, size: {...} }
+});
 
-// ✅ Правильно: Client Component с явным указанием
-("use client");
-export function InteractiveButton() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(count + 1)}>{count}</button>;
-}
-
-// ✅ Правильно: явные типы пропсов
-interface ButtonProps {
-  variant?: "primary" | "secondary";
-  children: React.ReactNode;
-}
-export function Button({ variant = "primary", children }: ButtonProps) {
-  return <button className={cn(styles[variant])}>{children}</button>;
-}
+export interface ButtonProps extends ComponentProps<"button">, VariantProps<typeof buttonVariants> {}
+export const Button = ({ variant, size, ...props }: ButtonProps) => (
+  <button className={cn(buttonVariants({ variant, size }))} {...props} />
+);
 ```
 
-### Стилизация
+## Code Quality & Tooling
 
-- Использовать **Tailwind CSS** для стилей
-- Использовать утилиту `cn()` из `@/shared/lib` для условных классов
-- Избегать inline-стилей
+### Linting & Formatting
 
-```tsx
-import { cn } from "@/shared/lib";
+- **ESLint** (flat config in `eslint.config.mjs`) enforces:
+  - TypeScript strict rules (`@typescript-eslint/no-explicit-any` as error)
+  - Import ordering via `simple-import-sort` (no manual sorting)
+  - Unused imports removal via `unused-imports`
+  - React 19 defaults (react-in-jsx-scope off)
+  - Accessibility checks via `jsx-a11y`
+- **Prettier** with minimal config (empty in `prettier.config.mjs` - uses defaults)
+- **Husky + lint-staged**: Pre-commit hooks run eslint --fix and prettier --write on staged files
 
-<div
-  className={cn(
-    "px-4 py-2",
-    isActive && "bg-blue-500",
-    isDisabled && "opacity-50",
-  )}
-/>;
+### Run Commands
+
+```bash
+npm run dev          # Start Next.js dev server on localhost:3000
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # Run ESLint checks
+npm run lint:fix     # Auto-fix ESLint issues
+npm run prepare      # Install husky hooks (runs on npm install)
 ```
 
-### Маршрутизация
+## Development Workflows
 
-- Использовать **route groups** для логической группировки: `(app)`, `(auth)`
-- `layout.tsx` для общих обёрток
-- `loading.tsx` для состояний загрузки
-- `error.tsx` для обработки ошибок
-- `not-found.tsx` для 404
+### Adding UI Components
 
-### Импорты
+1. Create component in `src/shared/ui/` following shadcn/ui + CVA pattern
+2. Import from `@radix-ui` for primitives and use `cn()` from `@/shared/lib` for styling
+3. Export from a barrel file if creating multiple related components
+4. Run `npm run lint:fix` to ensure import order and no unused imports
+
+### Common Import Pattern
 
 ```tsx
-// ✅ Использовать алиасы
+// Order: React/Next, external libs, internal utils, local imports
+import { ReactNode } from "react";
 import { Button } from "@/shared/ui";
 import { cn } from "@/shared/lib";
-
-// ❌ Избегать относительных путов для shared/features
-import { Button } from "../../../shared/ui";
 ```
 
-## Соглашения по именованию
+## Architecture Decisions
 
-- **Компоненты**: PascalCase (`Button.tsx`, `UserProfile.tsx`)
-- **Утилиты**: camelCase (`cn.ts`, `formatDate.ts`)
-- **Константы**: UPPER_SNAKE_CASE
-- **Файлы маршрутов**: kebab-case (`user-profile/page.tsx`)
+- **No RSC**: Components are client-side rendered for interactivity; shadcn/ui components require this
+- **Path aliases**: Always use `@/` prefix (configured in `tsconfig.json` and `components.json`)
+- **Shared utilities live in `src/shared/lib/`**: Common functions like `cn()` for class merging
+- **shadcn/ui aliases point to `src/shared/ui/`**: Ensures all generated components are centralized
 
-## Качество кода
+## Common Issues & Patterns
 
-- Следовать **ESLint** и **Prettier** правилам проекта
-- Избегать `any`, использовать строгую типизацию
-- Писать чистый, читаемый код без избыточных комментариев
-- Использовать destructuring для пропсов и объектов
-- Предпочитать функциональный подход
+- **Tailwind class conflicts**: Use `cn()` utility to properly merge conflicting Tailwind classes
+- **Icon sizing**: Button component includes smart SVG sizing via `[&_svg:not([class*='size-'])]:size-4`
+- **Dark mode**: Components support dark variants via Tailwind dark: prefix
+- **Type safety**: Always type component props extending both native HTML attributes and CVA variant props
 
-## Производительность
+## Important Files
 
-- Использовать **Server Components** где возможно
-- Применять **dynamic imports** для тяжёлых компонентов
-- Оптимизировать изображения через `next/image`
-- Минимизировать клиентский JavaScript
+- [package.json](package.json) - Dependencies and scripts
+- [eslint.config.mjs](eslint.config.mjs) - Linting rules
+- [components.json](components.json) - shadcn/ui and path alias configuration
+- [src/shared/ui/button.tsx](src/shared/ui/button.tsx) - Reference component pattern
+- [src/shared/lib/cn.ts](src/shared/lib/cn.ts) - Core utility for class merging
