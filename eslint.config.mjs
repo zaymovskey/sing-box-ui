@@ -52,5 +52,113 @@ export default defineConfig([
       },
     },
   },
+
+  {
+    files: ["src/shared/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/**"],
+              message: "shared не должен импортить из app",
+            },
+            {
+              group: ["@/features/**"],
+              message: "shared не должен импортить из features",
+            },
+            {
+              group: ["@/shared/**"],
+              message:
+                "Внутри shared не импортируй shared через alias (@/shared/*). Используй относительные импорты (./..).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/features/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/**"],
+              message: "features не должны импортить из app",
+            },
+            {
+              group: ["@/shared/lib/**"],
+              message:
+                "Импортируй из shared/lib только через public API: @/shared/lib",
+            },
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Не лезь вглубь features через alias. Другие фичи импортируй только как @/features/<feature>, а внутри своей — относительными импортами",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/app/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/shared/lib/*", "@/shared/lib/*/**"],
+              message:
+                "В app импортируй из shared/lib только через public API: @/shared/lib",
+            },
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "В app импортируй фичи только через public API: @/features/<feature>",
+            },
+            {
+              group: ["@/app/**"],
+              message:
+                "Внутри app не импортируй app через alias (@/app/*). Используй относительные импорты (./..).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
+    ignores: [
+      "src/app/**/*.{ts,tsx,js,jsx}",
+      "src/features/**/*.{ts,tsx,js,jsx}",
+      "src/shared/**/*.{ts,tsx,js,jsx}",
+    ],
+
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/shared/lib/*", "@/shared/lib/*/**"],
+              message:
+                "Импортируй из shared/lib только через public API: @/shared/lib",
+            },
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Импортируй фичи только через public API: @/features/<feature>",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   globalIgnores([".next/**", "node_modules/**", "public/**"]),
 ]);
