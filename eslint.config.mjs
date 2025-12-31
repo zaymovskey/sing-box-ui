@@ -54,6 +54,29 @@ export default defineConfig([
   },
 
   {
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
+    ignores: [
+      "src/app/**/*.{ts,tsx,js,jsx}",
+      "src/features/**/*.{ts,tsx,js,jsx}",
+      "src/shared/**/*.{ts,tsx,js,jsx}",
+    ],
+
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Импортируй фичи только через public API: @/features/<feature>",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["src/shared/**/*.{ts,tsx,js,jsx}"],
     rules: {
       "no-restricted-imports": [
@@ -90,19 +113,9 @@ export default defineConfig([
               message: "features не должны импортить из app",
             },
             {
-              group: ["@/shared/lib/**"],
+              group: ["@/features/**"],
               message:
-                "Импортируй из shared/lib только через public API: @/shared/lib",
-            },
-            {
-              group: ["@/features/*/*", "@/features/*/*/**"],
-              message:
-                "Не лезь вглубь features через alias. Другие фичи импортируй только как @/features/<feature>, а внутри своей — относительными импортами",
-            },
-            {
-              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
-              message:
-                "Импортируй из shared/ui только через public API: @/shared/ui",
+                "Импортируй фичи только через public API: @/features/<feature> (без deep-import)",
             },
           ],
         },
@@ -117,24 +130,14 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: ["@/shared/lib/*", "@/shared/lib/*/**"],
-              message:
-                "В app импортируй из shared/lib только через public API: @/shared/lib",
-            },
-            {
               group: ["@/features/*/*", "@/features/*/*/**"],
               message:
-                "В app импортируй фичи только через public API: @/features/<feature>",
+                "Импортируй фичи только через public API: @/features/<feature> (без deep-import)",
             },
             {
               group: ["@/app/**"],
               message:
                 "Внутри app не импортируй app через alias (@/app/*). Используй относительные импорты (./..).",
-            },
-            {
-              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
-              message:
-                "В app импортируй из shared/ui только через public API: @/shared/ui",
             },
           ],
         },
@@ -143,31 +146,20 @@ export default defineConfig([
   },
   {
     files: ["src/**/*.{ts,tsx,js,jsx}"],
-    ignores: [
-      "src/app/**/*.{ts,tsx,js,jsx}",
-      "src/features/**/*.{ts,tsx,js,jsx}",
-      "src/shared/**/*.{ts,tsx,js,jsx}",
-    ],
-
     rules: {
       "no-restricted-imports": [
         "error",
         {
           patterns: [
             {
-              group: ["@/shared/lib/*", "@/shared/lib/*/**"],
+              group: [
+                "@/shared/ui/*",
+                "@/shared/ui/*/**",
+                "@/shared/lib/*",
+                "@/shared/lib/*/**",
+              ],
               message:
-                "Импортируй из shared/lib только через public API: @/shared/lib",
-            },
-            {
-              group: ["@/features/*/*", "@/features/*/*/**"],
-              message:
-                "Импортируй фичи только через public API: @/features/<feature>",
-            },
-            {
-              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
-              message:
-                "Импортируй из shared/ui только через public API: @/shared/ui",
+                "Импортируй из shared только через public API: @/shared/ui или @/shared/lib",
             },
           ],
         },
