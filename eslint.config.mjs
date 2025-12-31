@@ -46,9 +46,9 @@ export default defineConfig([
         typescript: {
           project: "./tsconfig.json",
         },
-      },
-      node: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"],
+        node: {
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+        },
       },
     },
   },
@@ -99,6 +99,11 @@ export default defineConfig([
               message:
                 "Не лезь вглубь features через alias. Другие фичи импортируй только как @/features/<feature>, а внутри своей — относительными импортами",
             },
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "Импортируй из shared/ui только через public API: @/shared/ui",
+            },
           ],
         },
       ],
@@ -125,6 +130,11 @@ export default defineConfig([
               group: ["@/app/**"],
               message:
                 "Внутри app не импортируй app через alias (@/app/*). Используй относительные импорты (./..).",
+            },
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "В app импортируй из shared/ui только через public API: @/shared/ui",
             },
           ],
         },
@@ -153,6 +163,11 @@ export default defineConfig([
               group: ["@/features/*/*", "@/features/*/*/**"],
               message:
                 "Импортируй фичи только через public API: @/features/<feature>",
+            },
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "Импортируй из shared/ui только через public API: @/shared/ui",
             },
           ],
         },
