@@ -8,7 +8,6 @@ export function getAuthCookieName() {
 
 /**
  * Ставит cookie с JWT.
- * Почему async: у тебя cookies() возвращает Promise -> надо await.
  */
 export async function setSessionCookie(token: string) {
   const name = getAuthCookieName();
@@ -25,7 +24,6 @@ export async function setSessionCookie(token: string) {
 
 /**
  * Читает JWT из cookie.
- * Тоже async из-за await cookies().
  */
 export async function readSessionCookie(): Promise<string | null> {
   const name = getAuthCookieName();
@@ -36,7 +34,6 @@ export async function readSessionCookie(): Promise<string | null> {
 
 /**
  * Logout: удаляем cookie.
- * maxAge: 0 -> браузер выкидывает её.
  */
 export async function clearSessionCookie() {
   const name = getAuthCookieName();
