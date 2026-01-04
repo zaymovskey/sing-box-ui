@@ -5,14 +5,7 @@ import { LoginForm } from "@/features/auth";
  */
 export default function LoginPage() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        padding: 24,
-      }}
-    >
+    <div>
       <LoginForm />
     </div>
   );

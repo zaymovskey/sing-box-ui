@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { useLoginMutation } from "../model/useLoginMutation";
 
@@ -33,9 +34,22 @@ export function LoginForm() {
 
     try {
       await loginMutation.mutateAsync({ email, password });
+      toast.success("Toaster Test", {
+        description: "description",
+        action: {
+          label: undefined,
+          onClick: () => {},
+        },
+      });
       router.replace(next);
     } catch {
-      // ошибка уже лежит в loginMutation.error (см. ниже)
+      toast.error("Toaster Test", {
+        description: "description",
+        action: {
+          label: undefined,
+          onClick: () => {},
+        },
+      });
     }
   }
 
