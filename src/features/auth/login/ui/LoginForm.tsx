@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 
-import { useLoginMutation } from "@/features/auth/login/model/useLoginMutation";
+import { useLoginMutation } from "../model/useLoginMutation";
 
 /**
  * Тут нет RHF/zod — чисто минимальный UI.
