@@ -3,9 +3,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
+import { authQueryKeys } from "../../me/lib/queryKeys";
 import { logoutRequest } from "../api/logoutRequest";
-
-const AUTH_ME_QUERY_KEY = ["auth", "me"] as const;
 
 export function useLogoutMutation() {
   const qc = useQueryClient();
@@ -14,8 +13,8 @@ export function useLogoutMutation() {
   return useMutation({
     mutationFn: logoutRequest,
     onSettled: async () => {
-      qc.removeQueries({ queryKey: AUTH_ME_QUERY_KEY });
-      await qc.cancelQueries({ queryKey: AUTH_ME_QUERY_KEY });
+      qc.removeQueries({ queryKey: authQueryKeys.me() });
+      await qc.cancelQueries({ queryKey: authQueryKeys.me() });
       router.replace("/login");
     },
   });

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { authQueryKeys } from "../../me/lib/queryKeys";
 import { loginRequest } from "../api/loginRequest";
 import { type LoginRequestData } from "./login.request-schema";
 import { LoginResponseSchema } from "./login.response-schema";
@@ -17,7 +18,7 @@ export function useLoginMutation() {
       return LoginResponseSchema.parse(raw);
     },
     onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ["auth", "me"] });
+      await qc.invalidateQueries({ queryKey: authQueryKeys.me() });
     },
   });
 }

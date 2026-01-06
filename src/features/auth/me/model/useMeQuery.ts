@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { authQueryKeys } from "../lib/queryKeys";
+
 /**
  * DTO пользователя, который возвращает /api/auth/me
  */
@@ -33,7 +35,7 @@ async function fetchMe(): Promise<MeDto> {
  */
 export function useMeQuery() {
   return useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: authQueryKeys.me(),
     queryFn: fetchMe,
     retry: false,
     staleTime: 30_000,
