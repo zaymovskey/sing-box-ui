@@ -62,6 +62,35 @@ export default defineConfig([
         typescript: { project: "./tsconfig.json" },
         node: { extensions: [".js", ".jsx", ".ts", ".tsx"] },
       },
+      react: { version: "detect" },
+    },
+  },
+
+  // Импорты и экспорты типов: заставить использовать type-imports/type-exports
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      // Импорты: заставить import { type X }
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+          fixStyle: "inline-type-imports",
+          disallowTypeAnnotations: false,
+        },
+      ],
+      // Экспорты: заставить export type { X }
+      "@typescript-eslint/consistent-type-exports": [
+        "error",
+        { fixMixedExportsWithInlineTypeSpecifier: true },
+      ],
     },
   },
 
