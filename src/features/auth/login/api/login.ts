@@ -1,4 +1,4 @@
-import { type LoginData } from "../model/login.schema";
+import { type LoginData } from "../model/login.request-schema";
 
 export async function loginRequest(body: LoginData) {
   const res = await fetch("/api/auth/login", {
