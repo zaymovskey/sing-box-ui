@@ -42,7 +42,6 @@ export async function proxy(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
 
-    // Делается для того, чтобы после логина вернуться на запрошенную изначально страницу
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }

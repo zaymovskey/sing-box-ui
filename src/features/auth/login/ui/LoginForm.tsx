@@ -1,9 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
 
+import {
+  type LoginRequestData,
+  LoginRequestSchema,
+} from "../model/login.request-schema";
 import { useLoginMutation } from "../model/useLoginMutation";
 
 /**
@@ -16,47 +21,30 @@ export function LoginForm() {
 
   const next = useMemo(() => sp.get("next") ?? "/", [sp]);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const loginMutation = useLoginMutation();
 
-  /**
-   * submit:
-   * - простая валидация, чтобы не слать пустые поля
-   * - mutateAsync даст исключение при ошибке → UI покажет текст
-   * - после успеха редиректим
-   */
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  const form = useForm<LoginRequestData>({
+    resolver: zodResolver(LoginRequestSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-    if (!email.trim() || !password.trim()) return;
-
+  const onSubmit = form.handleSubmit(async (data) => {
     try {
-      await loginMutation.mutateAsync({ email, password });
-      toast.success("Toaster Test", {
-        description: "description",
-        action: {
-          label: undefined,
-          onClick: () => {},
-        },
-      });
+      await loginMutation.mutateAsync(data);
       router.replace(next);
-    } catch {
-      toast.error("Toaster Test", {
-        description: "description",
-        action: {
-          label: undefined,
-          onClick: () => {},
-        },
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Ошибка авторизации";
+
+      form.setError("root", {
+        type: "server",
+        message,
       });
     }
-  }
-
-  const errorText =
-    loginMutation.isError && loginMutation.error instanceof Error
-      ? loginMutation.error.message
-      : null;
+  });
 
   return (
     <div className="w-full max-w-[420px] rounded-xl border border-black/10 p-5">
@@ -67,33 +55,36 @@ export function LoginForm() {
         <label className="grid gap-1.5">
           <span className="text-xs text-white/80">Логин</span>
           <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...form.register("email")}
             autoComplete="username"
             placeholder="admin"
             className="rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm outline-none
                    focus:border-black/20 focus:ring-0 "
           />
+          {form.formState.errors.email?.message ? (
+            <div className="text-xs text-red-400">
+              {form.formState.errors.email.message}
+            </div>
+          ) : null}
         </label>
 
         {/* Пароль */}
         <label className="grid gap-1.5">
           <span className="text-xs text-white/80">Пароль</span>
           <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...form.register("password")}
             autoComplete="current-password"
             type="password"
             placeholder="••••••••"
             className="rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm outline-none
                    focus:border-black/20 focus:ring-0"
           />
+          {form.formState.errors.password?.message ? (
+            <div className="text-xs text-red-400">
+              {form.formState.errors.password.message}
+            </div>
+          ) : null}
         </label>
-
-        {/* Ошибка */}
-        {errorText ? (
-          <div className="text-xs text-red-400">{errorText}</div>
-        ) : null}
 
         {/* Кнопка */}
         <button
@@ -109,10 +100,11 @@ export function LoginForm() {
           {loginMutation.isPending ? "Входим..." : "Войти"}
         </button>
 
-        {/* debug next */}
-        <div className="text-xs text-white/60">
-          next: <code className="text-white/80">{next}</code>
-        </div>
+        {form.formState.errors.root?.message ? (
+          <div className="text-xs text-red-400">
+            {form.formState.errors.root.message}
+          </div>
+        ) : null}
       </form>
     </div>
   );
