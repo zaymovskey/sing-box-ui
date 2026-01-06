@@ -10,13 +10,13 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // ---------------------------------------------------------------------------
-  // 0) База
+  // База
   // ---------------------------------------------------------------------------
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
 
   // ---------------------------------------------------------------------------
-  // 1) Общие плагины/правила для всего проекта
+  // Общие плагины/правила для всего проекта
   // ---------------------------------------------------------------------------
   {
     plugins: {
@@ -95,11 +95,9 @@ export default defineConfig([
   },
 
   // ---------------------------------------------------------------------------
-  // 2) Shared layer
-  //    - shared НЕ может импортить app/features
-  //    - внутри shared не используем alias @/shared/** (только относительные)
-  //    - shared/ui и shared/lib импортим снаружи только через public API
-  //      (это правило мы повесим на app/features, а не на shared — см. ниже)
+  // Shared layer
+  //  - shared НЕ может импортить app/features/widgets
+  //  - внутри shared не используем alias @/shared/** (только относительные)
   // ---------------------------------------------------------------------------
   {
     files: ["src/shared/**/*.{ts,tsx,js,jsx}"],
@@ -117,9 +115,14 @@ export default defineConfig([
               message: "shared не должен импортить из features",
             },
             {
+              group: ["@/widgets/**"],
+              message: "shared не должен импортить из widgets",
+            },
+
+            {
               group: ["@/shared/**"],
               message:
-                "Внутри shared не импортируй shared через alias (@/shared/*). Используй относительные импорты (./..).",
+                "Внутри shared не импортируй shared через alias (@/shared/**). Используй относительные импорты (./..).",
             },
           ],
         },
@@ -128,12 +131,11 @@ export default defineConfig([
   },
 
   // ---------------------------------------------------------------------------
-  // 3) Features layer
-  //    - features НЕ может импортить app
-  //    - внутри features запрещаем alias deep-import @/features/**,
-  //      чтобы внутри фичи использовали относительные импорты,
-  //      а между фичами — public API
-  //    - shared импортится ТОЛЬКО через public API (важно!)
+  // Features layer
+  //  - features НЕ может импортить app
+  //  - внутри features не используем alias @/features/** (только относительные)
+  //  - features может импортить другие features только через public API @/features/<feature>
+  //  - shared импортится ТОЛЬКО через public API: @/shared/ui, @/shared/lib, @/shared/lib/server
   // ---------------------------------------------------------------------------
   {
     files: ["src/features/**/*.{ts,tsx,js,jsx}"],
@@ -142,33 +144,48 @@ export default defineConfig([
         "error",
         {
           patterns: [
-            // слойность: features -> app запрещено
             {
               group: ["@/app/**"],
               message: "features не должны импортить из app",
             },
 
-            // внутри features: никакого alias deep-import (включая в себя)
-            // => внутри фичи используем ../.., между фичами — только public API
             {
               group: ["@/features/**"],
               message:
-                "Внутри features не импортируй через alias @/features/**. Используй относительные импорты внутри фичи, а между фичами — только public API @/features/<feature>.",
+                "Внутри features не импортируй через alias (@/features/**). Используй относительные импорты (./..).",
             },
 
-            // shared: снаружи только public API
+            // Между фичами: запрещаем deep-import (разрешён только @/features/<feature>)
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Импортируй другие фичи только через public API: @/features/<feature> (без deep-import).",
+            },
+
+            // shared/ui: только @/shared/ui
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "Импортируй из shared/ui только через public API: @/shared/ui",
+            },
+
+            // shared/lib: только @/shared/lib или @/shared/lib/server
             {
               group: [
-                "@/shared/ui/*",
-                "@/shared/ui/*/**",
                 "@/shared/lib/*",
-                "!@/shared/lib/server",
                 "@/shared/lib/*/**",
-                "@/shared/lib/server/*",
-                "@/shared/lib/server/*/**",
+                "!@/shared/lib/server",
+                "!@/shared/lib/server/**",
               ],
               message:
-                "Импортируй из shared только через public API: @/shared/ui, @/shared/lib или @/shared/lib/server",
+                "Импортируй из shared/lib только через public API: @/shared/lib или @/shared/lib/server",
+            },
+
+            // shared/lib/server: запрещаем deep-import (разрешён только @/shared/lib/server)
+            {
+              group: ["@/shared/lib/server/*", "@/shared/lib/server/*/**"],
+              message:
+                "Импортируй из shared/lib/server только через public API: @/shared/lib/server",
             },
           ],
         },
@@ -177,10 +194,80 @@ export default defineConfig([
   },
 
   // ---------------------------------------------------------------------------
-  // 4) App layer
-  //    - app может импортить features, но ТОЛЬКО через public API
-  //    - внутри app не импортим app через alias @/app/**
-  //    - shared импортится ТОЛЬКО через public API
+  // Widgets layer
+  //  - widgets НЕ может импортить app
+  //  - внутри widgets не используем alias @/widgets/** (только относительные)
+  //  - widgets может импортить features только через public API @/features/<feature>
+  //  - shared импортится ТОЛЬКО через public API
+  // ---------------------------------------------------------------------------
+  {
+    files: ["src/widgets/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/**"],
+              message: "widgets не должны импортить из app",
+            },
+
+            {
+              group: ["@/widgets/**"],
+              message:
+                "Внутри widgets не импортируй через alias (@/widgets/**). Используй относительные импорты (./..).",
+            },
+
+            // Между виджетами: запрещаем deep-import (разрешён только @/widgets/<widget>)
+            {
+              group: ["@/widgets/*/*", "@/widgets/*/*/**"],
+              message:
+                "Импортируй другие виджеты только через public API: @/widgets/<widget> (без deep-import).",
+            },
+
+            // Features: запрещаем deep-import (разрешён только @/features/<feature>)
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Импортируй фичи только через public API: @/features/<feature> (без deep-import).",
+            },
+
+            // shared/ui: только @/shared/ui
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "Импортируй из shared/ui только через public API: @/shared/ui",
+            },
+
+            // shared/lib: только @/shared/lib или @/shared/lib/server
+            {
+              group: [
+                "@/shared/lib/*",
+                "@/shared/lib/*/**",
+                "!@/shared/lib/server",
+                "!@/shared/lib/server/**",
+              ],
+              message:
+                "Импортируй из shared/lib только через public API: @/shared/lib или @/shared/lib/server",
+            },
+
+            // shared/lib/server: запрещаем deep-import
+            {
+              group: ["@/shared/lib/server/*", "@/shared/lib/server/*/**"],
+              message:
+                "Импортируй из shared/lib/server только через public API: @/shared/lib/server",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // App layer
+  //  - app может импортить features/widgets (но соблюдая public API)
+  //  - внутри app не используем alias @/app/** (только относительные)
+  //  - shared импортится ТОЛЬКО через public API
   // ---------------------------------------------------------------------------
   {
     files: ["src/app/**/*.{ts,tsx,js,jsx}"],
@@ -189,35 +276,50 @@ export default defineConfig([
         "error",
         {
           patterns: [
-            // features: запрещаем deep-import из app
-            // разрешено: "@/features/auth"
-            // запрещено: "@/features/auth/login/model/..."
-            {
-              group: ["@/features/*/*", "@/features/*/*/**"],
-              message:
-                "Импортируй фичи только через public API: @/features/<feature> (без deep-import)",
-            },
-
-            // внутри app не импортим app через alias
             {
               group: ["@/app/**"],
               message:
-                "Внутри app не импортируй app через alias (@/app/*). Используй относительные импорты (./..).",
+                "Внутри app не импортируй app через alias (@/app/**). Используй относительные импорты (./..).",
             },
 
-            // shared: снаружи только public API
+            // Features: запрещаем deep-import
+            {
+              group: ["@/features/*/*", "@/features/*/*/**"],
+              message:
+                "Импортируй фичи только через public API: @/features/<feature> (без deep-import).",
+            },
+
+            // Widgets: запрещаем deep-import
+            {
+              group: ["@/widgets/*/*", "@/widgets/*/*/**"],
+              message:
+                "Импортируй виджеты только через public API: @/widgets/<widget> (без deep-import).",
+            },
+
+            // shared/ui: только @/shared/ui
+            {
+              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+              message:
+                "Импортируй из shared/ui только через public API: @/shared/ui",
+            },
+
+            // shared/lib: только @/shared/lib или @/shared/lib/server
             {
               group: [
-                "@/shared/ui/*",
-                "@/shared/ui/*/**",
                 "@/shared/lib/*",
-                "!@/shared/lib/server",
                 "@/shared/lib/*/**",
-                "@/shared/lib/server/*",
-                "@/shared/lib/server/*/**",
+                "!@/shared/lib/server",
+                "!@/shared/lib/server/**",
               ],
               message:
-                "Импортируй из shared только через public API: @/shared/ui, @/shared/lib или @/shared/lib/server",
+                "Импортируй из shared/lib только через public API: @/shared/lib или @/shared/lib/server",
+            },
+
+            // shared/lib/server: запрещаем deep-import
+            {
+              group: ["@/shared/lib/server/*", "@/shared/lib/server/*/**"],
+              message:
+                "Импортируй из shared/lib/server только через public API: @/shared/lib/server",
             },
           ],
         },
@@ -226,7 +328,7 @@ export default defineConfig([
   },
 
   // ---------------------------------------------------------------------------
-  // 5) Игноры
+  // Игноры
   // ---------------------------------------------------------------------------
   globalIgnores([".next/**", "node_modules/**", "public/**"]),
 ]);
