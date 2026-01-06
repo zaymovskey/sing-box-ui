@@ -1,3 +1,5 @@
+import { ApiError, readErrorMessage } from "@/shared/lib";
+
 import { type LoginRequestData } from "../model/login.request-schema";
 
 export async function loginRequest(body: LoginRequestData) {
@@ -8,8 +10,8 @@ export async function loginRequest(body: LoginRequestData) {
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || String(res.status));
+    const { message, payload } = await readErrorMessage(res);
+    throw new ApiError(res.status, message, payload);
   }
 
   return res.json() as Promise<unknown>;

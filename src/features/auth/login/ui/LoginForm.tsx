@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
+import { applyFormApiError } from "@/shared/lib";
+
 import {
   type LoginRequestData,
   LoginRequestSchema,
@@ -37,11 +39,10 @@ export function LoginForm() {
       await loginMutation.mutateAsync(data);
       router.replace(next);
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Ошибка авторизации";
-
-      form.setError("root", {
-        type: "server",
-        message,
+      applyFormApiError(form, e, {
+        401: "Неверный логин или пароль",
+        403: "Доступ запрещён",
+        429: "Слишком много попыток. Попробуй позже.",
       });
     }
   });
