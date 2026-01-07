@@ -7,11 +7,11 @@ import { useForm } from "react-hook-form";
 
 import { applyFormApiError } from "@/shared/lib";
 
+import { useLoginMutation } from "../model/login.mutation";
 import {
   type LoginRequestData,
   LoginRequestSchema,
 } from "../model/login.request-schema";
-import { useLoginMutation } from "../model/useLoginMutation";
 
 /**
  * Тут нет RHF/zod — чисто минимальный UI.
