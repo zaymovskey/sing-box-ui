@@ -2,6 +2,8 @@ import "server-only";
 
 import { jwtVerify, SignJWT } from "jose";
 
+import { serverEnv } from "../env-server";
+
 const encoder = new TextEncoder();
 
 /**
@@ -19,7 +21,7 @@ export type SessionPayload = {
  * jose работает с байтами, поэтому TextEncoder.
  */
 function getSecretKey() {
-  const secret = process.env.AUTH_JWT_SECRET;
+  const secret = serverEnv.AUTH_JWT_SECRET;
   if (!secret) throw new Error("AUTH_JWT_SECRET is not set");
   return encoder.encode(secret);
 }

@@ -1,12 +1,14 @@
 import { jwtVerify } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
 
-const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? "sbui_session";
+import { serverEnv } from "./shared/lib/server";
+
+const COOKIE_NAME = serverEnv.AUTH_COOKIE_NAME;
 
 const encoder = new TextEncoder();
 
 function getSecret() {
-  const secret = process.env.AUTH_JWT_SECRET;
+  const secret = serverEnv.AUTH_JWT_SECRET;
   if (!secret) throw new Error("AUTH_JWT_SECRET is not set");
   return encoder.encode(secret);
 }

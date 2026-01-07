@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { setSessionCookie, signSession } from "@/shared/lib/server";
+import { serverEnv, setSessionCookie, signSession } from "@/shared/lib/server";
 
 type LoginBody = {
   email?: string;
@@ -20,8 +20,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const demoEmail = process.env.AUTH_DEMO_EMAIL ?? "admin@example.com";
-  const demoPassword = process.env.AUTH_DEMO_PASSWORD ?? "admin12345";
+  const demoEmail = serverEnv.AUTH_DEMO_EMAIL ?? "admin@example.com";
+  const demoPassword = serverEnv.AUTH_DEMO_PASSWORD ?? "admin12345";
 
   if (email !== demoEmail || password !== demoPassword) {
     return NextResponse.json(

@@ -7,3 +7,4 @@ export {
 export type { SessionPayload } from "./auth/jwt";
 export { signSession, verifySession } from "./auth/jwt";
 export { withSession } from "./auth/with-session";
+export { serverEnv } from "./env-server";

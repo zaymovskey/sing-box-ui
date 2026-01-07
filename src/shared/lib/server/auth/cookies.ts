@@ -2,8 +2,10 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
+import { serverEnv } from "../env-server";
+
 export function getAuthCookieName() {
-  return process.env.AUTH_COOKIE_NAME ?? "sbui_session";
+  return serverEnv.AUTH_COOKIE_NAME;
 }
 
 /**
@@ -15,7 +17,7 @@ export async function setSessionCookie(token: string) {
 
   jar.set(name, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: serverEnv.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
