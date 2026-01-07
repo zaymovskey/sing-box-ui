@@ -6,3 +6,5 @@ export { applyFormApiError } from "./http/apply-form-api-error";
 export { getErrorMessage } from "./http/get-error-message";
 export { isErrorPayload } from "./http/is-error-payload";
 export { readErrorMessage } from "./http/read-error-message";
+export { apiRoutes } from "./routes/api";
+export { routes } from "./routes/routes";
