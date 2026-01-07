@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { authQueryKeys } from "../lib/queryKeys";
+import { authQueryKeys } from "../lib/me.query-keys";
 
 /**
  * DTO пользователя, который возвращает /api/auth/me

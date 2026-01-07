@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { authQueryKeys } from "../../me/lib/queryKeys";
+import { authQueryKeys } from "../../me/lib/me.query-keys";
 import { loginRequest } from "../api/login.api";
 import { type LoginRequestData } from "./login.request-schema";
 import { LoginResponseSchema } from "./login.response-schema";
