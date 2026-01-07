@@ -1,5 +1,6 @@
 export { cn } from "./cn";
 export { ApiError } from "./http/api-error";
+export { apiFetch } from "./http/api-fetch";
 export { applyFormApiError } from "./http/apply-form-api-error";
 export { getErrorMessage } from "./http/get-error-message";
 export { isErrorPayload } from "./http/is-error-payload";

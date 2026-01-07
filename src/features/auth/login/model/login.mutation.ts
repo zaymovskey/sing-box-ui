@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { authQueryKeys } from "../../me/lib/me.query-keys";
-import { loginRequest } from "../api/login.api";
+import { login } from "../api/login.api";
 import { type LoginRequestData } from "./login.request-schema";
 import { LoginResponseSchema } from "./login.response-schema";
 
@@ -14,7 +14,7 @@ export function useLoginMutation() {
 
   return useMutation({
     mutationFn: async (body: LoginRequestData) => {
-      const raw = await loginRequest(body);
+      const raw = await login(body);
       return LoginResponseSchema.parse(raw);
     },
     onSuccess: async () => {
