@@ -1,8 +1,14 @@
 import { z } from "zod";
 
 export const LoginFormSchema = z.object({
-  email: z.string().min(1, "Введите логин"),
-  password: z.string().min(1, "Введите пароль"),
+  email: z
+    .string()
+    .transform((v) => v.trim().toLowerCase())
+    .pipe(z.email("Введите корректный email")),
+  password: z
+    .string()
+    .transform((v) => v.trim())
+    .pipe(z.string().min(1, "Пароль обязателен")),
 });
 
 export type LoginFormValues = z.infer<typeof LoginFormSchema>;

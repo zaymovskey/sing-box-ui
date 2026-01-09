@@ -21,4 +21,5 @@ export {
 export { RootErrorMessage } from "./form/root-error-message";
 export { Input } from "./input";
 export { Label } from "./label";
+export { PasswordInput } from "./password-input";
 export { Toaster } from "./sonner";

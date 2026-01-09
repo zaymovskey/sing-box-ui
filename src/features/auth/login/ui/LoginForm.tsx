@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  PasswordInput,
   RootErrorMessage,
 } from "@/shared/ui";
 
@@ -64,50 +65,67 @@ export function LoginForm() {
   });
 
   return (
-    <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>
-              <h1 className="text-center text-2xl font-semibold tracking-tight">
-                Вход
-              </h1>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field: emailField }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...emailField} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field: passwordField }) => (
-                <FormItem>
-                  <FormLabel>Пароль</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...passwordField} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Войти</Button>
-          </CardContent>
-          <CardFooter className="flex-col gap-2">
-            <RootErrorMessage />
-          </CardFooter>
-        </Card>
-      </form>
-    </Form>
+    <div className="flex min-h-screen w-full items-center justify-center px-4">
+      <div className="w-full max-w-xs">
+        <Form {...form}>
+          <form onSubmit={onSubmit}>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <h1 className="text-center text-3xl font-semibold tracking-tight">
+                    Вход
+                  </h1>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field: emailField }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input {...emailField} placeholder="example@mail.com" />
+                      </FormControl>
+                      <div className="min-h-5">
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field: passwordField }) => (
+                    <FormItem>
+                      <FormLabel>Пароль</FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          {...passwordField}
+                          placeholder="••••••••••••"
+                        />
+                      </FormControl>
+                      <div className="min-h-5">
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={loginMutation.isPending}
+                >
+                  Войти
+                </Button>
+              </CardContent>
+              <CardFooter className="min-h-5 flex-col gap-2">
+                <RootErrorMessage />
+              </CardFooter>
+            </Card>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 }
