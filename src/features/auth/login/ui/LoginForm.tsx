@@ -69,23 +69,30 @@ export function LoginForm() {
       <div className="w-full max-w-xs">
         <Form {...form}>
           <form onSubmit={onSubmit}>
-            <Card>
+            <Card className="gap-3">
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="border-b pb-3">
                   <h1 className="text-center text-3xl font-semibold tracking-tight">
                     Вход
                   </h1>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1">
+              <CardContent className="space-y-3">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field: emailField }) => (
-                    <FormItem>
+                    <FormItem className="gap-2">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...emailField} placeholder="example@mail.com" />
+                        <Input
+                          {...emailField}
+                          placeholder="example@mail.com"
+                          onChange={(e) => {
+                            form.clearErrors("root");
+                            emailField.onChange(e);
+                          }}
+                        />
                       </FormControl>
                       <div className="min-h-5">
                         <FormMessage />
@@ -97,12 +104,16 @@ export function LoginForm() {
                   control={form.control}
                   name="password"
                   render={({ field: passwordField }) => (
-                    <FormItem>
+                    <FormItem className="gap-2">
                       <FormLabel>Пароль</FormLabel>
                       <FormControl>
                         <PasswordInput
                           {...passwordField}
                           placeholder="••••••••••••"
+                          onChange={(e) => {
+                            form.clearErrors("root");
+                            passwordField.onChange(e);
+                          }}
                         />
                       </FormControl>
                       <div className="min-h-5">
@@ -119,7 +130,7 @@ export function LoginForm() {
                   Войти
                 </Button>
               </CardContent>
-              <CardFooter className="min-h-5 flex-col gap-2">
+              <CardFooter className="min-h-5 flex-col">
                 <RootErrorMessage />
               </CardFooter>
             </Card>
