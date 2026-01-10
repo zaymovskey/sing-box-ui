@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { ApiError, routes } from "@/shared/lib";
+import { ApiError, appRoutes } from "@/shared/lib";
 
 import { useMeQuery } from "../model/me.query";
 
@@ -23,7 +23,7 @@ export function AuthGate({ children }: Props) {
 
   useEffect(() => {
     if (isUnauthorized(error)) {
-      router.replace(routes.login);
+      router.replace(appRoutes.login);
     }
   }, [error, router]);
 

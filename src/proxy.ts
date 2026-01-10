@@ -1,7 +1,7 @@
 import { jwtVerify } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { routes } from "@/shared/lib";
+import { appRoutes } from "@/shared/lib";
 import { serverEnv } from "@/shared/lib/server";
 
 const COOKIE_NAME = serverEnv.AUTH_COOKIE_NAME;
@@ -35,15 +35,15 @@ export async function proxy(req: NextRequest) {
 
   const loggedIn = token ? await isValidToken(token) : false;
 
-  if (loggedIn && pathname === routes.login) {
+  if (loggedIn && pathname === appRoutes.login) {
     const url = req.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = appRoutes.inbounds;
     return NextResponse.redirect(url);
   }
 
-  if (!loggedIn && pathname !== routes.login) {
+  if (!loggedIn && pathname !== appRoutes.login) {
     const url = req.nextUrl.clone();
-    url.pathname = routes.login;
+    url.pathname = appRoutes.login;
 
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);

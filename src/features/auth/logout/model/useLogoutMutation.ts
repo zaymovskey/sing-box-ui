@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-import { routes } from "@/shared/lib";
+import { appRoutes } from "@/shared/lib";
 
 import { authQueryKeys } from "../../me/lib/me.query-keys";
 import { logoutRequest } from "../api/logoutRequest";
@@ -17,7 +17,7 @@ export function useLogoutMutation() {
     onSettled: async () => {
       qc.removeQueries({ queryKey: authQueryKeys.me() });
       await qc.cancelQueries({ queryKey: authQueryKeys.me() });
-      router.replace(routes.login);
+      router.replace(appRoutes.login);
     },
   });
 }

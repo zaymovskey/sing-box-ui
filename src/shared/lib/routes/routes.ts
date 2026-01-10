@@ -1,4 +1,5 @@
-export const routes = {
+export const appRoutes = {
   login: "/login",
-  home: "/",
+  inbounds: "/inbounds",
+  sbConfig: "/sb-config",
 } as const;

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
-import { applyFormApiError } from "@/shared/lib";
+import { applyFormApiError, appRoutes } from "@/shared/lib";
 import {
   Button,
   Card,
@@ -38,7 +38,7 @@ export function LoginForm() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  const next = useMemo(() => sp.get("next") ?? "/", [sp]);
+  const next = useMemo(() => sp.get("next") ?? appRoutes.inbounds, [sp]);
 
   const loginMutation = useLoginMutation();
 
