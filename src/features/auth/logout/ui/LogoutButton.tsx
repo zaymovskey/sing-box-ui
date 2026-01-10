@@ -1,6 +1,12 @@
+import { DoorOpen } from "lucide-react";
+
+import { cn } from "@/shared/lib";
+
 import { useLogoutMutation } from "../model/useLogoutMutation";
 
-export function LogoutButton() {
+type LogoutButtonProps = React.ComponentProps<"button">;
+
+export function LogoutButton({ className, ...props }: LogoutButtonProps) {
   const logoutMutation = useLogoutMutation();
 
   const onLogout = () => {
@@ -8,8 +14,14 @@ export function LogoutButton() {
   };
 
   return (
-    <button onClick={onLogout} disabled={logoutMutation.isPending}>
-      Logout
+    <button
+      onClick={onLogout}
+      disabled={logoutMutation.isPending}
+      className={cn(className, "cursor-pointer")}
+      {...props}
+    >
+      <DoorOpen />
+      <span>Выход</span>
     </button>
   );
 }

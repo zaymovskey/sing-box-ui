@@ -1,5 +1,7 @@
+"use client";
 import { FileCog, UserRound } from "lucide-react";
 
+import { LogoutButton } from "@/features/auth";
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +42,11 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <LogoutButton />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
