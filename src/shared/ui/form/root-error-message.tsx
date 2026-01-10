@@ -1,3 +1,5 @@
+"use client";
+
 import { useFormContext } from "react-hook-form";
 
 function RootErrorMessage({ className, ...props }: React.ComponentProps<"p">) {

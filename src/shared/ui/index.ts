@@ -22,4 +22,12 @@ export { RootErrorMessage } from "./form/root-error-message";
 export { Input } from "./input";
 export { Label } from "./label";
 export { PasswordInput } from "./password-input";
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarProvider,
+} from "./sidebar";
 export { Toaster } from "./sonner";

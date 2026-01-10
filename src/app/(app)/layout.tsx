@@ -1,15 +1,18 @@
 import type { ReactNode } from "react";
 
 import { AuthGate } from "@/features/auth";
-import { Sidebar } from "@/widgets/sidebar";
+import { SidebarProvider } from "@/shared/ui";
+import { AppSidebar } from "@/widgets/sidebar";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGate>
-      <div className="min-h-dvh grid grid-cols-[240px_1fr]">
-        <Sidebar />
-        <main className="p-4">{children}</main>
-      </div>
+      <SidebarProvider>
+        <div className="grid min-h-dvh grid-cols-[240px_1fr]">
+          <AppSidebar />
+          <main className="p-4">{children}</main>
+        </div>
+      </SidebarProvider>
     </AuthGate>
   );
 }
