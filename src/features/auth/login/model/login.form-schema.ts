@@ -3,7 +3,9 @@ import { z } from "zod";
 export const LoginFormSchema = z.object({
   email: z
     .string()
-    .transform((v) => v.trim().toLowerCase())
+    .trim()
+    .toLowerCase()
+    .nonempty("Email обязателен")
     .pipe(z.email("Введите корректный email")),
   password: z
     .string()
