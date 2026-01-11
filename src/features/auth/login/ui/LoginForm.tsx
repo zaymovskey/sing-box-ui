@@ -126,6 +126,7 @@ export function LoginForm() {
                   type="submit"
                   className="w-full"
                   loading={loginMutation.isPending}
+                  disabled={loginMutation.isPending}
                 >
                   Войти
                 </Button>

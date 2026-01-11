@@ -1,8 +1,8 @@
 "use client";
-import { FileCog, UserRound } from "lucide-react";
+import { DoorOpen, FileCog, UserRound } from "lucide-react";
 import Link from "next/link";
 
-import { LogoutButton } from "@/features/auth";
+import { LogoutDialog } from "@/features/auth";
 import { appRoutes } from "@/shared/lib";
 import {
   Sidebar,
@@ -45,9 +45,20 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <LogoutButton />
-                </SidebarMenuButton>
+                <LogoutDialog
+                  renderTrigger={({ disabled }) => (
+                    <SidebarMenuButton asChild>
+                      <button
+                        type="button"
+                        disabled={disabled}
+                        className="cursor-pointer"
+                      >
+                        <DoorOpen className="size-4" />
+                        <span>Выход</span>
+                      </button>
+                    </SidebarMenuButton>
+                  )}
+                />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

@@ -9,6 +9,16 @@ export {
   CardTitle,
 } from "./card";
 export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./dialog";
+export {
   Form,
   FormControl,
   FormDescription,

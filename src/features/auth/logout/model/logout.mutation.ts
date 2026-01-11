@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 import { appRoutes } from "@/shared/lib";
 
 import { authQueryKeys } from "../../me/lib/me.query-keys";
-import { logoutRequest } from "../api/logoutRequest";
+import { logout } from "../api/logout.api";
 
 export function useLogoutMutation() {
   const qc = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: logoutRequest,
+    mutationFn: logout,
     onSettled: async () => {
       qc.removeQueries({ queryKey: authQueryKeys.me() });
       await qc.cancelQueries({ queryKey: authQueryKeys.me() });

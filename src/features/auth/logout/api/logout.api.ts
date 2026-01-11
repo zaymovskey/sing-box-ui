@@ -1,6 +1,6 @@
 import { apiRoutes } from "@/shared/lib";
 
-export async function logoutRequest() {
+export async function logout() {
   const res = await fetch(apiRoutes.auth.logout, { method: "POST" });
 
   if (!res.ok) {
