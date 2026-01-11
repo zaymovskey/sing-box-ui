@@ -18,7 +18,7 @@ import {
 const items = [
   {
     title: "SB Конфиг",
-    url: appRoutes.sbConfig,
+    url: appRoutes.config,
     icon: FileCog,
   },
   {

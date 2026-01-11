@@ -8,6 +8,53 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
+const appRestrictedImportPatterns = [
+  {
+    group: ["@/app/**"],
+    message:
+      "Внутри app не импортируй app через alias (@/app/**). Используй относительные импорты (./..).",
+  },
+
+  // Features: запрещаем deep-import (разрешён только public API)
+  {
+    group: ["@/features/*/*", "@/features/*/*/**"],
+    message:
+      "Импортируй фичи только через public API: @/features/<feature> (без deep-import).",
+  },
+
+  // Widgets: запрещаем deep-import (разрешён только public API)
+  {
+    group: ["@/widgets/*/*", "@/widgets/*/*/**"],
+    message:
+      "Импортируй виджеты только через public API: @/widgets/<widget> (без deep-import).",
+  },
+
+  // shared/ui: только public API
+  {
+    group: ["@/shared/ui/*", "@/shared/ui/*/**"],
+    message: "Импортируй из shared/ui только через public API: @/shared/ui",
+  },
+
+  // shared/lib: только @/shared/lib или @/shared/lib/server
+  {
+    group: [
+      "@/shared/lib/*",
+      "@/shared/lib/*/**",
+      "!@/shared/lib/server",
+      "!@/shared/lib/server/**",
+    ],
+    message:
+      "Импортируй из shared/lib только через public API: @/shared/lib или @/shared/lib/server",
+  },
+
+  // shared/lib/server: запрещаем deep-import
+  {
+    group: ["@/shared/lib/server/*", "@/shared/lib/server/*/**"],
+    message:
+      "Импортируй из shared/lib/server только через public API: @/shared/lib/server",
+  },
+];
+
 export default defineConfig([
   // ---------------------------------------------------------------------------
   // База
@@ -275,51 +322,26 @@ export default defineConfig([
       "no-restricted-imports": [
         "error",
         {
-          patterns: [
-            {
-              group: ["@/app/**"],
-              message:
-                "Внутри app не импортируй app через alias (@/app/**). Используй относительные импорты (./..).",
-            },
+          patterns: appRestrictedImportPatterns,
+        },
+      ],
+    },
+  },
 
-            // Features: запрещаем deep-import
+  // Запрет импорта NextResponse в route.ts
+  {
+    files: ["src/app/api/**/route.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: appRestrictedImportPatterns,
+          paths: [
             {
-              group: ["@/features/*/*", "@/features/*/*/**"],
+              name: "next/server",
+              importNames: ["NextResponse"],
               message:
-                "Импортируй фичи только через public API: @/features/<feature> (без deep-import).",
-            },
-
-            // Widgets: запрещаем deep-import
-            {
-              group: ["@/widgets/*/*", "@/widgets/*/*/**"],
-              message:
-                "Импортируй виджеты только через public API: @/widgets/<widget> (без deep-import).",
-            },
-
-            // shared/ui: только @/shared/ui
-            {
-              group: ["@/shared/ui/*", "@/shared/ui/*/**"],
-              message:
-                "Импортируй из shared/ui только через public API: @/shared/ui",
-            },
-
-            // shared/lib: только @/shared/lib или @/shared/lib/server
-            {
-              group: [
-                "@/shared/lib/*",
-                "@/shared/lib/*/**",
-                "!@/shared/lib/server",
-                "!@/shared/lib/server/**",
-              ],
-              message:
-                "Импортируй из shared/lib только через public API: @/shared/lib или @/shared/lib/server",
-            },
-
-            // shared/lib/server: запрещаем deep-import
-            {
-              group: ["@/shared/lib/server/*", "@/shared/lib/server/*/**"],
-              message:
-                "Импортируй из shared/lib/server только через public API: @/shared/lib/server",
+                'Не импортируй NextResponse в route.ts. Используй okJson/errorJson из "@/shared/api/http".',
             },
           ],
         },

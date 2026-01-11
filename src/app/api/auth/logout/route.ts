@@ -1,8 +1,6 @@
-import { NextResponse } from "next/server";
+import { clearSessionCookie, okJson, withApiErrors } from "@/shared/lib/server";
 
-import { clearSessionCookie } from "@/shared/lib/server";
-
-export async function POST() {
+export const POST = withApiErrors(async () => {
   await clearSessionCookie();
-  return NextResponse.json({ ok: true });
-}
+  return okJson({ ok: true });
+});

@@ -1,33 +1,38 @@
-import { NextResponse } from "next/server";
-
-import { serverEnv, setSessionCookie, signSession } from "@/shared/lib/server";
+import {
+  errorJson,
+  okJson,
+  serverEnv,
+  setSessionCookie,
+  signSession,
+  withApiErrors,
+} from "@/shared/lib/server";
 
 type LoginBody = {
   email?: string;
   password?: string;
 };
 
-export async function POST(req: Request) {
+export const POST = withApiErrors(async (req: Request) => {
   const body = (await req.json().catch(() => null)) as LoginBody | null;
 
   const email = body?.email?.trim();
   const password = body?.password;
 
   if (!email || !password) {
-    return NextResponse.json(
-      { message: "Email and password are required" },
-      { status: 400 },
-    );
+    return errorJson(400, {
+      message: "Email and password are required",
+      code: "INVALID_REQUEST",
+    });
   }
 
   const demoEmail = serverEnv.AUTH_DEMO_EMAIL ?? "admin@example.com";
   const demoPassword = serverEnv.AUTH_DEMO_PASSWORD ?? "admin12345";
 
   if (email !== demoEmail || password !== demoPassword) {
-    return NextResponse.json(
-      { message: "Invalid credentials" },
-      { status: 401 },
-    );
+    return errorJson(401, {
+      message: "Invalid credentials",
+      code: "INVALID_CREDENTIALS",
+    });
   }
 
   const token = await signSession({
@@ -38,5 +43,5 @@ export async function POST(req: Request) {
 
   await setSessionCookie(token);
 
-  return NextResponse.json({ ok: true });
-}
+  return okJson({ ok: true });
+});

@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { okJson, withApiErrors, withSession } from "@/shared/lib/server";
 
-import { withSession } from "@/shared/lib/server";
-
-export const GET = withSession(async ({ session }) => {
-  return NextResponse.json({
-    id: session.sub,
-    email: session.email,
-    role: session.role,
-  });
-});
+export const GET = withSession(
+  withApiErrors(async ({ session }) => {
+    return okJson({
+      id: session.sub,
+      email: session.email,
+      role: session.role,
+    });
+  }),
+);
