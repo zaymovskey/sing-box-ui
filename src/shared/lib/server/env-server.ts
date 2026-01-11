@@ -8,6 +8,7 @@ const serverEnvSchema = z.object({
   AUTH_JWT_SECRET: z.string().min(1),
   AUTH_DEMO_EMAIL: z.email(),
   AUTH_DEMO_PASSWORD: z.string().min(1),
+  SINGBOX_CONFIG_PATH: z.string().min(1),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -18,4 +19,5 @@ export const serverEnv: ServerEnv = serverEnvSchema.parse({
   AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET,
   AUTH_DEMO_EMAIL: process.env.AUTH_DEMO_EMAIL,
   AUTH_DEMO_PASSWORD: process.env.AUTH_DEMO_PASSWORD,
+  SINGBOX_CONFIG_PATH: process.env.SINGBOX_CONFIG_PATH,
 });
