@@ -30,10 +30,6 @@ import {
 } from "../model/login.form-schema";
 import { useLoginMutation } from "../model/login.mutation";
 
-/**
- * Тут нет RHF/zod — чисто минимальный UI.
- * Но запрос уходит через React Query mutation.
- */
 export function LoginForm() {
   const router = useRouter();
   const sp = useSearchParams();
