@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "lint:css": "stylelint \"src/**/*.{css,scss}\" --config .stylelintrc.config.mjs",
-    "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix --config .stylelintrc.config.mjs",
+    "lint:css": "stylelint \"src/**/*.{css,scss}\" --config stylelint.config.mjs",
+    "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix --config stylelint.config.mjs",
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add"
   },
@@ -23,7 +23,7 @@
       "prettier --write"
     ],
     "src/**/*.{css,scss}": [
-      "stylelint --fix --config stylelintrc.config.mjs",
+      "stylelint --fix --config stylelint.config.mjs",
       "prettier --write"
     ]
   },
