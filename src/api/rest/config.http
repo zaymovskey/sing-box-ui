@@ -4,6 +4,6 @@
 # =========================
 
 ### Config
-GET {{baseUrl}}{{apiPrefix}}/config
+GET {{baseUrl}}{{apiPrefix}}/sing-box
 
 ###
