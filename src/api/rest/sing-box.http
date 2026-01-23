@@ -1,0 +1,9 @@
+# =========================
+# SING-BOX — sing-box-ui
+# Env: local / prod
+# =========================
+
+### Config
+GET {{baseUrl}}{{apiPrefix}}/sing-box/config-editor
+
+###

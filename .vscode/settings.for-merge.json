@@ -1,0 +1,16 @@
+{
+  // -------------- Rest Client --------------
+  "rest-client.rememberCookiesForSubsequentRequests": true,
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "apiPrefix": "/api",
+      "json": "application/json"
+    },
+    "local": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "prod": {
+      "baseUrl": "https://example.com"
+    }
+  }
+}

@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
 
+import { AuthGate } from "@/features/auth";
+import { SidebarInset, SidebarProvider } from "@/shared/ui";
+import { AppSidebar } from "@/widgets/sidebar";
+
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-dvh grid grid-cols-[240px_1fr]">
-      <aside className="border-r p-4">Sidebar</aside>
-      <main className="p-4">{children}</main>
-    </div>
+    <AuthGate>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className="p-2">{children}</SidebarInset>
+      </SidebarProvider>
+    </AuthGate>
   );
 }

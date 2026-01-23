@@ -1,11 +1,5 @@
-import { RqTest } from "../_debug/rq-test";
-import { ToastTest } from "../_debug/toaster-test";
+import { redirect } from "next/navigation";
 
 export default function AppHome() {
-  return (
-    <>
-      <ToastTest />
-      <RqTest />
-    </>
-  );
+  redirect("/inbounds");
 }

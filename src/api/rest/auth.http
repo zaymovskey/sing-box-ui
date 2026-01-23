@@ -1,0 +1,23 @@
+# =========================
+# AUTH — sing-box-ui
+# Env: local / prod
+# =========================
+
+### Login
+POST {{baseUrl}}{{apiPrefix}}/auth/login
+Content-Type: {{json}}
+
+{
+  "email": "admin@example.com",
+  "password": "admin12345"
+}
+
+###
+
+### Me (cookie should be sent automatically after Login)
+GET {{baseUrl}}{{apiPrefix}}/auth/me
+
+###
+
+### Logout
+POST {{baseUrl}}{{apiPrefix}}/auth/logout
