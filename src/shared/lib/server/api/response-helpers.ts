@@ -6,17 +6,17 @@ const DEFAULT_NO_STORE = "no-store";
 
 // Нормализуем заголовки: объединяем init.headers + наши дефолты
 function buildHeaders(init?: InitNoStatus, defaults?: HeadersInit): Headers {
-  const h = new Headers(init?.headers);
+  const headers = new Headers(init?.headers);
 
   if (defaults) {
     const d = new Headers(defaults);
     d.forEach((value, key) => {
       // defaults не должны затирать явные init.headers
-      if (!h.has(key)) h.set(key, value);
+      if (!headers.has(key)) headers.set(key, value);
     });
   }
 
-  return h;
+  return headers;
 }
 
 // На случай, если ты захочешь переопределить no-store
