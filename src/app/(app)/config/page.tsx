@@ -1,3 +1,5 @@
+import { SingBoxConfigScreen } from "@/features/sing-box";
+
 export default function ConfigPage() {
-  return <div>SB Конфиг</div>;
+  return <SingBoxConfigScreen />;
 }
