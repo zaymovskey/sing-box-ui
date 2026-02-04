@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 
 import {
   errorJson,
-  okJsonText,
+  okJson,
   serverEnv,
   withApiErrors,
   withSession,
@@ -14,7 +14,8 @@ export const GET = withApiErrors(
 
     try {
       const content = await fs.readFile(path, "utf-8");
-      return okJsonText(content);
+      const parsed = JSON.parse(content);
+      return okJson(parsed);
     } catch {
       return errorJson(500, {
         message: "Не удалось прочитать конфиг sing-box",
