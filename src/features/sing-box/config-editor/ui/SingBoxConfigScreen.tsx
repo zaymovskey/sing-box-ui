@@ -5,25 +5,25 @@ import { Ban, Check, CirclePlus, Copy, FilePenLine, Trash } from "lucide-react";
 import { type CSSProperties, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { useConfigJsonQuery } from "../model/config-editor.query";
+import { useConfigQuery } from "../model/config-editor.query";
 import {
-  type configEditorResponse,
-  configEditorResponseSchema,
+  type ConfigEditorRequestData,
+  ConfigEditorResponseSchema,
 } from "../model/config-editor.response-schema";
 
 export function SingBoxConfigScreen() {
-  const { data: singBoxConfig } = useConfigJsonQuery();
+  const { data: singBoxConfig } = useConfigQuery();
 
-  const [draft, setDraft] = useState<configEditorResponse | null>(null);
+  const [draft, setDraft] = useState<ConfigEditorRequestData | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
   const [toastIds, setToastIds] = useState<(string | number)[]>([]);
 
-  const onSetChange = (newData: configEditorResponse) => {
+  const onSetChange = (newData: ConfigEditorRequestData) => {
     toastIds.forEach((id) => toast.dismiss(id));
     setToastIds([]);
 
     setDraft(newData);
-    const resOfParse = configEditorResponseSchema.safeParse(newData);
+    const resOfParse = ConfigEditorResponseSchema.safeParse(newData);
 
     if (!resOfParse.success) {
       const keys = new Set(
@@ -37,9 +37,13 @@ export function SingBoxConfigScreen() {
           `Некорретное значение в ${issue.path.join(".")}`,
           {
             description: issue.message,
-            action: {
-              label: "Undo",
-              onClick: () => console.log("Undo"),
+            cancelButtonStyle: {
+              backgroundColor: "var(--destructive)",
+              color: "var(--secondary)",
+            },
+            cancel: {
+              label: "Закрыть",
+              onClick: () => {},
             },
             position: "top-right",
           },
@@ -135,7 +139,7 @@ export function SingBoxConfigScreen() {
             />
           ),
         }}
-        setData={(next) => onSetChange(next as configEditorResponse)}
+        setData={(next) => onSetChange(next as ConfigEditorRequestData)}
         theme={makeTheme(invalidKeys)}
       />
     </div>
