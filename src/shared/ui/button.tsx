@@ -54,11 +54,11 @@ function Button({
 
   return (
     <Comp
-      data-slot="button"
       className={cn(
         buttonVariants({ variant, size, className }),
         "cursor-pointer",
       )}
+      data-slot="button"
       {...props}
     >
       {loading ? <LoaderCircle className="animate-spin" /> : children}

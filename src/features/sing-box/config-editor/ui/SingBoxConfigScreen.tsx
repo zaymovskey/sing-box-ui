@@ -5,25 +5,37 @@ import { Ban, Check, CirclePlus, Copy, FilePenLine, Trash } from "lucide-react";
 import { type CSSProperties, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { Button } from "@/shared/ui";
+
+import { useUpdateConfigMutation } from "../model/config-editor.mutation";
 import { useConfigQuery } from "../model/config-editor.query";
-import {
-  type ConfigEditorRequestData,
-  ConfigEditorResponseSchema,
-} from "../model/config-editor.response-schema";
+import { type Config, ConfigSchema } from "../model/config-editor.schema";
 
 export function SingBoxConfigScreen() {
   const { data: singBoxConfig } = useConfigQuery();
 
-  const [draft, setDraft] = useState<ConfigEditorRequestData | null>(null);
+  const [configDraft, setConfigDraft] = useState<Config | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
   const [toastIds, setToastIds] = useState<(string | number)[]>([]);
 
-  const onSetChange = (newData: ConfigEditorRequestData) => {
+  const updateConfigMutation = useUpdateConfigMutation();
+
+  const saveConfigChanges = () => {
+    if (invalidKeys.size > 0 || configDraft === null) return;
+
+    try {
+      updateConfigMutation.mutateAsync(configDraft);
+    } catch (error) {
+      console.error("Failed to save config changes:", error);
+    }
+  };
+
+  const onSetChange = (newData: Config) => {
     toastIds.forEach((id) => toast.dismiss(id));
     setToastIds([]);
 
-    setDraft(newData);
-    const resOfParse = ConfigEditorResponseSchema.safeParse(newData);
+    setConfigDraft(newData);
+    const resOfParse = ConfigSchema.safeParse(newData);
 
     if (!resOfParse.success) {
       const keys = new Set(
@@ -89,18 +101,26 @@ export function SingBoxConfigScreen() {
     };
   };
 
+  const resetConfigChanges = () => {
+    const singBoxConfigCopy = structuredClone(singBoxConfig) as Config;
+    setConfigDraft(singBoxConfigCopy);
+    setInvalidKeys(new Set());
+    toastIds.forEach((id) => toast.dismiss(id));
+    setToastIds([]);
+  };
+
   useEffect(() => {
     if (!singBoxConfig) return;
-    if (draft !== null) return;
+    if (configDraft !== null) return;
 
-    setDraft(structuredClone(singBoxConfig));
-  }, [singBoxConfig, draft]);
+    setConfigDraft(structuredClone(singBoxConfig));
+  }, [singBoxConfig, configDraft]);
 
   return (
-    <div className="sb-config-editor">
+    <div className="sb-config-editor flex gap-1">
       <JsonEditor
         className="border-border border"
-        data={draft}
+        data={configDraft}
         icons={{
           add: (
             <CirclePlus
@@ -139,9 +159,19 @@ export function SingBoxConfigScreen() {
             />
           ),
         }}
-        setData={(next) => onSetChange(next as ConfigEditorRequestData)}
+        setData={(next) => onSetChange(next as Config)}
         theme={makeTheme(invalidKeys)}
       />
+      <div>
+        <div className="fixed flex flex-col gap-1">
+          <Button disabled={invalidKeys.size > 0} onClick={saveConfigChanges}>
+            Сохранить
+          </Button>
+          <Button variant="outline" onClick={resetConfigChanges}>
+            Отменить
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

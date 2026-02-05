@@ -119,10 +119,10 @@ export function LoginForm() {
                   )}
                 />
                 <Button
-                  type="submit"
                   className="w-full"
-                  loading={loginMutation.isPending}
                   disabled={loginMutation.isPending}
+                  loading={loginMutation.isPending}
+                  type="submit"
                 >
                   Войти
                 </Button>
