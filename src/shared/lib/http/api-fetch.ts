@@ -17,7 +17,7 @@ export async function apiFetch<T = unknown>(
   input: string,
   init?: ApiFetchOptions & { responseMode?: ResponseMode },
 ): Promise<T> {
-  const { responseMode = "auto", ...rest } = init ?? {};
+  const { responseMode = "json", ...rest } = init ?? {};
 
   const res = await fetch(input, {
     credentials: "include",

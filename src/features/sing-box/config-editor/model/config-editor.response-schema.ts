@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { Configuration } from "@black-duty/sing-box-schema";
+import { type z } from "zod";
 
-export const configEditorResponseSchema = z.record(z.string(), z.unknown());
+export const configEditorResponseSchema = Configuration;
 export type configEditorResponse = z.infer<typeof configEditorResponseSchema>;
