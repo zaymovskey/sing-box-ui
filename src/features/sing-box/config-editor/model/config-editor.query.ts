@@ -4,7 +4,7 @@ import { getConfigJson } from "../api/config-editor.api";
 import { singBoxQueryKeys } from "../lib/config-editor.query-keys";
 import { type configEditorResponse } from "./config-editor.response-schema";
 
-export function useConfigTextQuery() {
+export function useConfigJsonQuery() {
   return useQuery<configEditorResponse>({
     queryKey: singBoxQueryKeys.configEditor(),
     queryFn: getConfigJson,
