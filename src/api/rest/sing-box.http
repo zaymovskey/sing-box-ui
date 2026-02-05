@@ -3,7 +3,89 @@
 # Env: local / prod
 # =========================
 
-### Config
+### GET Config
 GET {{baseUrl}}{{apiPrefix}}/sing-box/config-editor
+
+###
+
+### PUT Config
+PUT {{baseUrl}}{{apiPrefix}}/sing-box/config-editor
+Content-Type: {{json}}
+
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "timestamp": true
+  },
+  "inbounds": [
+    {
+      "type": "hysteria2",
+      "tag": "hy2-in",
+      "listen": "::",
+      "listen_port": 443,
+      "sniff": true,
+      "sniff_override_destination": true,
+      "up_mbps": 100,
+      "down_mbps": 100,
+      "obfs": {
+        "type": "salamander",
+        "password": "seroga-obfs"
+      },
+      "users": [
+        {
+          "name": "seroga",
+          "password": "seroga-hy2-pass"
+        }
+      ],
+      "ignore_client_bandwidth": false,
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "certificate_path": "/etc/sing-box/hy2.crt",
+        "key_path": "/etc/sing-box/hy2.key"
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "reality-in",
+      "listen": "::",
+      "listen_port": 8443,
+      "sniff": true,
+      "sniff_override_destination": true,
+      "users": [
+        {
+          "uuid": "c2b6b3d9-7570-4f87-9a97-1afa4fa403a8",
+          "flow": "xtls-rprx-vision"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "reality": {
+          "enabled": true,
+          "handshake": {
+            "server": "www.cloudflare.com",
+            "server_port": 443
+          },
+          "private_key": "4GEPuZRGKK4IpV-T53vlzjGMRdRqHXaq1imC6OCAWk4"
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "final": "direct"
+  }
+}
 
 ###

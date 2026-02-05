@@ -24,3 +24,21 @@ export const GET = withApiErrors(
     }
   }),
 );
+
+export const PUT = withApiErrors(
+  withSession(async ({ request }) => {
+    const path = serverEnv.SINGBOX_CONFIG_PATH;
+    const body = await request.json();
+
+    try {
+      const content = JSON.stringify(body, null, 2);
+      await fs.writeFile(path, content, "utf-8");
+      return okJson({ ok: true });
+    } catch {
+      return errorJson(500, {
+        message: "Не удалось записать конфиг sing-box",
+        code: "SINGBOX_CONFIG_WRITE_FAILED",
+      });
+    }
+  }),
+);
