@@ -1,8 +1,23 @@
 "use client";
 
 import { JsonEditor, type Theme } from "json-edit-react";
-import { Ban, Check, CirclePlus, Copy, FilePenLine, Trash } from "lucide-react";
-import { type CSSProperties, useEffect, useState } from "react";
+import {
+  Ban,
+  Check,
+  CirclePlus,
+  Copy,
+  FilePenLine,
+  PencilOff,
+  Save,
+  Trash,
+} from "lucide-react";
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/shared/ui";
@@ -20,18 +35,31 @@ export function SingBoxConfigScreen() {
 
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const saveConfigChanges = () => {
+  const saveConfigChanges = async () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
 
-    try {
-      updateConfigMutation.mutateAsync(configDraft);
-    } catch (error) {
-      console.error("Failed to save config changes:", error);
-    }
+    toast.promise(
+      () => {
+        return updateConfigMutation.mutateAsync(configDraft);
+      },
+      {
+        loading: "Загрузка...",
+        success: () => `Сохранено`,
+        error: "Ошибка при сохранении конфигурации",
+        duration: 1000,
+      },
+    );
+  };
+
+  const toastIdsRef = useRef<(string | number)[]>([]);
+
+  const dismissToasts = () => {
+    toastIdsRef.current.forEach(toast.dismiss);
+    toastIdsRef.current = [];
   };
 
   const onSetChange = (newData: Config) => {
-    toastIds.forEach((id) => toast.dismiss(id));
+    dismissToasts();
     setToastIds([]);
 
     setConfigDraft(newData);
@@ -44,23 +72,19 @@ export function SingBoxConfigScreen() {
         }),
       );
 
-      resOfParse.error.issues.forEach((issue) => {
-        const toastId = toast.error(
-          `Некорретное значение в ${issue.path.join(".")}`,
-          {
-            description: issue.message,
-            cancelButtonStyle: {
-              backgroundColor: "var(--destructive)",
-              color: "var(--secondary)",
-            },
-            cancel: {
-              label: "Закрыть",
-              onClick: () => {},
-            },
-            position: "top-right",
+      toastIdsRef.current = resOfParse.error.issues.map((issue) => {
+        return toast.error(`Некорретное значение в ${issue.path.join(".")}`, {
+          description: issue.message,
+          cancelButtonStyle: {
+            backgroundColor: "var(--destructive)",
+            color: "var(--secondary)",
           },
-        );
-        setToastIds([...toastIds, toastId]);
+          cancel: {
+            label: "Закрыть",
+            onClick: () => {},
+          },
+          position: "top-right",
+        });
       });
       setInvalidKeys(keys);
       return;
@@ -71,9 +95,13 @@ export function SingBoxConfigScreen() {
 
   const makeTheme = (invalidKeys: Set<string>): Theme => {
     const isInvalid = (path: (string | number)[]) => {
-      const key = path.join(".");
-      if (invalidKeys.has(key)) return true;
-      return false;
+      const pathString = path.join(".");
+      for (const invalid of invalidKeys) {
+        if (invalid === pathString || invalid.startsWith(pathString + "."))
+          return true;
+      }
+
+      return invalidKeys.has(pathString);
     };
 
     const invalidBox: CSSProperties = {
@@ -101,6 +129,8 @@ export function SingBoxConfigScreen() {
     };
   };
 
+  const theme = useMemo(() => makeTheme(invalidKeys), [invalidKeys]);
+
   const resetConfigChanges = () => {
     const singBoxConfigCopy = structuredClone(singBoxConfig) as Config;
     setConfigDraft(singBoxConfigCopy);
@@ -109,66 +139,74 @@ export function SingBoxConfigScreen() {
     setToastIds([]);
   };
 
+  const isConfigInitializedRef = useRef(false);
+
   useEffect(() => {
     if (!singBoxConfig) return;
-    if (configDraft !== null) return;
+    if (isConfigInitializedRef.current) return;
 
     setConfigDraft(structuredClone(singBoxConfig));
+    isConfigInitializedRef.current = true;
   }, [singBoxConfig, configDraft]);
+
+  const icons = useMemo(
+    () => ({
+      add: (
+        <CirclePlus
+          className="text-chart-2 hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+      delete: (
+        <Trash
+          className="text-chart-1 hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+      edit: (
+        <FilePenLine
+          className="text-muted-foreground hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+      copy: (
+        <Copy
+          className="text-muted-foreground hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+      ok: (
+        <Check
+          className="text-chart-2 hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+      cancel: (
+        <Ban
+          className="text-chart-1 hover:text-primary transition-colors"
+          size={20}
+        />
+      ),
+    }),
+    [],
+  );
 
   return (
     <div className="sb-config-editor flex gap-1">
       <JsonEditor
         className="border-border border"
         data={configDraft}
-        icons={{
-          add: (
-            <CirclePlus
-              className="text-chart-2 hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-          delete: (
-            <Trash
-              className="text-chart-1 hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-          edit: (
-            <FilePenLine
-              className="text-muted-foreground hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-          copy: (
-            <Copy
-              className="text-muted-foreground hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-          ok: (
-            <Check
-              className="text-chart-2 hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-          cancel: (
-            <Ban
-              className="text-chart-1 hover:text-primary transition-colors"
-              size={20}
-            />
-          ),
-        }}
+        icons={icons}
         setData={(next) => onSetChange(next as Config)}
-        theme={makeTheme(invalidKeys)}
+        theme={theme}
       />
       <div>
         <div className="fixed flex flex-col gap-1">
           <Button disabled={invalidKeys.size > 0} onClick={saveConfigChanges}>
-            Сохранить
+            <Save /> Сохранить
           </Button>
           <Button variant="outline" onClick={resetConfigChanges}>
-            Отменить
+            <PencilOff /> Сбросить
           </Button>
         </div>
       </div>
