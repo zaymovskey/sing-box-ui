@@ -16,7 +16,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-export function isErrorPayload(payload: unknown): payload is ApiErrorPayload {
+export function isCustomErrorPayload(
+  payload: unknown,
+): payload is ApiErrorPayload {
   if (!isRecord(payload)) return false;
 
   const error = payload.error;
