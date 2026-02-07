@@ -20,8 +20,10 @@ export const POST = withApiErrors(async (req: Request) => {
 
   if (!email || !password) {
     return errorJson(400, {
-      message: "Email and password are required",
-      code: "INVALID_REQUEST",
+      error: {
+        message: "Email and password are required",
+        code: "INVALID_REQUEST",
+      },
     });
   }
 
@@ -30,8 +32,10 @@ export const POST = withApiErrors(async (req: Request) => {
 
   if (email !== demoEmail || password !== demoPassword) {
     return errorJson(401, {
-      message: "Invalid credentials",
-      code: "INVALID_CREDENTIALS",
+      error: {
+        message: "Invalid credentials",
+        code: "INVALID_CREDENTIALS",
+      },
     });
   }
 

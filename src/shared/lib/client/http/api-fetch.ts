@@ -41,12 +41,12 @@ export async function apiFetch<T = unknown>(
   const text = await res.text();
   if (!text) return undefined as T;
 
-  if (responseMode === "text") return text as unknown as T;
+  if (responseMode === "text") return text as T;
   if (responseMode === "json") return JSON.parse(text) as T;
 
   try {
     return JSON.parse(text) as T;
   } catch {
-    return text as unknown as T;
+    return text as T;
   }
 }

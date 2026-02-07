@@ -13,14 +13,18 @@ export function withSession(handler: AuthedHandler) {
   return async (request: Request): Promise<Response> => {
     const token = await readSessionCookie();
     if (!token) {
-      return errorJson(401, { message: "Unauthorized", code: "UNAUTHORIZED" });
+      return errorJson(401, {
+        error: { message: "Unauthorized", code: "UNAUTHORIZED" },
+      });
     }
 
     try {
       const session = await verifySession(token);
       return handler({ request, session });
     } catch {
-      return errorJson(401, { message: "Unauthorized", code: "UNAUTHORIZED" });
+      return errorJson(401, {
+        error: { message: "Unauthorized", code: "UNAUTHORIZED" },
+      });
     }
   };
 }

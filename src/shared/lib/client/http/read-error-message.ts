@@ -1,18 +1,18 @@
-import { isErrorPayload } from "./is-error-payload";
+import { type ApiErrorPayload, isErrorPayload } from "./is-error-payload";
 
 export async function readErrorMessage(res: Response): Promise<{
   message: string;
-  payload?: unknown;
+  payload?: ApiErrorPayload;
 }> {
   let message = `Ошибка ${res.status}`;
-  let payload: unknown = undefined;
+  let payload: ApiErrorPayload | undefined = undefined;
 
   let hasJsonMessage = false;
 
   try {
     payload = await res.clone().json();
     if (isErrorPayload(payload)) {
-      message = payload.message;
+      message = payload.error.message;
       hasJsonMessage = true;
     }
   } catch {

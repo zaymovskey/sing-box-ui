@@ -18,8 +18,10 @@ export const GET = withApiErrors(
       return okJson(parsed);
     } catch {
       return errorJson(500, {
-        message: "Не удалось прочитать конфиг sing-box",
-        code: "SINGBOX_CONFIG_READ_FAILED",
+        error: {
+          message: "Не удалось прочитать конфиг sing-box",
+          code: "SINGBOX_CONFIG_READ_FAILED",
+        },
       });
     }
   }),
@@ -36,8 +38,10 @@ export const PUT = withApiErrors(
       return okJson({ ok: true });
     } catch {
       return errorJson(500, {
-        message: "Не удалось записать конфиг sing-box",
-        code: "SINGBOX_CONFIG_WRITE_FAILED",
+        error: {
+          message: "Не удалось записать конфиг sing-box",
+          code: "SINGBOX_CONFIG_WRITE_FAILED",
+        },
       });
     }
   }),
