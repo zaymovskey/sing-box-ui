@@ -20,6 +20,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 
+import { isObjectsContentEqual } from "@/shared/lib/universal";
 import { Button } from "@/shared/ui";
 
 import { useUpdateConfigMutation } from "../model/config-editor.mutation";
@@ -34,6 +35,8 @@ export function SingBoxConfigScreen() {
   const [toastIds, setToastIds] = useState<(string | number)[]>([]);
 
   const updateConfigMutation = useUpdateConfigMutation();
+
+  const draftIsDifferent = !isObjectsContentEqual(configDraft, singBoxConfig);
 
   const saveConfigChanges = async () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
@@ -202,10 +205,17 @@ export function SingBoxConfigScreen() {
       />
       <div>
         <div className="fixed flex flex-col gap-1">
-          <Button disabled={invalidKeys.size > 0} onClick={saveConfigChanges}>
+          <Button
+            disabled={invalidKeys.size > 0 || !draftIsDifferent}
+            onClick={saveConfigChanges}
+          >
             <Save /> Сохранить
           </Button>
-          <Button variant="outline" onClick={resetConfigChanges}>
+          <Button
+            disabled={!draftIsDifferent}
+            variant="outline"
+            onClick={resetConfigChanges}
+          >
             <PencilOff /> Сбросить
           </Button>
         </div>
