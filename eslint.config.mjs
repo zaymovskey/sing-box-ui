@@ -102,6 +102,18 @@ export default defineConfig([
 
       // Пустая строка после импортов
       "import/newline-after-import": ["error", { count: 1 }],
+
+      "react-hooks/set-state-in-effect": "off",
+
+      "react/jsx-sort-props": [
+        "warn",
+        {
+          callbacksLast: true,
+          shorthandFirst: true,
+          noSortAlphabetically: false,
+          reservedFirst: true,
+        },
+      ],
     },
 
     settings: {

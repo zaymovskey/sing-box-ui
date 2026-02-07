@@ -5,6 +5,8 @@ type ApiFetchOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
 };
 
+type ResponseMode = "auto" | "text" | "json";
+
 /**
  * Fetch wrapper:
  * - credentials: include (httpOnly cookie)
@@ -13,14 +15,19 @@ type ApiFetchOptions = Omit<RequestInit, "headers"> & {
  */
 export async function apiFetch<T = unknown>(
   input: string,
-  init?: ApiFetchOptions,
+  init?: ApiFetchOptions & { responseMode?: ResponseMode },
 ): Promise<T> {
+  const { responseMode = "json", ...rest } = init ?? {};
+
   const res = await fetch(input, {
     credentials: "include",
-    ...init,
+    ...rest,
     headers: {
-      Accept: "application/json",
-      ...(init?.headers ?? {}),
+      Accept:
+        responseMode === "json"
+          ? "application/json"
+          : "text/plain, application/json",
+      ...(rest?.headers ?? {}),
     },
   });
 
@@ -29,14 +36,14 @@ export async function apiFetch<T = unknown>(
     throw new ApiError(res.status, message, payload);
   }
 
-  // 204 No Content / пустое тело
   if (res.status === 204) return undefined as T;
 
-  // иногда бек может вернуть пустоту даже при 200
   const text = await res.text();
   if (!text) return undefined as T;
 
-  // пробуем JSON, если не JSON — вернём как строку
+  if (responseMode === "text") return text as unknown as T;
+  if (responseMode === "json") return JSON.parse(text) as T;
+
   try {
     return JSON.parse(text) as T;
   } catch {

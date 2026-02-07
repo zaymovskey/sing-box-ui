@@ -126,3 +126,11 @@
 [data-slot="dialog-close"] {
   cursor: pointer;
 }
+
+.sb-config-editor .jer-copy-pulse:hover {
+  transform: none !important;
+}
+
+.sb-config-editor .jer-copy-pulse:hover svg {
+  color: hsl(var(--primary));
+}

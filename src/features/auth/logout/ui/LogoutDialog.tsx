@@ -38,19 +38,19 @@ export function LogoutDialog({ renderTrigger }: LogoutDialogProps) {
         <DialogFooter>
           <DialogClose asChild>
             <Button
+              disabled={logoutMutation.isPending}
               type="button"
               variant="outline"
-              disabled={logoutMutation.isPending}
             >
               Отмена
             </Button>
           </DialogClose>
 
           <Button
-            type="button"
-            onClick={() => logoutMutation.mutate()}
             disabled={logoutMutation.isPending}
             loading={logoutMutation.isPending}
+            type="button"
+            onClick={() => logoutMutation.mutate()}
           >
             Выйти
           </Button>

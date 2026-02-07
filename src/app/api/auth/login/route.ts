@@ -25,8 +25,8 @@ export const POST = withApiErrors(async (req: Request) => {
     });
   }
 
-  const demoEmail = serverEnv.AUTH_DEMO_EMAIL ?? "admin@example.com";
-  const demoPassword = serverEnv.AUTH_DEMO_PASSWORD ?? "admin12345";
+  const demoEmail = serverEnv.AUTH_DEMO_EMAIL;
+  const demoPassword = serverEnv.AUTH_DEMO_PASSWORD;
 
   if (email !== demoEmail || password !== demoPassword) {
     return errorJson(401, {

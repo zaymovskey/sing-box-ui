@@ -3,5 +3,5 @@
 import { Toaster as Sonner } from "sonner";
 
 export function Toaster() {
-  return <Sonner richColors position="top-center" duration={4000} />;
+  return <Sonner richColors duration={Infinity} position="top-center" />;
 }

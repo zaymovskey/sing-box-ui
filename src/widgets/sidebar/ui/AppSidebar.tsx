@@ -52,9 +52,9 @@ export function AppSidebar() {
                   renderTrigger={({ disabled }) => (
                     <SidebarMenuButton asChild>
                       <button
-                        type="button"
-                        disabled={disabled}
                         className="cursor-pointer"
+                        disabled={disabled}
+                        type="button"
                       >
                         <DoorOpen className="size-4" />
                         <span>Выход</span>

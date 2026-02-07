@@ -53,8 +53,8 @@ export function AuthGate({ children }: Props) {
 
         <button
           className="mt-4 rounded-md border px-3 py-2 text-sm"
-          onClick={() => refetch()}
           disabled={isFetching}
+          onClick={() => refetch()}
         >
           {isFetching ? "Проверяю..." : "Повторить"}
         </button>

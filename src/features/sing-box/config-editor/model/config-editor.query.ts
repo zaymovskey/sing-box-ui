@@ -1,16 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getConfig } from "../api/config-editor.api";
+import { getConfigJson } from "../api/config-editor.api";
 import { singBoxQueryKeys } from "../lib/config-editor.query-keys";
-import { configEditorResponseSchema } from "./config-editor.response-schema";
+import { type Config } from "./config-editor.schema";
 
-export function useConfigEditorQuery() {
-  return useQuery({
+export function useConfigQuery() {
+  return useQuery<Config>({
     queryKey: singBoxQueryKeys.configEditor(),
-    queryFn: async () => {
-      const raw = await getConfig();
-      return configEditorResponseSchema.parse(raw);
-    },
+    queryFn: getConfigJson,
     retry: false,
     staleTime: 0,
   });
