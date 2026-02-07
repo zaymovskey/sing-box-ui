@@ -1,4 +1,4 @@
-import { type ErrorPayload } from "../../http/is-error-payload";
+import { type ErrorPayload } from "../../client/http/is-error-payload";
 
 type InitNoStatus = Omit<ResponseInit, "status">;
 

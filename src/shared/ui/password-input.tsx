@@ -24,26 +24,26 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       <div className="relative">
         <Input
           ref={ref}
-          type={visible ? "text" : "password"}
-          disabled={disabled}
           className={cn("pr-10", className)}
+          disabled={disabled}
+          type={visible ? "text" : "password"}
           {...props}
         />
 
         <button
-          type="button"
-          disabled={disabled}
           aria-label={visible ? ariaHide : ariaShow}
           className={cn(
             "text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-1",
             "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
             "cursor-pointer disabled:pointer-events-none disabled:opacity-50",
           )}
+          disabled={disabled}
+          type="button"
+          onClick={() => setVisible((v) => !v)}
           onMouseDown={(e) => {
             // чтобы при клике не слетал фокус с инпута
             e.preventDefault();
           }}
-          onClick={() => setVisible((v) => !v)}
         >
           {visible ? <EyeOff /> : <Eye />}
         </button>

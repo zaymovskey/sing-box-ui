@@ -1,16 +1,14 @@
 import { apiFetch, apiRoutes } from "@/shared/lib";
 
-import { type ConfigEditorRequestData } from "../model/config-editor.response-schema";
+import { type Config } from "../model/config-editor.schema";
 
-export async function getConfigJson(): Promise<ConfigEditorRequestData> {
-  return apiFetch<ConfigEditorRequestData>(apiRoutes.singBox.configEditor, {
+export async function getConfigJson(): Promise<Config> {
+  return apiFetch<Config>(apiRoutes.singBox.configEditor, {
     method: "GET",
   });
 }
 
-export async function updateConfigJson(
-  body: ConfigEditorRequestData,
-): Promise<void> {
+export async function updateConfigJson(body: Config): Promise<void> {
   return apiFetch(apiRoutes.singBox.configEditor, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
