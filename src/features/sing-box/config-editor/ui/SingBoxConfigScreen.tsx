@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 import { ApiError } from "@/shared/lib";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
-import { Button } from "@/shared/ui";
+import { Button, Card } from "@/shared/ui";
 
 import { useUpdateConfigMutation } from "../../config-core/model/config-editor.mutation";
 import { useConfigQuery } from "../../config-core/model/config-editor.query";
@@ -250,7 +250,7 @@ export function SingBoxConfigScreen() {
   );
 
   return (
-    <div className="sb-config-editor flex gap-1">
+    <Card className="sb-config-editor mb-4 w-190 flex-row gap-3 p-4">
       <JsonEditor
         className="border-border border"
         data={configDraft}
@@ -275,6 +275,6 @@ export function SingBoxConfigScreen() {
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

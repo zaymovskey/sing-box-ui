@@ -1,3 +1,4 @@
+export { Badge } from "./badge";
 export { Button } from "./button";
 export {
   Card,
@@ -18,6 +19,14 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./dialog";
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 export {
   Form,
   FormControl,
@@ -49,3 +58,12 @@ export {
   SidebarTrigger,
 } from "./sidebar";
 export { Toaster } from "./sonner";
+export { Switch } from "./switch";
+export {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
