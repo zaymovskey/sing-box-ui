@@ -24,9 +24,12 @@ import { ApiError } from "@/shared/lib";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
 import { Button } from "@/shared/ui";
 
-import { useUpdateConfigMutation } from "../model/config-editor.mutation";
-import { useConfigQuery } from "../model/config-editor.query";
-import { type Config, ConfigSchema } from "../model/config-editor.schema";
+import { useUpdateConfigMutation } from "../../config-core/model/config-editor.mutation";
+import { useConfigQuery } from "../../config-core/model/config-editor.query";
+import {
+  type Config,
+  ConfigSchema,
+} from "../../config-core/model/config-editor.schema";
 
 const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
   const allInvalidKeys: Set<string> = new Set();
