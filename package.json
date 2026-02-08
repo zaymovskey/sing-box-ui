@@ -48,6 +48,7 @@
     "json-edit-react": "^1.29.0",
     "lucide-react": "^0.556.0",
     "next": "^16.1.0",
+    "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.70.0",

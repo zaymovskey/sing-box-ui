@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogoutDialog } from "@/features/auth";
 import { appRoutes } from "@/shared/lib";
 import {
+  Separator,
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -48,6 +49,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
+                <Separator className="mt-2" />
                 <LogoutDialog
                   renderTrigger={({ disabled }) => (
                     <SidebarMenuButton asChild>
