@@ -1,51 +1,24 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
 
 import { Badge, Card } from "@/shared/ui";
 
+import { useConfigQuery } from "../../config-core/model/config-editor.query";
+import { type InboundRow } from "../model/inbound-row";
+import { mapInboundsToRows } from "../model/inbound-row.mapper";
 import { InboundsTable } from "./InboundsTable";
 
-type InboundTableItem = {
-  type: string;
-  tag?: string;
-  listen?: string;
-  listen_port?: number;
-  users?: Array<{ name?: string; uuid?: string; password?: string }>;
-  tls?: {
-    enabled?: boolean;
-    reality?: { enabled?: boolean };
-  };
-};
-
-const inboundsMock: InboundTableItem[] = [
-  {
-    type: "hysteria2",
-    tag: "hy2-in",
-    listen: "::",
-    listen_port: 443,
-    users: [{ name: "SEREGAAAA111", password: "seroga-hy2-pass" }],
-    tls: { enabled: true },
-  },
-  {
-    type: "vless",
-    tag: "reality-in",
-    listen: "::",
-    listen_port: 8443,
-    users: [{ name: "seroga", uuid: "c2b6b3d9-7570-4f87-9a97-1afa4fa403a8" }],
-    tls: { enabled: true, reality: { enabled: true } },
-  },
-];
-
-const inboundColumns: ColumnDef<InboundTableItem>[] = [
+const inboundColumns: ColumnDef<InboundRow>[] = [
   {
     accessorKey: "tag",
-    header: "Tag",
+    header: "Тэг (Tag)",
     cell: ({ row }) => row.original.tag ?? "—",
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: "Тип (Type)",
     cell: ({ row }) => (
       <Badge className="rounded-full px-2 py-0 text-xs" variant="outline">
         {row.original.type}
@@ -54,37 +27,32 @@ const inboundColumns: ColumnDef<InboundTableItem>[] = [
   },
   {
     id: "listen",
-    header: "Listen",
-    cell: ({ row }) => {
-      const { listen, listen_port } = row.original;
-      if (!listen && !listen_port) return "—";
-      return `${listen ?? "0.0.0.0"}:${listen_port ?? "—"}`;
-    },
+    header: "Порт (Listen)",
+    cell: ({ row }) => row.original.listen_port ?? "—",
   },
   {
     id: "users",
-    header: "Users",
-    cell: ({ row }) => row.original.users?.length ?? 0,
-  },
-  {
-    id: "security",
-    header: "Security",
-    cell: ({ row }) => {
-      const tls = Boolean(row.original.tls?.enabled);
-      const reality = Boolean(row.original.tls?.reality?.enabled);
-
-      if (reality) return "reality";
-      if (tls) return "tls";
-      return "—";
-    },
+    header: "Пользователи (Users)",
+    cell: ({ row }) => (
+      <Badge className="rounded-full px-2 py-0 text-xs" variant="outline">
+        {row.original.usersCount}
+      </Badge>
+    ),
   },
 ];
 
 export function InboundsTableScreen() {
+  const { data: singBoxConfig } = useConfigQuery();
+
+  const tableRows = useMemo(
+    () => mapInboundsToRows(singBoxConfig ?? { inbounds: [] }),
+    [singBoxConfig],
+  );
+
   return (
     <div>
       <Card className="mb-4 p-4">
-        <InboundsTable columns={inboundColumns} data={inboundsMock} />
+        <InboundsTable columns={inboundColumns} data={tableRows} />
       </Card>
     </div>
   );
