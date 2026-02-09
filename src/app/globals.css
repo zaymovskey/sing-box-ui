@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(100% 0 0deg);
+  --background: oklch(96.416% 0.0001 271.152deg);
   --foreground: oklch(14.5% 0 0deg);
   --card: oklch(100% 0 0deg);
   --card-foreground: oklch(14.5% 0 0deg);
@@ -133,4 +133,26 @@
 
 .sb-config-editor .jer-copy-pulse:hover svg {
   color: hsl(var(--primary));
+}
+
+.scrollbar-transparent {
+  scrollbar-color: rgb(0 0 0 / 35%) transparent;
+  scrollbar-width: thin; /* Firefox */
+}
+
+.scrollbar-transparent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb {
+  background-color: rgb(0 0 0 / 35%);
+  border-radius: 9999px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(0 0 0 / 50%);
 }

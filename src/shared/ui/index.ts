@@ -1,3 +1,4 @@
+export { Badge } from "./badge";
 export { Button } from "./button";
 export {
   Card,
@@ -19,6 +20,15 @@ export {
   DialogTrigger,
 } from "./dialog";
 export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
+export { Field, FieldGroup, FieldLegend } from "./field";
+export {
   Form,
   FormControl,
   FormDescription,
@@ -32,6 +42,16 @@ export { RootErrorMessage } from "./form/root-error-message";
 export { Input } from "./input";
 export { Label } from "./label";
 export { PasswordInput } from "./password-input";
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
+export { Separator } from "./separator";
 export {
   Sidebar,
   SidebarContent,
@@ -48,3 +68,12 @@ export {
   SidebarTrigger,
 } from "./sidebar";
 export { Toaster } from "./sonner";
+export { Switch } from "./switch";
+export {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";

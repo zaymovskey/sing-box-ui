@@ -1,15 +1,31 @@
-export type ErrorPayload = {
+export type ApiIssue = {
+  path?: string;
   message: string;
   code?: string;
-  details?: unknown;
 };
 
-// Если функция вернула true, то внутри этого блока value имеет тип { message: string }
-export function isErrorPayload(value: unknown): value is ErrorPayload {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "message" in value &&
-    typeof (value as Record<string, unknown>).message === "string"
-  );
+export type ApiErrorPayload = {
+  error: {
+    code: string;
+    message: string;
+    issues?: ApiIssue[];
+  };
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function isCustomErrorPayload(
+  payload: unknown,
+): payload is ApiErrorPayload {
+  if (!isRecord(payload)) return false;
+
+  const error = payload.error;
+  if (!isRecord(error)) return false;
+
+  if (typeof error.message !== "string") return false;
+  if (typeof error.code !== "string") return false;
+
+  return true;
 }

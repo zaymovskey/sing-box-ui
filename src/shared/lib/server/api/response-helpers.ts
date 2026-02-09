@@ -1,4 +1,4 @@
-import { type ErrorPayload } from "../../client/http/is-error-payload";
+import { type ApiErrorPayload } from "../../client/http/is-error-payload";
 
 type InitNoStatus = Omit<ResponseInit, "status">;
 
@@ -41,7 +41,7 @@ export function okJson<T>(data: T, init?: InitNoStatus) {
 
 export function errorJson(
   status: number,
-  payload: ErrorPayload,
+  payload: ApiErrorPayload,
   init?: InitNoStatus,
 ) {
   const headers = ensureNoStore(

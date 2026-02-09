@@ -20,47 +20,139 @@ import {
 } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/shared/ui";
+import { ApiError } from "@/shared/lib";
+import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
+import { Button, Card } from "@/shared/ui";
 
-import { useUpdateConfigMutation } from "../model/config-editor.mutation";
-import { useConfigQuery } from "../model/config-editor.query";
-import { type Config, ConfigSchema } from "../model/config-editor.schema";
+import { useUpdateConfigMutation } from "../../config-core/model/config-editor.mutation";
+import { useConfigQuery } from "../../config-core/model/config-editor.query";
+import {
+  type Config,
+  ConfigSchema,
+} from "../../config-core/model/config-editor.schema";
+
+const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
+  const allInvalidKeys: Set<string> = new Set();
+
+  invalidKeys.forEach((invalidKey) => {
+    let currentKeyFamilyMember = "";
+    const parts = invalidKey.split(".");
+    parts.forEach((invalidKeyPart, index) => {
+      currentKeyFamilyMember += (index === 0 ? "" : ".") + invalidKeyPart;
+      allInvalidKeys.add(currentKeyFamilyMember);
+    });
+  });
+
+  return new Set(allInvalidKeys);
+};
+
+const makeTheme = (invalidKeys: Set<string>): Theme => {
+  const isInvalid = (path: (string | number)[]) => {
+    const pathString = path.join(".");
+    return invalidKeys.has(pathString);
+  };
+
+  const invalidBox: CSSProperties = {
+    borderRadius: 2,
+    padding: "2px 4px",
+    background: "color-mix(in srgb, var(--destructive) 12%, transparent)",
+  } as const;
+
+  const checkInvalidBox = (path: (string | number)[]) => {
+    if (isInvalid(path)) {
+      return invalidBox;
+    }
+    return null;
+  };
+
+  return {
+    styles: {
+      property: ({ path }) => checkInvalidBox(path),
+      input: ({ path }) => checkInvalidBox(path),
+      string: ({ path }) => checkInvalidBox(path),
+      number: ({ path }) => checkInvalidBox(path),
+      boolean: ({ path }) => checkInvalidBox(path),
+      null: ({ path }) => checkInvalidBox(path),
+    },
+  };
+};
 
 export function SingBoxConfigScreen() {
   const { data: singBoxConfig } = useConfigQuery();
 
   const [configDraft, setConfigDraft] = useState<Config | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
-  const [toastIds, setToastIds] = useState<(string | number)[]>([]);
 
   const updateConfigMutation = useUpdateConfigMutation();
+
+  const draftIsDifferent = !isObjectsContentEqual(configDraft, singBoxConfig);
+
+  const serverErrorsToastIdRef = useRef<string | number | null>(null);
 
   const saveConfigChanges = async () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
 
-    toast.promise(
-      () => {
-        return updateConfigMutation.mutateAsync(configDraft);
-      },
-      {
-        loading: "Загрузка...",
-        success: () => `Сохранено`,
-        error: "Ошибка при сохранении конфигурации",
-        duration: 1000,
-      },
-    );
+    dismissServerErrorsToasts();
+    dismissClientErrorsToasts();
+
+    try {
+      toast.loading("Сохранение...", { id: "save-config" });
+      await updateConfigMutation.mutateAsync(configDraft);
+      toast.success("Конфигурация успешно сохранена", { id: "save-config" });
+    } catch (err) {
+      toast.dismiss("save-config");
+
+      if (!(err instanceof ApiError)) {
+        toast.error("Неизвестная ошибка");
+        return;
+      }
+
+      const issues = err.issues;
+
+      if (!issues?.length) {
+        toast.error(err.uiMessage);
+        return;
+      }
+
+      serverErrorsToastIdRef.current = toast.error(
+        `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
+        {
+          cancelButtonStyle: {
+            backgroundColor: "var(--destructive)",
+            color: "var(--secondary)",
+          },
+          cancel: {
+            label: "Закрыть",
+            onClick: () => {},
+          },
+          duration: 4000,
+        },
+      );
+
+      const newinvalidKeys = issues
+        .map((i) => i.path ?? null)
+        .filter((x): x is string => x !== null);
+
+      setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
+    }
   };
 
-  const toastIdsRef = useRef<(string | number)[]>([]);
+  const clientErrorsToastIdsRef = useRef<(string | number)[]>([]);
 
-  const dismissToasts = () => {
-    toastIdsRef.current.forEach(toast.dismiss);
-    toastIdsRef.current = [];
+  const dismissClientErrorsToasts = () => {
+    clientErrorsToastIdsRef.current.forEach(toast.dismiss);
+    clientErrorsToastIdsRef.current = [];
+  };
+
+  const dismissServerErrorsToasts = () => {
+    if (serverErrorsToastIdRef.current) {
+      toast.dismiss(serverErrorsToastIdRef.current);
+      serverErrorsToastIdRef.current = null;
+    }
   };
 
   const onSetChange = (newData: Config) => {
-    dismissToasts();
-    setToastIds([]);
+    dismissClientErrorsToasts();
 
     setConfigDraft(newData);
     const resOfParse = ConfigSchema.safeParse(newData);
@@ -72,8 +164,8 @@ export function SingBoxConfigScreen() {
         }),
       );
 
-      toastIdsRef.current = resOfParse.error.issues.map((issue) => {
-        return toast.error(`Некорретное значение в ${issue.path.join(".")}`, {
+      clientErrorsToastIdsRef.current = resOfParse.error.issues.map((issue) => {
+        return toast.error(`Некорректное значение в ${issue.path.join(".")}`, {
           description: issue.message,
           cancelButtonStyle: {
             backgroundColor: "var(--destructive)",
@@ -86,57 +178,23 @@ export function SingBoxConfigScreen() {
           position: "top-right",
         });
       });
-      setInvalidKeys(keys);
+
+      setInvalidKeys(buildAllInvalidKeys(keys));
       return;
     }
 
     setInvalidKeys(new Set());
   };
 
-  const makeTheme = (invalidKeys: Set<string>): Theme => {
-    const isInvalid = (path: (string | number)[]) => {
-      const pathString = path.join(".");
-      for (const invalid of invalidKeys) {
-        if (invalid === pathString || invalid.startsWith(pathString + "."))
-          return true;
-      }
-
-      return invalidKeys.has(pathString);
-    };
-
-    const invalidBox: CSSProperties = {
-      borderRadius: 2,
-      padding: "2px 4px",
-      background: "color-mix(in srgb, var(--destructive) 12%, transparent)",
-    } as const;
-
-    const checkInvalidBox = (path: (string | number)[]) => {
-      if (isInvalid(path)) {
-        return invalidBox;
-      }
-      return null;
-    };
-
-    return {
-      styles: {
-        property: ({ path }) => checkInvalidBox(path),
-        input: ({ path }) => checkInvalidBox(path),
-        string: ({ path }) => checkInvalidBox(path),
-        number: ({ path }) => checkInvalidBox(path),
-        boolean: ({ path }) => checkInvalidBox(path),
-        null: ({ path }) => checkInvalidBox(path),
-      },
-    };
-  };
-
   const theme = useMemo(() => makeTheme(invalidKeys), [invalidKeys]);
 
   const resetConfigChanges = () => {
+    dismissServerErrorsToasts();
+    dismissClientErrorsToasts();
+
     const singBoxConfigCopy = structuredClone(singBoxConfig) as Config;
     setConfigDraft(singBoxConfigCopy);
     setInvalidKeys(new Set());
-    toastIds.forEach((id) => toast.dismiss(id));
-    setToastIds([]);
   };
 
   const isConfigInitializedRef = useRef(false);
@@ -147,7 +205,7 @@ export function SingBoxConfigScreen() {
 
     setConfigDraft(structuredClone(singBoxConfig));
     isConfigInitializedRef.current = true;
-  }, [singBoxConfig, configDraft]);
+  }, [singBoxConfig]);
 
   const icons = useMemo(
     () => ({
@@ -192,7 +250,7 @@ export function SingBoxConfigScreen() {
   );
 
   return (
-    <div className="sb-config-editor flex gap-1">
+    <Card className="sb-config-editor mb-4 w-190 flex-row gap-3 p-4">
       <JsonEditor
         className="border-border border"
         data={configDraft}
@@ -202,14 +260,21 @@ export function SingBoxConfigScreen() {
       />
       <div>
         <div className="fixed flex flex-col gap-1">
-          <Button disabled={invalidKeys.size > 0} onClick={saveConfigChanges}>
+          <Button
+            disabled={invalidKeys.size > 0 || !draftIsDifferent}
+            onClick={saveConfigChanges}
+          >
             <Save /> Сохранить
           </Button>
-          <Button variant="outline" onClick={resetConfigChanges}>
+          <Button
+            disabled={!draftIsDifferent}
+            variant="outline"
+            onClick={resetConfigChanges}
+          >
             <PencilOff /> Сбросить
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

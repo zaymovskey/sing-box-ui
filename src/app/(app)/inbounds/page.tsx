@@ -1,3 +1,9 @@
+import { InboundsTableScreen } from "@/features/sing-box";
+
 export default function InboundsPage() {
-  return <div>Inbounds</div>;
+  return (
+    <div>
+      <InboundsTableScreen />
+    </div>
+  );
 }

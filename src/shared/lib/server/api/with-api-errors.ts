@@ -10,7 +10,7 @@ export function withApiErrors<Args extends unknown[]>(
       return await handler(...args);
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown error";
-      return errorJson(500, { message, code: "INTERNAL_ERROR" });
+      return errorJson(500, { error: { message, code: "INTERNAL_ERROR" } });
     }
   };
 }
