@@ -134,3 +134,25 @@
 .sb-config-editor .jer-copy-pulse:hover svg {
   color: hsl(var(--primary));
 }
+
+.scrollbar-transparent {
+  scrollbar-color: rgb(0 0 0 / 35%) transparent;
+  scrollbar-width: thin; /* Firefox */
+}
+
+.scrollbar-transparent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb {
+  background-color: rgb(0 0 0 / 35%);
+  border-radius: 9999px;
+}
+
+.scrollbar-transparent::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(0 0 0 / 50%);
+}

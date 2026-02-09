@@ -27,6 +27,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+export { Field, FieldGroup, FieldLegend } from "./field";
 export {
   Form,
   FormControl,
@@ -41,6 +42,15 @@ export { RootErrorMessage } from "./form/root-error-message";
 export { Input } from "./input";
 export { Label } from "./label";
 export { PasswordInput } from "./password-input";
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 export { Separator } from "./separator";
 export {
   Sidebar,

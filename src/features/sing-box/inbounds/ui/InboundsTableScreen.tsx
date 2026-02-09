@@ -3,17 +3,18 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 
-import { Badge, Card } from "@/shared/ui";
+import { Badge, Card, Separator } from "@/shared/ui";
 
 import { useConfigQuery } from "../../config-core/model/config-editor.query";
 import { type InboundRow } from "../model/inbound-row";
 import { mapInboundsToRows } from "../model/inbound-row.mapper";
+import { CreateInboundDialog } from "./CreateInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 
 const inboundColumns: ColumnDef<InboundRow>[] = [
   {
     accessorKey: "tag",
-    header: "Тэг (Tag)",
+    header: "Тег (Tag)",
     cell: ({ row }) => row.original.tag ?? "—",
   },
   {
@@ -51,7 +52,9 @@ export function InboundsTableScreen() {
 
   return (
     <div>
-      <Card className="mb-4 p-4">
+      <Card className="mb-4 gap-5 p-4">
+        <CreateInboundDialog />
+        <Separator />
         <InboundsTable columns={inboundColumns} data={tableRows} />
       </Card>
     </div>
