@@ -1,4 +1,4 @@
-import { type UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
@@ -12,11 +12,9 @@ import {
 
 import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormHy2Fields({
-  form,
-}: {
-  form: UseFormReturn<CreateInboundFormValues>;
-}) {
+export function CreateInboundFormHy2Fields() {
+  const form = useFormContext<CreateInboundFormValues>();
+
   return (
     <div className="space-y-4">
       <div className="mt-7 mb-2 text-xl font-medium opacity-80">Hysteria2</div>
@@ -74,38 +72,33 @@ export function CreateInboundFormHy2Fields({
         <FormField
           control={form.control}
           name="up_mbps"
-          render={() => {
-            const reg = form.register("up_mbps", {
-              valueAsNumber: true,
-            });
-
-            return (
-              <FormItem className="gap-2">
-                <FormLabel>Up (Mbps)</FormLabel>
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    placeholder="100"
-                    type="number"
-                    {...reg}
-                    onChange={(e) => {
-                      form.clearErrors("root");
-                      reg.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <div className="min-h-5">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem className="gap-2">
+              <FormLabel>Up (Mbps)</FormLabel>
+              <FormControl>
+                <Input
+                  inputMode="numeric"
+                  placeholder="100"
+                  type="number"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    form.clearErrors("root");
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
+                  }}
+                />
+              </FormControl>
+              <div className="min-h-5">
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
         />
 
         <FormField
           control={form.control}
           name="down_mbps"
-          render={() => (
+          render={({ field }) => (
             <FormItem className="gap-2">
               <FormLabel>Down (Mbps)</FormLabel>
               <FormControl>
@@ -113,16 +106,11 @@ export function CreateInboundFormHy2Fields({
                   inputMode="numeric"
                   placeholder="100"
                   type="number"
-                  {...form.register("down_mbps", {
-                    valueAsNumber: true,
-                  })}
+                  value={field.value ?? ""}
                   onChange={(e) => {
                     form.clearErrors("root");
-                    form
-                      .register("down_mbps", {
-                        valueAsNumber: true,
-                      })
-                      .onChange(e);
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
                   }}
                 />
               </FormControl>

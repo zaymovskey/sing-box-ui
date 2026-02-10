@@ -29,13 +29,13 @@ export {
 } from "./dropdown-menu";
 export { Field, FieldGroup, FieldLegend } from "./field";
 export {
-  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormProvider,
   useFormField,
 } from "./form/form";
 export { RootErrorMessage } from "./form/root-error-message";

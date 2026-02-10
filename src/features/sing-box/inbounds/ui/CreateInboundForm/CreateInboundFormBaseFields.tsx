@@ -1,4 +1,4 @@
-import { type UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
@@ -12,11 +12,9 @@ import {
 
 import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormBaseFields({
-  form,
-}: {
-  form: UseFormReturn<CreateInboundFormValues>;
-}) {
+export function CreateInboundFormBaseFields() {
+  const form = useFormContext<CreateInboundFormValues>();
+
   return (
     <>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -75,32 +73,27 @@ export function CreateInboundFormBaseFields({
         <FormField
           control={form.control}
           name="reality_handshake_port"
-          render={() => {
-            const reg = form.register("reality_handshake_port", {
-              valueAsNumber: true,
-            });
-
-            return (
-              <FormItem className="gap-2">
-                <FormLabel>Handshake port</FormLabel>
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    placeholder="443"
-                    type="number"
-                    {...reg}
-                    onChange={(e) => {
-                      form.clearErrors("root");
-                      reg.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <div className="min-h-5">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem className="gap-2">
+              <FormLabel>Handshake port</FormLabel>
+              <FormControl>
+                <Input
+                  inputMode="numeric"
+                  placeholder="443"
+                  type="number"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    form.clearErrors("root");
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
+                  }}
+                />
+              </FormControl>
+              <div className="min-h-5">
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
         />
       </div>
 
