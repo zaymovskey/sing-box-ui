@@ -86,7 +86,7 @@ export function CreateInboundForm() {
 
   return (
     <div className="w-full">
-      <div className="w-ful">
+      <div className="w-full">
         <FormProvider {...form}>
           <form onSubmit={onSubmit}>
             <FormField

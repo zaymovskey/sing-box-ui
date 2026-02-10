@@ -72,63 +72,53 @@ export function CreateInboundFormHy2Fields() {
         <FormField
           control={form.control}
           name="up_mbps"
-          render={() => {
-            const reg = form.register("up_mbps", {
-              valueAsNumber: true,
-            });
-
-            return (
-              <FormItem className="gap-2">
-                <FormLabel>Up (Mbps)</FormLabel>
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    placeholder="100"
-                    type="number"
-                    {...reg}
-                    onChange={(e) => {
-                      form.clearErrors("root");
-                      reg.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <div className="min-h-5">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem className="gap-2">
+              <FormLabel>Up (Mbps)</FormLabel>
+              <FormControl>
+                <Input
+                  inputMode="numeric"
+                  placeholder="100"
+                  type="number"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    form.clearErrors("root");
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
+                  }}
+                />
+              </FormControl>
+              <div className="min-h-5">
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
         />
 
         <FormField
           control={form.control}
           name="down_mbps"
-          render={() => {
-            const reg = form.register("down_mbps", {
-              valueAsNumber: true,
-            });
-
-            return (
-              <FormItem className="gap-2">
-                <FormLabel>Down (Mbps)</FormLabel>
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    placeholder="100"
-                    type="number"
-                    {...reg}
-                    onChange={(e) => {
-                      form.clearErrors("root");
-                      reg.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <div className="min-h-5">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem className="gap-2">
+              <FormLabel>Down (Mbps)</FormLabel>
+              <FormControl>
+                <Input
+                  inputMode="numeric"
+                  placeholder="100"
+                  type="number"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    form.clearErrors("root");
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
+                  }}
+                />
+              </FormControl>
+              <div className="min-h-5">
+                <FormMessage />
+              </div>
+            </FormItem>
+          )}
         />
       </div>
 
