@@ -1,1 +1,1 @@
-export { useConfigQuery } from "./model/config-editor.query";
+export { useConfigQuery } from "./model/config-core.query";

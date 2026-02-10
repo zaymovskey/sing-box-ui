@@ -1,4 +1,4 @@
-import type { Config } from "../../config-core/model/config-editor.schema";
+import type { Config } from "../../config-core/model/config-core.schema";
 import { type InboundRow } from "./inbound-row";
 
 function getUsersCount(
