@@ -55,11 +55,8 @@ export function CreateInboundFormBaseFields() {
                   value={field.value ?? ""}
                   onChange={(e) => {
                     form.clearErrors("root");
-                    field.onChange(
-                      e.target.value === ""
-                        ? undefined
-                        : Number(e.target.value),
-                    );
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
                   }}
                 />
               </FormControl>

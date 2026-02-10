@@ -27,9 +27,6 @@ import { CreateInboundFormBaseFields } from "./CreateInboundFormBaseFields";
 import { CreateInboundFormHy2Fields } from "./CreateInboundFormHy2Fields";
 import { CreateInboundFormVlessFields } from "./CreateInboundFormVlessFields";
 
-// TODO: подставь свой use-case / mutation
-// import { useCreateInboundMutation } from "../model/create-inbound.mutation";
-
 const typeItems = [
   { label: "VLESS", value: "vless" },
   { label: "Hysteria2", value: "hysteria2" },
@@ -39,28 +36,13 @@ const typeItems = [
 }>;
 
 export function CreateInboundForm() {
-  // const createMutation = useCreateInboundMutation();
-
-  const vlessDefaults: CreateInboundFormValues = {
-    type: "vless",
-    tag: "",
-    listen_port: 8443,
-    reality_handshake_port: 443,
-    sniff: true,
-    sniff_override_destination: true,
-
-    user_name: "user",
-    uuid: "",
-    flow: "",
-    tls_server_name: "www.cloudflare.com",
-    reality_handshake_server: "www.cloudflare.com",
-    reality_private_key: "",
-  };
-
   const form = useForm<CreateInboundFormValues>({
     resolver: zodResolver(CreateInboundFormSchema),
     mode: "onSubmit",
-    defaultValues: vlessDefaults,
+    defaultValues: {
+      type: "vless",
+    },
+    shouldUnregister: true,
   });
 
   const type = useWatch({
@@ -70,7 +52,6 @@ export function CreateInboundForm() {
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      // await createMutation.mutateAsync(data);
       console.log("CREATE INBOUND", data);
     } catch (e) {
       applyFormApiError(form, e, {
