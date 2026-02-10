@@ -1,4 +1,4 @@
-import { type UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
@@ -12,11 +12,9 @@ import {
 
 import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormBaseFields({
-  form,
-}: {
-  form: UseFormReturn<CreateInboundFormValues>;
-}) {
+export function CreateInboundFormBaseFields() {
+  const form = useFormContext<CreateInboundFormValues>();
+
   return (
     <>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

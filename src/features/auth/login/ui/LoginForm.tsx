@@ -13,12 +13,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormProvider,
   Input,
   PasswordInput,
   RootErrorMessage,
@@ -63,7 +63,7 @@ export function LoginForm() {
   return (
     <div className="flex min-h-screen w-full items-center justify-center px-4">
       <div className="w-full max-w-xs">
-        <Form {...form}>
+        <FormProvider {...form}>
           <form onSubmit={onSubmit}>
             <Card className="gap-3">
               <CardHeader>
@@ -132,7 +132,7 @@ export function LoginForm() {
               </CardFooter>
             </Card>
           </form>
-        </Form>
+        </FormProvider>
       </div>
     </div>
   );

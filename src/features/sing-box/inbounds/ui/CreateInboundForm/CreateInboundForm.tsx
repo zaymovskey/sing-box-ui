@@ -5,12 +5,12 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { applyFormApiError } from "@/shared/lib";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormProvider,
   Select,
   SelectContent,
   SelectGroup,
@@ -29,6 +29,14 @@ import { CreateInboundFormVlessFields } from "./CreateInboundFormVlessFields";
 
 // TODO: подставь свой use-case / mutation
 // import { useCreateInboundMutation } from "../model/create-inbound.mutation";
+
+const typeItems = [
+  { label: "VLESS", value: "vless" },
+  { label: "Hysteria2", value: "hysteria2" },
+] satisfies ReadonlyArray<{
+  label: string;
+  value: CreateInboundFormValues["type"];
+}>;
 
 export function CreateInboundForm() {
   // const createMutation = useCreateInboundMutation();
@@ -76,18 +84,10 @@ export function CreateInboundForm() {
     }
   });
 
-  const typeItems = [
-    { label: "VLESS", value: "vless" },
-    { label: "Hysteria2", value: "hysteria2" },
-  ] satisfies ReadonlyArray<{
-    label: string;
-    value: CreateInboundFormValues["type"];
-  }>;
-
   return (
     <div className="w-full">
       <div className="w-ful">
-        <Form {...form}>
+        <FormProvider {...form}>
           <form onSubmit={onSubmit}>
             <FormField
               control={form.control}
@@ -127,17 +127,13 @@ export function CreateInboundForm() {
               )}
             />
 
-            <CreateInboundFormBaseFields form={form} />
+            <CreateInboundFormBaseFields />
 
-            {type === "vless" ? (
-              <CreateInboundFormVlessFields form={form} />
-            ) : null}
+            {type === "vless" ? <CreateInboundFormVlessFields /> : null}
 
-            {type === "hysteria2" ? (
-              <CreateInboundFormHy2Fields form={form} />
-            ) : null}
+            {type === "hysteria2" ? <CreateInboundFormHy2Fields /> : null}
           </form>
-        </Form>
+        </FormProvider>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { type UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import {
   FormControl,
@@ -12,11 +12,9 @@ import {
 
 import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormVlessFields({
-  form,
-}: {
-  form: UseFormReturn<CreateInboundFormValues>;
-}) {
+export function CreateInboundFormVlessFields() {
+  const form = useFormContext<CreateInboundFormValues>();
+
   return (
     <div className="space-y-4">
       <div className="mt-7 mb-2 text-xl font-medium opacity-80">VLESS</div>
@@ -140,36 +138,6 @@ export function CreateInboundFormVlessFields({
               </div>
             </FormItem>
           )}
-        />
-        <FormField
-          control={form.control}
-          name="reality_handshake_port"
-          render={() => {
-            const reg = form.register("reality_handshake_port", {
-              valueAsNumber: true,
-            });
-
-            return (
-              <FormItem className="gap-2">
-                <FormLabel>Handshake port</FormLabel>
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    placeholder="443"
-                    type="number"
-                    {...reg}
-                    onChange={(e) => {
-                      form.clearErrors("root");
-                      reg.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <div className="min-h-5">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            );
-          }}
         />
       </div>
 
