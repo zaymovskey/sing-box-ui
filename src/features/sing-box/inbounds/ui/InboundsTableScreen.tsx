@@ -6,8 +6,8 @@ import { useMemo } from "react";
 import { Badge, Card, Separator } from "@/shared/ui";
 
 import { useConfigQuery } from "../../config-core/model/config-core.query";
-import { type InboundRow } from "../model/inbound-row";
 import { mapInboundsToRows } from "../model/inbound-row.mapper";
+import { type InboundRow } from "../model/inbound-row.type";
 import { CreateInboundDialog } from "./CreateInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 

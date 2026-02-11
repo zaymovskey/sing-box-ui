@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { applyFormApiError } from "@/shared/lib";
@@ -23,12 +24,12 @@ import {
   CreateInboundFormSchema,
   type CreateInboundFormValues,
 } from "../../../config-core/model/config-core.inbounds-schema";
+import { useCreateInbound } from "../../model/inbound-create.command";
 import { CreateInboundFormBaseFields } from "./CreateInboundFormBaseFields";
 import { CreateInboundFormHy2Fields } from "./CreateInboundFormHy2Fields";
 import { CreateInboundFormVlessFields } from "./CreateInboundFormVlessFields";
 
-// TODO: подставь свой use-case / mutation
-// import { useCreateInboundMutation } from "../model/create-inbound.mutation";
+export const CREATE_INBOUND_FORM_ID = "create-inbound-form";
 
 const typeItems = [
   { label: "VLESS", value: "vless" },
@@ -38,29 +39,54 @@ const typeItems = [
   value: CreateInboundFormValues["type"];
 }>;
 
-export function CreateInboundForm() {
-  // const createMutation = useCreateInboundMutation();
-
-  const vlessDefaults: CreateInboundFormValues = {
+const defaultsByType = {
+  vless: {
     type: "vless",
+
+    // Base
     tag: "",
-    listen_port: 8443,
+    listen_port: 443,
     reality_handshake_port: 443,
     sniff: true,
     sniff_override_destination: true,
 
-    user_name: "user",
+    // VLESS
+    user_name: "",
     uuid: "",
     flow: "",
     tls_server_name: "www.cloudflare.com",
     reality_handshake_server: "www.cloudflare.com",
     reality_private_key: "",
-  };
+  },
+  hysteria2: {
+    type: "hysteria2",
+
+    // Base
+    tag: "",
+    listen_port: 443,
+    reality_handshake_port: 443,
+    sniff: true,
+    sniff_override_destination: true,
+
+    // Hy2
+    user_name: "",
+    password: "",
+    up_mbps: 100,
+    down_mbps: 100,
+    obfs_password: "",
+    tls_server_name: "www.cloudflare.com",
+    certificate_path: "/etc/sing-box/hy2.crt",
+    key_path: "/etc/sing-box/hy2.key",
+  },
+} satisfies Record<CreateInboundFormValues["type"], CreateInboundFormValues>;
+
+export function CreateInboundForm() {
+  const { createInbound } = useCreateInbound();
 
   const form = useForm<CreateInboundFormValues>({
     resolver: zodResolver(CreateInboundFormSchema),
     mode: "onSubmit",
-    defaultValues: vlessDefaults,
+    defaultValues: defaultsByType["vless"],
   });
 
   const type = useWatch({
@@ -68,9 +94,19 @@ export function CreateInboundForm() {
     name: "type",
   });
 
+  const prevTypeRef = useRef(type);
+
+  useEffect(() => {
+    const prev = prevTypeRef.current;
+    if (prev === type) return;
+
+    form.reset(defaultsByType[type]);
+    prevTypeRef.current = type;
+  }, [type, form]);
+
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      // await createMutation.mutateAsync(data);
+      await createInbound(data);
       console.log("CREATE INBOUND", data);
     } catch (e) {
       applyFormApiError(form, e, {
@@ -88,7 +124,7 @@ export function CreateInboundForm() {
     <div className="w-full">
       <div className="w-full">
         <FormProvider {...form}>
-          <form onSubmit={onSubmit}>
+          <form id={CREATE_INBOUND_FORM_ID} onSubmit={onSubmit}>
             <FormField
               control={form.control}
               name="type"

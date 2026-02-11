@@ -30,7 +30,7 @@ export function CreateInboundFormBaseFields() {
                   placeholder="in-01"
                   onChange={(e) => {
                     form.clearErrors("root");
-                    field.onChange(e);
+                    field.onChange(e.target.value);
                   }}
                 />
               </FormControl>
@@ -55,11 +55,8 @@ export function CreateInboundFormBaseFields() {
                   value={field.value ?? ""}
                   onChange={(e) => {
                     form.clearErrors("root");
-                    field.onChange(
-                      e.target.value === ""
-                        ? undefined
-                        : Number(e.target.value),
-                    );
+                    const n = e.target.valueAsNumber;
+                    field.onChange(Number.isNaN(n) ? undefined : n);
                   }}
                 />
               </FormControl>
@@ -89,7 +86,7 @@ export function CreateInboundFormBaseFields() {
                   }}
                 />
               </FormControl>
-              <div className="min-h-5">
+              <div className="min-h-8">
                 <FormMessage />
               </div>
             </FormItem>

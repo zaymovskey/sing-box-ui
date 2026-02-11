@@ -9,7 +9,10 @@ import {
   DialogTrigger,
 } from "@/shared/ui";
 
-import { CreateInboundForm } from "./CreateInboundForm/CreateInboundForm";
+import {
+  CREATE_INBOUND_FORM_ID,
+  CreateInboundForm,
+} from "./CreateInboundForm/CreateInboundForm";
 
 export function CreateInboundDialog() {
   return (
@@ -36,7 +39,7 @@ export function CreateInboundDialog() {
               Сбросить
             </Button>
 
-            <Button type="submit" onClick={() => {}}>
+            <Button form={CREATE_INBOUND_FORM_ID} type="submit">
               Создать
             </Button>
           </div>
