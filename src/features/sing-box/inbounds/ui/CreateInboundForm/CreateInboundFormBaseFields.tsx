@@ -30,7 +30,7 @@ export function CreateInboundFormBaseFields() {
                   placeholder="in-01"
                   onChange={(e) => {
                     form.clearErrors("root");
-                    field.onChange(e);
+                    field.onChange(e.target.value);
                   }}
                 />
               </FormControl>
@@ -86,7 +86,7 @@ export function CreateInboundFormBaseFields() {
                   }}
                 />
               </FormControl>
-              <div className="min-h-5">
+              <div className="min-h-8">
                 <FormMessage />
               </div>
             </FormItem>

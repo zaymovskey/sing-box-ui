@@ -11,7 +11,7 @@ const BaseInboundFormSchema = z.object({
 
 const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
-  user_name: z.string().trim().min(1).default("user"),
+  user_name: z.string().trim().min(1, "Нужен user_name").default("user"),
   uuid: z.uuid("Нужен UUID"),
   flow: z.string().trim().optional(),
   tls_server_name: z.string().trim().min(1).default("www.cloudflare.com"),
@@ -25,7 +25,7 @@ const VlessFormSchema = BaseInboundFormSchema.extend({
 
 const Hy2FormSchema = BaseInboundFormSchema.extend({
   type: z.literal("hysteria2"),
-  user_name: z.string().trim().min(1).default("user"),
+  user_name: z.string().trim().min(1, "Нужен user_name").default("user"),
   password: z.string().trim().min(1, "Нужен password"),
   up_mbps: z.number().int().min(1).default(100),
   down_mbps: z.number().int().min(1).default(100),

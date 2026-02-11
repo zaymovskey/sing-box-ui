@@ -50,7 +50,7 @@ export const PUT = withApiErrors(
     }
 
     try {
-      const content = JSON.stringify(body, null, 2);
+      const content = JSON.stringify(parseResult.data, null, 2);
       await fs.writeFile(path, content, "utf-8");
       return okJson({ ok: true });
     } catch {

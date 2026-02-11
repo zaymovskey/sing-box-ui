@@ -1,5 +1,5 @@
 import type { Config } from "../../config-core/model/config-core.schema";
-import { type InboundRow } from "./inbound-row";
+import { type InboundRow } from "./inbound-row.type";
 
 function getUsersCount(
   inb: { type: string } & Record<string, unknown>,
