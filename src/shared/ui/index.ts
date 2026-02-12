@@ -77,3 +77,4 @@ export {
   TableHeader,
   TableRow,
 } from "./table";
+export { UuidInput } from "./uuid-input";

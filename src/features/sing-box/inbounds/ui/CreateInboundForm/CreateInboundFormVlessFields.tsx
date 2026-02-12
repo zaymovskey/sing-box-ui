@@ -8,6 +8,7 @@ import {
   FormMessage,
   Input,
   Separator,
+  UuidInput,
 } from "@/shared/ui";
 
 import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
@@ -49,9 +50,9 @@ export function CreateInboundFormVlessFields() {
           name="uuid"
           render={({ field }) => (
             <FormItem className="gap-2">
-              <FormLabel>UUID</FormLabel>
+              <FormLabel>UUID</FormLabel>{" "}
               <FormControl>
-                <Input
+                <UuidInput
                   {...field}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   onChange={(e) => {
