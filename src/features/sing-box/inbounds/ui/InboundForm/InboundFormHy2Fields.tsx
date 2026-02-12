@@ -10,10 +10,10 @@ import {
   Separator,
 } from "@/shared/ui";
 
-import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormHy2Fields() {
-  const form = useFormContext<CreateInboundFormValues>();
+export function InboundFormHy2Fields() {
+  const form = useFormContext<InboundFormValues>();
 
   return (
     <div className="space-y-4">

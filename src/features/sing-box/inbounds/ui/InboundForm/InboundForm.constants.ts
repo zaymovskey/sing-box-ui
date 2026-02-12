@@ -1,11 +1,11 @@
-import type { CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import type { InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export const typeItems = [
   { label: "VLESS", value: "vless" },
   { label: "Hysteria2", value: "hysteria2" },
 ] as const satisfies ReadonlyArray<{
   label: string;
-  value: CreateInboundFormValues["type"];
+  value: InboundFormValues["type"];
 }>;
 
 export const defaultsByType = {
@@ -39,4 +39,4 @@ export const defaultsByType = {
     certificate_path: "/etc/sing-box/hy2.crt",
     key_path: "/etc/sing-box/hy2.key",
   },
-} satisfies Record<CreateInboundFormValues["type"], CreateInboundFormValues>;
+} satisfies Record<InboundFormValues["type"], InboundFormValues>;

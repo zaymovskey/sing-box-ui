@@ -15,21 +15,21 @@ import {
 } from "@/shared/ui";
 
 import {
-  CreateInboundFormSchema,
-  type CreateInboundFormValues,
+  InboundFormSchema,
+  type InboundFormValues,
 } from "../../config-core/model/config-core.inbounds-schema";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
 } from "../model/inbound-create.command";
-import { CreateInboundForm } from "./CreateInboundForm/CreateInboundForm";
-import { defaultsByType } from "./CreateInboundForm/createInboundForm.constants";
+import { InboundForm } from "./InboundForm/InboundForm";
+import { defaultsByType } from "./InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
 
 export function CreateInboundDialog() {
-  const form = useForm<CreateInboundFormValues>({
-    resolver: zodResolver(CreateInboundFormSchema),
+  const form = useForm<InboundFormValues>({
+    resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
     defaultValues: defaultsByType.vless,
   });
@@ -38,7 +38,7 @@ export function CreateInboundDialog() {
 
   const { createInbound, isPending } = useCreateInbound();
 
-  const handleSubmit = async (values: CreateInboundFormValues) => {
+  const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
     toast.loading("Сохранение...", { id: "save-inbound" });
 
@@ -79,11 +79,7 @@ export function CreateInboundDialog() {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <CreateInboundForm
-            form={form}
-            formId={FORM_ID}
-            onSubmit={handleSubmit}
-          />
+          <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

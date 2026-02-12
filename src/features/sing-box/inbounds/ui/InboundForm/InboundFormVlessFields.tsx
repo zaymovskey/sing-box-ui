@@ -11,10 +11,10 @@ import {
   UuidInput,
 } from "@/shared/ui";
 
-import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormVlessFields() {
-  const form = useFormContext<CreateInboundFormValues>();
+export function InboundFormVlessFields() {
+  const form = useFormContext<InboundFormValues>();
 
   return (
     <div className="space-y-4">

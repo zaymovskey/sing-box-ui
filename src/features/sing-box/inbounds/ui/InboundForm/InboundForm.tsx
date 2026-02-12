@@ -17,23 +17,19 @@ import {
   SelectValue,
 } from "@/shared/ui";
 
-import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
-import { defaultsByType, typeItems } from "./createInboundForm.constants";
-import { CreateInboundFormBaseFields } from "./CreateInboundFormBaseFields";
-import { CreateInboundFormHy2Fields } from "./CreateInboundFormHy2Fields";
-import { CreateInboundFormVlessFields } from "./CreateInboundFormVlessFields";
+import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import { defaultsByType, typeItems } from "./InboundForm.constants";
+import { InboundFormBaseFields } from "./InboundFormBaseFields";
+import { InboundFormHy2Fields } from "./InboundFormHy2Fields";
+import { InboundFormVlessFields } from "./InboundFormVlessFields";
 
-type CreateInboundFormProps = {
+type InboundFormProps = {
   formId: string;
-  form: UseFormReturn<CreateInboundFormValues>;
-  onSubmit: (values: CreateInboundFormValues) => Promise<void>;
+  form: UseFormReturn<InboundFormValues>;
+  onSubmit: (values: InboundFormValues) => Promise<void>;
 };
 
-export function CreateInboundForm({
-  formId,
-  form,
-  onSubmit,
-}: CreateInboundFormProps) {
+export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
   const type = useWatch({ control: form.control, name: "type" });
   const prevTypeRef = useRef(type);
 
@@ -59,10 +55,8 @@ export function CreateInboundForm({
                 <Select
                   value={typeField.value}
                   onValueChange={(v) => {
-                    // ✅ это UX формы (чистим root error, если он был)
                     form.clearErrors("root");
-
-                    typeField.onChange(v as CreateInboundFormValues["type"]);
+                    typeField.onChange(v);
                   }}
                 >
                   <SelectTrigger className="w-full">
@@ -88,9 +82,9 @@ export function CreateInboundForm({
           )}
         />
 
-        <CreateInboundFormBaseFields />
-        {type === "vless" ? <CreateInboundFormVlessFields /> : null}
-        {type === "hysteria2" ? <CreateInboundFormHy2Fields /> : null}
+        <InboundFormBaseFields />
+        {type === "vless" ? <InboundFormVlessFields /> : null}
+        {type === "hysteria2" ? <InboundFormHy2Fields /> : null}
       </form>
     </FormProvider>
   );

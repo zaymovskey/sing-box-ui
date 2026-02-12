@@ -10,10 +10,10 @@ import {
   Switch,
 } from "@/shared/ui";
 
-import { type CreateInboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
-export function CreateInboundFormBaseFields() {
-  const form = useFormContext<CreateInboundFormValues>();
+export function InboundFormBaseFields() {
+  const form = useFormContext<InboundFormValues>();
 
   return (
     <>

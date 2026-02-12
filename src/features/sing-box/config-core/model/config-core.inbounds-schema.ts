@@ -35,9 +35,9 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
   key_path: z.string().trim().min(1, "Нужен путь к .key"),
 });
 
-export const CreateInboundFormSchema = z.discriminatedUnion("type", [
+export const InboundFormSchema = z.discriminatedUnion("type", [
   VlessFormSchema,
   Hy2FormSchema,
 ]);
 
-export type CreateInboundFormValues = z.input<typeof CreateInboundFormSchema>;
+export type InboundFormValues = z.input<typeof InboundFormSchema>;
