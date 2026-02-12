@@ -9,6 +9,8 @@ import {
 } from "../../config-core/model/config-core.schema";
 import { mapFormToInbound } from "./inbound-create.mapper";
 
+export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
+
 export function useCreateInbound() {
   const { data: singBoxConfig } = useConfigQuery();
   const updateConfigMutation = useUpdateConfigMutation();
@@ -29,8 +31,7 @@ export function useCreateInbound() {
 
       const parsed = ConfigSchema.safeParse(nextConfig);
       if (!parsed.success) {
-        // тут можешь кинуть кастомную ошибку под applyFormApiError/тосты
-        throw new Error("Config is invalid after mapping");
+        throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
       return updateConfigMutation.mutateAsync(parsed.data);

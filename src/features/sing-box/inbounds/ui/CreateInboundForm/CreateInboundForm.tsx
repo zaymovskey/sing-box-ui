@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 
-import { applyFormApiError } from "@/shared/lib";
 import {
   FormControl,
   FormField,
@@ -24,7 +24,10 @@ import {
   CreateInboundFormSchema,
   type CreateInboundFormValues,
 } from "../../../config-core/model/config-core.inbounds-schema";
-import { useCreateInbound } from "../../model/inbound-create.command";
+import {
+  CONFIG_INVALID_AFTER_MAPPING,
+  useCreateInbound,
+} from "../../model/inbound-create.command";
 import { CreateInboundFormBaseFields } from "./CreateInboundFormBaseFields";
 import { CreateInboundFormHy2Fields } from "./CreateInboundFormHy2Fields";
 import { CreateInboundFormVlessFields } from "./CreateInboundFormVlessFields";
@@ -107,16 +110,15 @@ export function CreateInboundForm() {
   const onSubmit = form.handleSubmit(async (data) => {
     try {
       await createInbound(data);
-      console.log("CREATE INBOUND", data);
     } catch (e) {
-      applyFormApiError(form, e, {
-        400: "Некорректные данные",
-        401: "Нужна авторизация",
-        403: "Доступ запрещён",
-        409: "Конфликт (возможно, tag уже занят)",
-        429: "Слишком много попыток. Попробуй позже.",
-        500: "Ошибка сервера",
-      });
+      const msg = e instanceof Error ? e.message : "";
+
+      if (msg === CONFIG_INVALID_AFTER_MAPPING) {
+        toast.error("Конфиг получился невалидным (баг маппера).");
+        return;
+      }
+
+      toast.error("Не удалось создать инбаунд");
     }
   });
 
