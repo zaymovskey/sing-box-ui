@@ -60,6 +60,7 @@ function Button({
       )}
       data-slot="button"
       {...props}
+      disabled={loading || props.disabled}
     >
       {loading ? <LoaderCircle className="animate-spin" /> : children}
     </Comp>
