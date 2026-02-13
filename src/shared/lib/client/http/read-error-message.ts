@@ -1,34 +1,34 @@
-import { isCustomErrorPayload } from "./is-error-payload";
+import { ApiErrorPayloadSchema } from "./api-error.schema";
 
 export async function readErrorMessage(res: Response): Promise<{
   message: string;
   payload?: unknown;
 }> {
-  let message = `Ошибка ${res.status}`;
-  let payload: unknown | undefined = undefined;
+  const fallback = `Ошибка ${res.status}`;
 
-  let hasJsonMessage = false;
-
+  // 1) Пробуем JSON
   try {
-    payload = await res.clone().json();
-    if (isCustomErrorPayload(payload)) {
-      message = payload.error.message;
-      hasJsonMessage = true;
+    const payload = (await res.clone().json()) as unknown;
+
+    const parsed = ApiErrorPayloadSchema.safeParse(payload);
+    if (parsed.success) {
+      return { message: parsed.data.error.message, payload };
     }
+
+    // JSON есть, но не наш формат — вернём payload (может пригодиться для логов)
+    return { message: fallback, payload };
   } catch {
-    // not JSON — ok
+    // не JSON — идём дальше
   }
 
-  if (!hasJsonMessage) {
-    try {
-      const text = await res.text();
-      if (text?.trim()) {
-        message = text.trim();
-      }
-    } catch {
-      // ignore
-    }
+  // 2) Пробуем текст
+  try {
+    const text = (await res.text()).trim();
+    if (text) return { message: text };
+  } catch {
+    // игнор
   }
 
-  return { message, payload };
+  // 3) Фоллбек
+  return { message: fallback };
 }

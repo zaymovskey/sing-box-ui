@@ -1,4 +1,4 @@
-import { ApiError } from "./api-error";
+import { ApiError } from "./api-error.class";
 
 export function getErrorMessage(error: unknown, fallback = "Произошла ошибка") {
   if (error instanceof ApiError) return error.message || fallback;

@@ -20,7 +20,6 @@ import {
 } from "react";
 import { toast } from "sonner";
 
-import { ApiError } from "@/shared/lib";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
 import { Button, Card } from "@/shared/ui";
 
@@ -95,46 +94,45 @@ export function SingBoxConfigScreen() {
     dismissServerErrorsToasts();
     dismissClientErrorsToasts();
 
-    try {
-      toast.loading("Сохранение...", { id: "save-config" });
-      await updateConfigMutation.mutateAsync(configDraft);
-      toast.success("Конфигурация успешно сохранена", { id: "save-config" });
-    } catch (err) {
-      toast.dismiss("save-config");
+    toast.loading("Сохранение...", { id: "save-config" });
 
-      if (!(err instanceof ApiError)) {
-        toast.error("Неизвестная ошибка");
-        return;
-      }
+    updateConfigMutation.mutate(configDraft, {
+      onSuccess: () => {
+        toast.success("Конфигурация успешно сохранена", {
+          id: "save-config",
+          duration: 2000,
+        });
+      },
+      onError: (err) => {
+        const issues = err.issues;
 
-      const issues = err.issues;
+        if (!issues?.length) {
+          toast.error(err.uiMessage);
+          return;
+        }
 
-      if (!issues?.length) {
-        toast.error(err.uiMessage);
-        return;
-      }
-
-      serverErrorsToastIdRef.current = toast.error(
-        `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
-        {
-          cancelButtonStyle: {
-            backgroundColor: "var(--destructive)",
-            color: "var(--secondary)",
+        serverErrorsToastIdRef.current = toast.error(
+          `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
+          {
+            cancelButtonStyle: {
+              backgroundColor: "var(--destructive)",
+              color: "var(--secondary)",
+            },
+            cancel: {
+              label: "Закрыть",
+              onClick: () => {},
+            },
+            duration: 4000,
           },
-          cancel: {
-            label: "Закрыть",
-            onClick: () => {},
-          },
-          duration: 4000,
-        },
-      );
+        );
 
-      const newinvalidKeys = issues
-        .map((i) => i.path ?? null)
-        .filter((x): x is string => x !== null);
+        const newinvalidKeys = issues
+          .map((i) => i.path ?? null)
+          .filter((x): x is string => x !== null);
 
-      setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
-    }
+        setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
+      },
+    });
   };
 
   const clientErrorsToastIdsRef = useRef<(string | number)[]>([]);

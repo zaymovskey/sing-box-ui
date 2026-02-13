@@ -17,6 +17,22 @@ export const GET = withApiErrors(
     try {
       const content = await fs.readFile(path, "utf-8");
       const parsed = JSON.parse(content);
+      const parseResult = Configuration.safeParse(parsed);
+
+      if (!parseResult.success) {
+        return errorJson(422, {
+          error: {
+            message: "Некорректный формат конфига sing-box",
+            code: "SINGBOX_CONFIG_INVALID",
+            issues: parseResult.error.issues.map((issue) => ({
+              code: issue.code,
+              message: issue.message,
+              path: issue.path.join("."),
+            })),
+          },
+        });
+      }
+
       return okJson(parsed);
     } catch {
       return errorJson(500, {

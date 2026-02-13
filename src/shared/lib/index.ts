@@ -1,6 +1,6 @@
 export { cn } from "./client/cn";
 export { clientEnv } from "./client/env-client";
-export { ApiError } from "./client/http/api-error";
+export { ApiError } from "./client/http/api-error.class";
 export { apiFetch } from "./client/http/api-fetch";
 export { applyFormApiError } from "./client/http/apply-form-api-error";
 export { getErrorMessage } from "./client/http/get-error-message";
