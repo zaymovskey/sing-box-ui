@@ -15,6 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
 } from "@/shared/ui";
 
 import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
@@ -83,8 +84,17 @@ export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
         />
 
         <InboundFormBaseFields />
-        {type === "vless" ? <InboundFormVlessFields /> : null}
-        {type === "hysteria2" ? <InboundFormHy2Fields /> : null}
+
+        <div className="space-y-4">
+          <div className="mt-7 mb-2 text-xl font-medium opacity-80">
+            {type === "vless" && "VLESS"}
+            {type === "hysteria2" && "Hysteria2"}
+          </div>
+          <Separator />
+
+          {type === "vless" && <InboundFormVlessFields />}
+          {type === "hysteria2" && <InboundFormHy2Fields />}
+        </div>
       </form>
     </FormProvider>
   );

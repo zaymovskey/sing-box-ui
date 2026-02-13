@@ -1,169 +1,48 @@
-import { useFormContext } from "react-hook-form";
-
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Separator,
-  UuidInput,
-} from "@/shared/ui";
+import { UncontrolledTextField, UncontrolledUuidField } from "@/shared/ui";
 
 import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export function InboundFormVlessFields() {
-  const form = useFormContext<InboundFormValues>();
-
   return (
-    <div className="space-y-4">
-      <div className="mt-7 mb-2 text-xl font-medium opacity-80">VLESS</div>
-      <Separator />
-
+    <>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <FormField
-          control={form.control}
+        <UncontrolledTextField<InboundFormValues>
+          label="User name"
           name="user_name"
-          render={({ field }) => (
-            <FormItem className="gap-2">
-              <FormLabel>User name</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="user"
-                  onChange={(e) => {
-                    form.clearErrors("root");
-                    field.onChange(e);
-                  }}
-                />
-              </FormControl>
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="user"
         />
 
-        <FormField
-          control={form.control}
+        <UncontrolledUuidField<InboundFormValues>
+          label="UUID"
           name="uuid"
-          render={({ field }) => (
-            <FormItem className="gap-2">
-              <FormLabel>UUID</FormLabel>{" "}
-              <FormControl>
-                <UuidInput
-                  {...field}
-                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                  onChange={(e) => {
-                    form.clearErrors("root");
-                    field.onChange(e);
-                  }}
-                />
-              </FormControl>
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         />
       </div>
-
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <FormField
-          control={form.control}
+        <UncontrolledTextField<InboundFormValues>
+          label="Flow (optional)"
           name="flow"
-          render={({ field }) => (
-            <FormItem className="gap-2">
-              <FormLabel>Flow (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="xtls-rprx-vision"
-                  onChange={(e) => {
-                    form.clearErrors("root");
-                    field.onChange(e);
-                  }}
-                />
-              </FormControl>
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="xtls-rprx-vision"
         />
 
-        <FormField
-          control={form.control}
+        <UncontrolledTextField<InboundFormValues>
+          label="TLS server name"
           name="tls_server_name"
-          render={({ field }) => (
-            <FormItem className="gap-2">
-              <FormLabel>TLS server name</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="www.cloudflare.com"
-                  onChange={(e) => {
-                    form.clearErrors("root");
-                    field.onChange(e);
-                  }}
-                />
-              </FormControl>
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="www.cloudflare.com"
         />
       </div>
-
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <FormField
-          control={form.control}
+        <UncontrolledTextField<InboundFormValues>
+          label="Handshake server"
           name="reality_handshake_server"
-          render={({ field }) => (
-            <FormItem className="gap-2">
-              <FormLabel>Handshake server</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="www.cloudflare.com"
-                  onChange={(e) => {
-                    form.clearErrors("root");
-                    field.onChange(e);
-                  }}
-                />
-              </FormControl>
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="www.cloudflare.com"
         />
       </div>
-
-      <FormField
-        control={form.control}
+      <UncontrolledTextField<InboundFormValues>
+        label="Reality private key"
         name="reality_private_key"
-        render={({ field }) => (
-          <FormItem className="gap-2">
-            <FormLabel>Reality private key</FormLabel>
-            <FormControl>
-              <Input
-                {...field}
-                placeholder="private_key"
-                onChange={(e) => {
-                  form.clearErrors("root");
-                  field.onChange(e);
-                }}
-              />
-            </FormControl>
-            <div className="min-h-5">
-              <FormMessage />
-            </div>
-          </FormItem>
-        )}
+        placeholder="private_key"
       />
-    </div>
+    </>
   );
 }

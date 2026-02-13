@@ -28,6 +28,7 @@ export {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 export { Field, FieldGroup, FieldLegend } from "./field";
+export { ControlledSwitchField } from "./form/controlled/controlled-switch-field";
 export {
   FormControl,
   FormDescription,
@@ -39,6 +40,9 @@ export {
   useFormField,
 } from "./form/form";
 export { RootErrorMessage } from "./form/root-error-message";
+export { UncontrolledNumberField } from "./form/uncontrolled/uncontrolled-number-field";
+export { UncontrolledTextField } from "./form/uncontrolled/uncontrolled-text-field";
+export { UncontrolledUuidField } from "./form/uncontrolled/uncontrolled-uuid-field";
 export { Input } from "./input";
 export { Label } from "./label";
 export { PasswordInput } from "./password-input";

@@ -1,32 +1,46 @@
+"use client";
+
 import { RotateCcw } from "lucide-react";
+import * as React from "react";
+import { type ComponentPropsWithoutRef, forwardRef } from "react";
 
 import { Button } from "./button";
 import { Input } from "./input";
 
-type UuidInputProps = Omit<
-  React.ComponentProps<"input">,
-  "onChange" | "value"
-> & {
-  onChange?: (value: string) => void;
-};
+type Props = ComponentPropsWithoutRef<"input">;
 
-export function UuidInput({ onChange, ...props }: UuidInputProps) {
-  const handleGenerateUuid = () => {
-    const uuid = crypto.randomUUID();
-    onChange?.(uuid);
-  };
+export const UuidInput = forwardRef<HTMLInputElement, Props>(
+  ({ ...props }, forwardedRef) => {
+    const innerRef = React.useRef<HTMLInputElement | null>(null);
+    const setRef = (node: HTMLInputElement | null) => {
+      innerRef.current = node;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange?.(e.target.value);
-  };
+      if (typeof forwardedRef === "function") {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        forwardedRef.current = node;
+      }
+    };
 
-  return (
-    <div className="flex items-center gap-1">
-      <Button type="button" variant="outline" onClick={handleGenerateUuid}>
-        <RotateCcw />
-      </Button>
+    const handleGenerate = () => {
+      const uuid = crypto.randomUUID();
+      const el = innerRef.current;
+      if (!el) return;
 
-      <Input {...props} onChange={handleChange} />
-    </div>
-  );
-}
+      el.value = uuid;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+
+    return (
+      <div className="flex items-center gap-0.5">
+        <Button type="button" variant="outline" onClick={handleGenerate}>
+          <RotateCcw className="size-4" />
+        </Button>
+
+        <Input ref={setRef} {...props} />
+      </div>
+    );
+  },
+);
+
+UuidInput.displayName = "UuidInput";
