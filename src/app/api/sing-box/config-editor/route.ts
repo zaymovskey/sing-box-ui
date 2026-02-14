@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 import { Configuration } from "@black-duty/sing-box-schema";
+import { type z } from "zod";
 
 import {
   errorJson,
@@ -9,6 +10,20 @@ import {
   withApiErrors,
   withSession,
 } from "@/shared/lib/server";
+
+const invalidConfigResponse = (error: z.ZodError) => {
+  return errorJson(422, {
+    error: {
+      message: "Некорректный формат конфига sing-box",
+      code: "SINGBOX_CONFIG_INVALID",
+      issues: error.issues.map((issue) => ({
+        code: issue.code,
+        message: issue.message,
+        path: issue.path.join("."),
+      })),
+    },
+  });
+};
 
 export const GET = withApiErrors(
   withSession(async () => {
@@ -20,17 +35,7 @@ export const GET = withApiErrors(
       const parseResult = Configuration.safeParse(parsed);
 
       if (!parseResult.success) {
-        return errorJson(422, {
-          error: {
-            message: "Некорректный формат конфига sing-box",
-            code: "SINGBOX_CONFIG_INVALID",
-            issues: parseResult.error.issues.map((issue) => ({
-              code: issue.code,
-              message: issue.message,
-              path: issue.path.join("."),
-            })),
-          },
-        });
+        return invalidConfigResponse(parseResult.error);
       }
 
       return okJson(parsed);
@@ -52,17 +57,7 @@ export const PUT = withApiErrors(
     const parseResult = Configuration.safeParse(body);
 
     if (!parseResult.success) {
-      return errorJson(422, {
-        error: {
-          message: "Некорректный формат конфига sing-box",
-          code: "SINGBOX_CONFIG_INVALID",
-          issues: parseResult.error.issues.map((issue) => ({
-            code: issue.code,
-            message: issue.message,
-            path: issue.path.join("."),
-          })),
-        },
-      });
+      return invalidConfigResponse(parseResult.error);
     }
 
     try {

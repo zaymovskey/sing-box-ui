@@ -1,16 +1,4 @@
-export type ApiIssue = {
-  path?: string;
-  message: string;
-  code?: string;
-};
-
-export type ApiErrorPayload = {
-  error: {
-    code: string;
-    message: string;
-    issues?: ApiIssue[];
-  };
-};
+import { type ApiErrorPayload } from "../../../api/contracts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

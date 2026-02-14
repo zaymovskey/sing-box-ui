@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { meResponseSchema } from "@/shared/api/contracts";
+
 import { getMe } from "../api/me.api";
 import { authQueryKeys } from "../lib/me.query-keys";
-import { meResponseSchema } from "./me.response-schema";
 
 export function useMeQuery() {
   return useQuery({

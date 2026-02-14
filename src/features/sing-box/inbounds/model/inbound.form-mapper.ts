@@ -1,5 +1,6 @@
+import { type Config } from "@/shared/api/contracts";
+
 import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
-import { type Config } from "../../config-core/model/config-core.schema";
 
 type Inbound = NonNullable<Config["inbounds"]>[number];
 

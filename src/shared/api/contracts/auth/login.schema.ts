@@ -11,4 +11,4 @@ export const LoginRequestSchema = z.object({
     .pipe(z.string().min(1, "Пароль обязателен")),
 });
 
-export type LoginRequestData = z.infer<typeof LoginRequestSchema>;
+export type LoginRequest = z.infer<typeof LoginRequestSchema>;

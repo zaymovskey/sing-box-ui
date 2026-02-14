@@ -1,6 +1,5 @@
+import { type Config } from "@/shared/api/contracts";
 import { apiFetch, apiRoutes } from "@/shared/lib";
-
-import { type Config } from "../model/config-core.schema";
 
 export async function getConfigJson(): Promise<Config> {
   return apiFetch<Config>(apiRoutes.singBox.configEditor, {

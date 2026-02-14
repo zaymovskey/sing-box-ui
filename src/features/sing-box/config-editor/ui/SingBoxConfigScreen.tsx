@@ -19,6 +19,7 @@ import {
   useState,
 } from "react";
 
+import { type Config, ConfigSchema } from "@/shared/api/contracts";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
 import {
   Button,
@@ -30,10 +31,6 @@ import {
 
 import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
 import { useConfigQuery } from "../../config-core/model/config-core.query";
-import {
-  type Config,
-  ConfigSchema,
-} from "../../config-core/model/config-core.schema";
 
 const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
   const allInvalidKeys: Set<string> = new Set();

@@ -1,4 +1,4 @@
-import { ApiErrorPayloadSchema } from "./api-error.schema";
+import { ApiErrorPayloadSchema } from "../../../api/contracts";
 
 export async function readErrorMessage(res: Response): Promise<{
   message: string;

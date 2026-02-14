@@ -1,4 +1,5 @@
-import type { Config } from "../../config-core/model/config-core.schema";
+import type { Config } from "@/shared/api/contracts";
+
 import { type InboundRow } from "./inbound-row.type";
 
 function getUsersCount(
