@@ -71,7 +71,9 @@ export {
   SidebarProvider,
   SidebarTrigger,
 } from "./sidebar";
-export { Toaster } from "./sonner";
+export { Toaster } from "./sonner/sonner";
+export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
+export { clientToast, infraToast, serverToast } from "./sonner/toasters";
 export { Switch } from "./switch";
 export {
   Table,

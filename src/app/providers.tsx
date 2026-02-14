@@ -1,16 +1,28 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import * as React from "react";
+import { useState } from "react";
 
-import { Toaster } from "@/shared/ui";
+import { ApiError } from "@/shared/lib";
+import { infraToast, sonnerErrorCloseButton, Toaster } from "@/shared/ui";
 
 type ProvidersProps = {
   children: React.ReactNode;
 };
 
+const errorToMessage = (e: unknown) => {
+  if (e instanceof ApiError) return e.uiMessage;
+  return "Неизвестная ошибка";
+};
+
 export function Providers({ children }: ProvidersProps) {
-  const [queryClient] = React.useState(
+  const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
@@ -24,6 +36,28 @@ export function Providers({ children }: ProvidersProps) {
             retry: 0,
           },
         },
+        mutationCache: new MutationCache({
+          onError: (err, _vars, _ctx, mutation) => {
+            if (mutation.meta?.silent) return;
+
+            infraToast.error(errorToMessage(err), {
+              id: `m:${mutation.options.mutationKey?.join?.(":") ?? "mutation"}`,
+              position: "bottom-left",
+              ...sonnerErrorCloseButton,
+            });
+          },
+        }),
+        queryCache: new QueryCache({
+          onError: (err, query) => {
+            if (query.meta?.silent) return;
+
+            infraToast.error(errorToMessage(err), {
+              id: `q:${query.queryHash}`,
+              position: "bottom-left",
+              ...sonnerErrorCloseButton,
+            });
+          },
+        }),
       }),
   );
 
