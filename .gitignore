@@ -10,4 +10,7 @@ dist/
 .env.local
 .env.*.local
 coverage/
+docker/data/*
+!docker/data/.gitkeep
+!docker/data/sing-box/config.example.json
 
