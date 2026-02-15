@@ -1,17 +1,15 @@
-import { type ApiErrorPayload } from "../../client/http/is-error-payload";
+import { type ApiErrorPayload } from "../../../api/contracts";
 
 type InitNoStatus = Omit<ResponseInit, "status">;
 
 const DEFAULT_NO_STORE = "no-store";
 
-// Нормализуем заголовки: объединяем init.headers + наши дефолты
 function buildHeaders(init?: InitNoStatus, defaults?: HeadersInit): Headers {
   const headers = new Headers(init?.headers);
 
   if (defaults) {
     const d = new Headers(defaults);
     d.forEach((value, key) => {
-      // defaults не должны затирать явные init.headers
       if (!headers.has(key)) headers.set(key, value);
     });
   }
@@ -19,7 +17,6 @@ function buildHeaders(init?: InitNoStatus, defaults?: HeadersInit): Headers {
   return headers;
 }
 
-// На случай, если ты захочешь переопределить no-store
 function ensureNoStore(headers: Headers) {
   if (!headers.has("Cache-Control")) {
     headers.set("Cache-Control", DEFAULT_NO_STORE);
@@ -55,9 +52,6 @@ export function errorJson(
   });
 }
 
-/**
- * ✅ Plain text (логи, версии, healthcheck, и т.д.)
- */
 export function okText(text: string, init?: InitNoStatus) {
   const headers = ensureNoStore(
     buildHeaders(init, { "Content-Type": "text/plain; charset=utf-8" }),
@@ -70,10 +64,6 @@ export function okText(text: string, init?: InitNoStatus) {
   });
 }
 
-/**
- * ✅ Raw JSON document as text (конфиги, шаблоны).
- * Важно: НЕ JSON.stringify, иначе будет "строка в JSON".
- */
 export function okJsonText(jsonText: string, init?: InitNoStatus) {
   const headers = ensureNoStore(
     buildHeaders(init, { "Content-Type": "application/json; charset=utf-8" }),
@@ -86,9 +76,6 @@ export function okJsonText(jsonText: string, init?: InitNoStatus) {
   });
 }
 
-/**
- * ✅ 204 No Content
- */
 export function noContent(init?: InitNoStatus) {
   const headers = ensureNoStore(buildHeaders(init));
 

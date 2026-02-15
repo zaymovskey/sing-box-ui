@@ -5,7 +5,8 @@ export {
   okJsonText,
   okText,
 } from "./api/response-helpers";
-export { withApiErrors } from "./api/with-api-errors";
+export { ServerApiError } from "./api/server-api-error.class";
+export { withRoute } from "./api/with-route";
 export {
   clearSessionCookie,
   getAuthCookieName,

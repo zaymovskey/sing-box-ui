@@ -8,9 +8,6 @@ export function getAuthCookieName() {
   return serverEnv.AUTH_COOKIE_NAME;
 }
 
-/**
- * Ставит cookie с JWT.
- */
 export async function setSessionCookie(token: string) {
   const name = getAuthCookieName();
   const jar = await cookies();
@@ -24,9 +21,6 @@ export async function setSessionCookie(token: string) {
   });
 }
 
-/**
- * Читает JWT из cookie.
- */
 export async function readSessionCookie(): Promise<string | null> {
   const name = getAuthCookieName();
   const jar = await cookies();
@@ -34,9 +28,6 @@ export async function readSessionCookie(): Promise<string | null> {
   return jar.get(name)?.value ?? null;
 }
 
-/**
- * Logout: удаляем cookie.
- */
 export async function clearSessionCookie() {
   const name = getAuthCookieName();
   const jar = await cookies();

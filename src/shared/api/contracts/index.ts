@@ -1,5 +1,5 @@
 export { type LoginRequest, LoginRequestSchema } from "./auth/login.schema";
-export { type MeResponse, meResponseSchema } from "./auth/me.schema";
+export { type MeResponse, MeResponseSchema } from "./auth/me.schema";
 export {
   type ApiErrorPayload,
   ApiErrorPayloadSchema,

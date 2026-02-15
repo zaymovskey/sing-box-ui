@@ -4,7 +4,6 @@ export { ApiError } from "./client/http/api-error.class";
 export { apiFetch } from "./client/http/api-fetch";
 export { applyFormApiError } from "./client/http/apply-form-api-error";
 export { getErrorMessage } from "./client/http/get-error-message";
-export { isCustomErrorPayload } from "./client/http/is-error-payload";
 export { readErrorMessage } from "./client/http/read-error-message";
 export { apiRoutes } from "./client/routes/api";
 export { appRoutes } from "./client/routes/routes";

@@ -1,11 +1,17 @@
-import { okJson, withApiErrors, withSession } from "@/shared/lib/server";
+import { MeResponseSchema } from "@/shared/api/contracts";
+import { withRoute } from "@/shared/lib/server";
 
-export const GET = withSession(
-  withApiErrors(async ({ session }) => {
-    return okJson({
-      id: session.sub,
-      email: session.email,
-      role: session.role,
-    });
+/**
+ * Get current user
+ * @response MeResponseSchema
+ * @openapi
+ */
+export const GET = withRoute({
+  auth: true,
+  responseSchema: MeResponseSchema,
+  handler: async ({ session }) => ({
+    id: session.sub,
+    email: session.email,
+    roles: [session.role],
   }),
-);
+});

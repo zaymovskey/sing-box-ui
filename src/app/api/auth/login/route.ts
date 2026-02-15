@@ -1,51 +1,39 @@
+import { LoginRequestSchema, OkResponseSchema } from "@/shared/api/contracts";
 import {
-  errorJson,
-  okJson,
+  ServerApiError,
   serverEnv,
   setSessionCookie,
   signSession,
-  withApiErrors,
+  withRoute,
 } from "@/shared/lib/server";
 
-type LoginBody = {
-  email?: string;
-  password?: string;
-};
+export const POST = withRoute({
+  auth: false,
+  responseSchema: OkResponseSchema,
+  requestSchema: LoginRequestSchema,
+  handler: async ({ body }) => {
+    const email = body.email.trim();
+    const password = body.password;
 
-export const POST = withApiErrors(async (req: Request) => {
-  const body = (await req.json().catch(() => null)) as LoginBody | null;
+    const demoEmail = serverEnv.AUTH_DEMO_EMAIL;
+    const demoPassword = serverEnv.AUTH_DEMO_PASSWORD;
 
-  const email = body?.email?.trim();
-  const password = body?.password;
+    if (email !== demoEmail || password !== demoPassword) {
+      throw new ServerApiError(
+        401,
+        "INVALID_CREDENTIALS",
+        "Invalid credentials",
+      );
+    }
 
-  if (!email || !password) {
-    return errorJson(400, {
-      error: {
-        message: "Email and password are required",
-        code: "INVALID_REQUEST",
-      },
+    const token = await signSession({
+      sub: "1",
+      email,
+      role: "admin",
     });
-  }
 
-  const demoEmail = serverEnv.AUTH_DEMO_EMAIL;
-  const demoPassword = serverEnv.AUTH_DEMO_PASSWORD;
+    await setSessionCookie(token);
 
-  if (email !== demoEmail || password !== demoPassword) {
-    return errorJson(401, {
-      error: {
-        message: "Invalid credentials",
-        code: "INVALID_CREDENTIALS",
-      },
-    });
-  }
-
-  const token = await signSession({
-    sub: "1",
-    email,
-    role: "admin",
-  });
-
-  await setSessionCookie(token);
-
-  return okJson({ ok: true });
+    return { ok: true };
+  },
 });
