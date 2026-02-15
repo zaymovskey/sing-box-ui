@@ -14,9 +14,6 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       data-slot="input"
       type={type}
       {...props}
-      value={
-        (props.value as string | number | readonly string[] | undefined) ?? ""
-      }
     />
   );
 }

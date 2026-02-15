@@ -18,18 +18,19 @@ import {
   useRef,
   useState,
 } from "react";
-import { toast } from "sonner";
 
-import { ApiError } from "@/shared/lib";
+import { type Config, ConfigSchema } from "@/shared/api/contracts";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
-import { Button, Card } from "@/shared/ui";
+import {
+  Button,
+  Card,
+  clientToast,
+  serverToast,
+  sonnerErrorCloseButton,
+} from "@/shared/ui";
 
 import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
 import { useConfigQuery } from "../../config-core/model/config-core.query";
-import {
-  type Config,
-  ConfigSchema,
-} from "../../config-core/model/config-core.schema";
 
 const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
   const allInvalidKeys: Set<string> = new Set();
@@ -78,7 +79,11 @@ const makeTheme = (invalidKeys: Set<string>): Theme => {
 };
 
 export function SingBoxConfigScreen() {
-  const { data: singBoxConfig } = useConfigQuery();
+  const {
+    data: singBoxConfig,
+    isError: isConfigQueryError,
+    isLoading: isConfigQueryLoading,
+  } = useConfigQuery();
 
   const [configDraft, setConfigDraft] = useState<Config | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
@@ -87,7 +92,17 @@ export function SingBoxConfigScreen() {
 
   const draftIsDifferent = !isObjectsContentEqual(configDraft, singBoxConfig);
 
-  const serverErrorsToastIdRef = useRef<string | number | null>(null);
+  const mutationServerErrorsToastIdRef = useRef<string | number | null>(null);
+
+  useEffect(() => {
+    if (isConfigQueryError) {
+      serverToast.error("Не удалось загрузить конфигурацию sing-box", {
+        id: "load-config",
+      });
+    } else {
+      serverToast.dismiss("load-config");
+    }
+  }, [isConfigQueryError]);
 
   const saveConfigChanges = async () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
@@ -95,59 +110,53 @@ export function SingBoxConfigScreen() {
     dismissServerErrorsToasts();
     dismissClientErrorsToasts();
 
-    try {
-      toast.loading("Сохранение...", { id: "save-config" });
-      await updateConfigMutation.mutateAsync(configDraft);
-      toast.success("Конфигурация успешно сохранена", { id: "save-config" });
-    } catch (err) {
-      toast.dismiss("save-config");
+    serverToast.loading("Сохранение...", { id: "save-config" });
 
-      if (!(err instanceof ApiError)) {
-        toast.error("Неизвестная ошибка");
-        return;
-      }
+    updateConfigMutation.mutate(configDraft, {
+      onSuccess: () => {
+        serverToast.success("Конфигурация успешно сохранена", {
+          id: "save-config",
+          duration: 2000,
+        });
+      },
+      onError: (err) => {
+        serverToast.dismiss("save-config");
 
-      const issues = err.issues;
+        const issues = err.issues;
 
-      if (!issues?.length) {
-        toast.error(err.uiMessage);
-        return;
-      }
+        if (!issues?.length) {
+          serverToast.error(err.uiMessage);
+          return;
+        }
 
-      serverErrorsToastIdRef.current = toast.error(
-        `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
-        {
-          cancelButtonStyle: {
-            backgroundColor: "var(--destructive)",
-            color: "var(--secondary)",
+        mutationServerErrorsToastIdRef.current = serverToast.error(
+          `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
+          {
+            ...sonnerErrorCloseButton,
+            duration: 4000,
           },
-          cancel: {
-            label: "Закрыть",
-            onClick: () => {},
-          },
-          duration: 4000,
-        },
-      );
+        );
 
-      const newinvalidKeys = issues
-        .map((i) => i.path ?? null)
-        .filter((x): x is string => x !== null);
+        const newinvalidKeys = issues
+          .map((i) => i.path ?? null)
+          .filter((x): x is string => x !== null);
 
-      setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
-    }
+        setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
+      },
+    });
   };
 
   const clientErrorsToastIdsRef = useRef<(string | number)[]>([]);
 
   const dismissClientErrorsToasts = () => {
-    clientErrorsToastIdsRef.current.forEach(toast.dismiss);
+    clientErrorsToastIdsRef.current.forEach(clientToast.dismiss);
     clientErrorsToastIdsRef.current = [];
   };
 
   const dismissServerErrorsToasts = () => {
-    if (serverErrorsToastIdRef.current) {
-      toast.dismiss(serverErrorsToastIdRef.current);
-      serverErrorsToastIdRef.current = null;
+    if (mutationServerErrorsToastIdRef.current) {
+      serverToast.dismiss(mutationServerErrorsToastIdRef.current);
+      mutationServerErrorsToastIdRef.current = null;
     }
   };
 
@@ -165,18 +174,14 @@ export function SingBoxConfigScreen() {
       );
 
       clientErrorsToastIdsRef.current = resOfParse.error.issues.map((issue) => {
-        return toast.error(`Некорректное значение в ${issue.path.join(".")}`, {
-          description: issue.message,
-          cancelButtonStyle: {
-            backgroundColor: "var(--destructive)",
-            color: "var(--secondary)",
+        return clientToast.error(
+          `Некорректное значение в ${issue.path.join(".")}`,
+          {
+            description: issue.message,
+            ...sonnerErrorCloseButton,
+            position: "top-right",
           },
-          cancel: {
-            label: "Закрыть",
-            onClick: () => {},
-          },
-          position: "top-right",
-        });
+        );
       });
 
       setInvalidKeys(buildAllInvalidKeys(keys));
@@ -261,13 +266,15 @@ export function SingBoxConfigScreen() {
       <div>
         <div className="fixed flex flex-col gap-1">
           <Button
-            disabled={invalidKeys.size > 0 || !draftIsDifferent}
+            disabled={
+              invalidKeys.size > 0 || !draftIsDifferent || isConfigQueryLoading
+            }
             onClick={saveConfigChanges}
           >
             <Save /> Сохранить
           </Button>
           <Button
-            disabled={!draftIsDifferent}
+            disabled={!draftIsDifferent || isConfigQueryLoading}
             variant="outline"
             onClick={resetConfigChanges}
           >

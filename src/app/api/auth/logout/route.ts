@@ -1,6 +1,24 @@
-import { clearSessionCookie, okJson, withApiErrors } from "@/shared/lib/server";
+import { OkResponseSchema } from "@/shared/api/contracts";
+import { clearSessionCookie, withRoute } from "@/shared/lib/server";
 
-export const POST = withApiErrors(async () => {
-  await clearSessionCookie();
-  return okJson({ ok: true });
+/**
+ * Logout
+ * @description Logs out the currently authenticated user.
+ * @responseSet logout
+ * @tag Auth
+ *
+ * @response 200:OkResponseSchema
+ * @add 401:ApiErrorPayloadSchema
+ *
+ * @security CookieAuth
+ *
+ * @openapi
+ */
+export const POST = withRoute({
+  auth: true,
+  responseSchema: OkResponseSchema,
+  handler: async () => {
+    await clearSessionCookie();
+    return { ok: true };
+  },
 });

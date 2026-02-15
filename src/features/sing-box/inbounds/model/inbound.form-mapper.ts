@@ -1,13 +1,11 @@
-import { type Configuration } from "@black-duty/sing-box-schema";
-import { type z } from "zod";
+import { type Config } from "@/shared/api/contracts";
 
-import { type CreateInboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
+import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
 
-type Config = z.infer<typeof Configuration>;
 type Inbound = NonNullable<Config["inbounds"]>[number];
 
 function mapVlessFormToInbound(
-  values: Extract<CreateInboundFormValues, { type: "vless" }>,
+  values: Extract<InboundFormValues, { type: "vless" }>,
 ): Inbound {
   return {
     type: "vless",
@@ -39,7 +37,7 @@ function mapVlessFormToInbound(
 }
 
 function mapHy2FormToInbound(
-  values: Extract<CreateInboundFormValues, { type: "hysteria2" }>,
+  values: Extract<InboundFormValues, { type: "hysteria2" }>,
 ): Inbound {
   return {
     type: "hysteria2",
@@ -65,7 +63,7 @@ function mapHy2FormToInbound(
   };
 }
 
-export function mapFormToInbound(values: CreateInboundFormValues): Inbound {
+export function mapFormToInbound(values: InboundFormValues): Inbound {
   if (values.type === "vless") {
     return mapVlessFormToInbound(values);
   }

@@ -1,21 +1,8 @@
-import { z } from "zod";
-
-const ApiIssueSchema = z.object({
-  path: z.string().optional(),
-  message: z.string(),
-  code: z.string().optional(),
-});
-
-const ApiErrorPayloadSchema = z.object({
-  error: z.object({
-    code: z.string(),
-    message: z.string(),
-    issues: z.array(ApiIssueSchema).optional(),
-  }),
-});
-
-type ApiErrorPayload = z.infer<typeof ApiErrorPayloadSchema>;
-type ApiIssue = z.infer<typeof ApiIssueSchema>;
+import {
+  type ApiErrorPayload,
+  ApiErrorPayloadSchema,
+  type ApiIssue,
+} from "../../../api/contracts";
 
 type ParsedContract = { ok: true; data: ApiErrorPayload } | { ok: false };
 

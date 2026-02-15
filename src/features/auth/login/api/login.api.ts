@@ -1,8 +1,7 @@
+import { type LoginRequest } from "@/shared/api/contracts";
 import { apiFetch, apiRoutes } from "@/shared/lib";
 
-import { type LoginRequestData } from "../model/login.request-schema";
-
-export async function login(body: LoginRequestData) {
+export async function login(body: LoginRequest) {
   return apiFetch(apiRoutes.auth.login, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

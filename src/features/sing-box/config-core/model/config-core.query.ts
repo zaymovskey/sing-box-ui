@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { type Config } from "@/shared/api/contracts";
+import { type ApiError } from "@/shared/lib";
+
 import { getConfigJson } from "../api/config-core.api";
 import { singBoxQueryKeys } from "../lib/config-core.query-keys";
-import { type Config } from "./config-core.schema";
 
 export function useConfigQuery() {
-  return useQuery<Config>({
+  return useQuery<Config, ApiError>({
     queryKey: singBoxQueryKeys.config(),
     queryFn: getConfigJson,
     retry: false,

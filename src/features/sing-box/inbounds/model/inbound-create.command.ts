@@ -1,20 +1,20 @@
 import { useCallback } from "react";
 
-import { type CreateInboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
+import { type Config, ConfigSchema } from "@/shared/api/contracts";
+
+import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
 import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
 import { useConfigQuery } from "../../config-core/model/config-core.query";
-import {
-  type Config,
-  ConfigSchema,
-} from "../../config-core/model/config-core.schema";
-import { mapFormToInbound } from "./inbound-create.mapper";
+import { mapFormToInbound } from "./inbound.form-mapper";
+
+export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useCreateInbound() {
   const { data: singBoxConfig } = useConfigQuery();
   const updateConfigMutation = useUpdateConfigMutation();
 
   const createInbound = useCallback(
-    async (newInbound: CreateInboundFormValues) => {
+    async (newInbound: InboundFormValues) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }
@@ -29,8 +29,7 @@ export function useCreateInbound() {
 
       const parsed = ConfigSchema.safeParse(nextConfig);
       if (!parsed.success) {
-        // тут можешь кинуть кастомную ошибку под applyFormApiError/тосты
-        throw new Error("Config is invalid after mapping");
+        throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
       return updateConfigMutation.mutateAsync(parsed.data);

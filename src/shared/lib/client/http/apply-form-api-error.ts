@@ -1,6 +1,6 @@
 import type { FieldValues, UseFormReturn } from "react-hook-form";
 
-import { ApiError } from "./api-error";
+import { ApiError } from "./api-error.class";
 import { getErrorMessage } from "./get-error-message";
 
 type StatusMap = Partial<Record<number, string>>;
