@@ -13,13 +13,63 @@
   ],
   "components": {
     "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "CookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sbui_session"
       }
     },
     "schemas": {
+      "LoginRequestSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "OkResponseSchema": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
+      "DocConfigSchema": {
+        "type": "object",
+        "properties": {
+          "log": {
+            "nullable": true
+          },
+          "dns": {
+            "nullable": true
+          },
+          "inbounds": {
+            "type": "array",
+            "items": {},
+            "nullable": true
+          },
+          "outbounds": {
+            "type": "array",
+            "items": {},
+            "nullable": true
+          },
+          "route": {
+            "nullable": true
+          }
+        }
+      },
       "MeResponseSchema": {
         "type": "object",
         "properties": {
@@ -40,49 +90,6 @@
         "required": [
           "id",
           "email"
-        ]
-      },
-      "TesttResponseSchema": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
-          }
-        },
-        "required": [
-          "ok"
-        ]
-      },
-      "TesttResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
-          }
-        },
-        "required": [
-          "ok"
-        ]
-      },
-      "LoginRequestSchema": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password"
         ]
       },
       "LoginRequest": {
@@ -220,23 +227,16 @@
           "message"
         ]
       },
-      "OkResponseSchema": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
       "OkResponse": {
         "type": "object",
         "properties": {
           "ok": {
-            "type": "boolean",
-            "nullable": true
+            "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "ok"
+        ]
       },
       "ConfigSchema": {
         "$ref": "#/components/schemas/Configuration"
@@ -254,14 +254,32 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "Invalid request parameters"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "400"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "400"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid request parameters"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -274,14 +292,32 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "Authentication required"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "401"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "401"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication required"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -294,14 +330,32 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "Access denied"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "403"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "403"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -314,14 +368,32 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "Resource not found"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "404"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "404"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Resource not found"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -334,14 +406,32 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "Resource already exists"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "409"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "409"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Resource already exists"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -354,14 +444,70 @@
               "type": "object",
               "properties": {
                 "error": {
-                  "type": "string",
-                  "example": "An unexpected error occurred"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "500"
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "500"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unexpected server error"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
                 }
-              }
+              },
+              "required": [
+                "error"
+              ]
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "Service Unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "503"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Service temporarily unavailable"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApiIssueSchema"
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                }
+              },
+              "required": [
+                "error"
+              ]
             }
           }
         }
@@ -371,16 +517,42 @@
   "paths": {
     "/auth/login": {
       "post": {
-        "operationId": "post-auth-login",
-        "summary": "",
-        "description": "",
+        "operationId": "login",
+        "summary": "Login user",
+        "description": "Logs in a user with email and password.",
         "tags": [
           "Auth"
         ],
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestSchema"
+              }
+            }
+          }
+        },
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/400"
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorPayloadSchema"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -391,15 +563,32 @@
     "/auth/logout": {
       "post": {
         "operationId": "post-auth-logout",
-        "summary": "",
-        "description": "",
+        "summary": "Logout",
+        "description": "Logs out the currently authenticated user.",
         "tags": [
           "Auth"
         ],
         "parameters": [],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/400"
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorPayloadSchema"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -410,8 +599,8 @@
     "/auth/me": {
       "get": {
         "operationId": "get-auth-me",
-        "summary": "Get current user",
-        "description": "",
+        "summary": "Update sing-box config",
+        "description": "Returns the currently authenticated user's profile (id, email, roles).",
         "tags": [
           "Auth"
         ],
@@ -427,8 +616,15 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/400"
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorPayloadSchema"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -439,46 +635,10 @@
     "/sing-box/config-editor": {
       "get": {
         "operationId": "get-sing-box-config-editor",
-        "summary": "",
-        "description": "",
+        "summary": "Get sing-box config",
+        "description": "Returns the current sing-box configuration. Requires authentication.",
         "tags": [
-          "Sing-box"
-        ],
-        "parameters": [],
-        "responses": {
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "put": {
-        "operationId": "put-sing-box-config-editor",
-        "summary": "",
-        "description": "",
-        "tags": [
-          "Sing-box"
-        ],
-        "parameters": [],
-        "responses": {
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/testt": {
-      "get": {
-        "operationId": "get-testt",
-        "summary": "",
-        "description": "",
-        "tags": [
-          "Testt"
+          "SingBox"
         ],
         "parameters": [],
         "responses": {
@@ -487,16 +647,72 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 TesttResponseSchema"
+                  "$ref": "#/components/schemas/DocConfigSchema"
                 }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/400"
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorPayloadSchema"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-sing-box-config-editor",
+        "summary": "Update sing-box config",
+        "description": "Updates the current sing-box configuration. Requires authentication.",
+        "tags": [
+          "SingBox"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocConfigSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorPayloadSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          },
+          "503": {
+            "$ref": "#/components/responses/503"
           }
         }
       }

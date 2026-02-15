@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 
 import { Configuration } from "@black-duty/sing-box-schema";
-import { type z } from "zod";
+import { z } from "zod";
 
 import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
 import { ServerApiError, serverEnv, withRoute } from "@/shared/lib/server";
@@ -19,6 +19,18 @@ const throwInvalidConfigResponse = (error: z.ZodError): never => {
   );
 };
 
+/**
+ * Get sing-box config
+ * @description Returns the current sing-box configuration. Requires authentication.
+ * @responseSet getSingBoxConfig
+ * @tag SingBox
+ *
+ * @response 200:DocConfigSchema
+ * @add 401:ApiErrorPayloadSchema
+ * @add 503:ApiErrorPayloadSchema
+ *
+ * @openapi
+ */
 export const GET = withRoute({
   auth: true,
   responseSchema: ConfigSchema,
@@ -37,7 +49,7 @@ export const GET = withRoute({
       return parsed;
     } catch {
       throw new ServerApiError(
-        500,
+        503,
         "SINGBOX_CONFIG_READ_FAILED",
         "Не удалось прочитать конфиг sing-box",
       );
@@ -45,6 +57,19 @@ export const GET = withRoute({
   },
 });
 
+/**
+ * Update sing-box config
+ * @description Updates the current sing-box configuration. Requires authentication.
+ * @responseSet updateSingBoxConfig
+ * @tag SingBox
+ *
+ * @body DocConfigSchema
+ * @response 200:OkResponseSchema
+ * @add 401:ApiErrorPayloadSchema
+ * @add 503:ApiErrorPayloadSchema
+ *
+ * @openapi
+ */
 export const PUT = withRoute({
   auth: true,
   requestSchema: ConfigSchema,
@@ -63,10 +88,22 @@ export const PUT = withRoute({
       return { ok: true };
     } catch {
       throw new ServerApiError(
-        500,
+        503,
         "SINGBOX_CONFIG_WRITE_FAILED",
         "Не удалось записать конфиг sing-box",
       );
     }
   },
+});
+
+/**
+ * Костыль для документации, так как реальный ConfigSchema пакет
+ * next-openapi-gen не поддерживает
+ */
+export const DocConfigSchema = z.object({
+  log: z.unknown().optional(),
+  dns: z.unknown().optional(),
+  inbounds: z.array(z.unknown()).optional(),
+  outbounds: z.array(z.unknown()).optional(),
+  route: z.unknown().optional(),
 });

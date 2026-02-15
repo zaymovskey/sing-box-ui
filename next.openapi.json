@@ -13,10 +13,10 @@
   ],
   "components": {
     "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "CookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sbui_session"
       }
     }
   },
@@ -24,21 +24,31 @@
   "responseSets": {
     "common": ["400", "500"],
     "auth": ["400", "401", "403", "500"],
-    "public": ["400", "500"]
+    "public": ["400", "500"],
+    "logout": ["401", "500"],
+    "login": ["401", "500"],
+    "getSingBoxConfig": ["401", "503", "500"],
+    "updateSingBoxConfig": ["401", "503", "500"],
+    "getCurrentUser": ["401", "500"]
   },
   "errorConfig": {
     "template": {
       "type": "object",
       "properties": {
         "error": {
-          "type": "string",
-          "example": "{{ERROR_MESSAGE}}"
-        },
-        "code": {
-          "type": "string",
-          "example": "{{ERROR_CODE}}"
+          "type": "object",
+          "properties": {
+            "code": { "type": "string", "example": "{{ERROR_CODE}}" },
+            "message": { "type": "string", "example": "{{ERROR_MESSAGE}}" },
+            "issues": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/ApiIssueSchema" }
+            }
+          },
+          "required": ["code", "message"]
         }
-      }
+      },
+      "required": ["error"]
     },
     "codes": {
       "400": {
@@ -79,8 +89,15 @@
       "500": {
         "description": "Internal Server Error",
         "variables": {
-          "ERROR_MESSAGE": "An unexpected error occurred",
+          "ERROR_MESSAGE": "Unexpected server error",
           "ERROR_CODE": "INTERNAL_ERROR"
+        }
+      },
+      "503": {
+        "description": "Service Unavailable",
+        "variables": {
+          "ERROR_MESSAGE": "Service temporarily unavailable",
+          "ERROR_CODE": "SERVICE_UNAVAILABLE"
         }
       }
     }

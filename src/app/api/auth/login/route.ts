@@ -7,6 +7,20 @@ import {
   withRoute,
 } from "@/shared/lib/server";
 
+/**
+ * Login user
+ * @description Logs in a user with email and password.
+ * @operationId login
+ * @tag Auth
+ *
+ * @responseSet login
+ *
+ * @body LoginRequestSchema
+ * @response 200:OkResponseSchema
+ * @add 401:ApiErrorPayloadSchema
+ *
+ * @openapi
+ */
 export const POST = withRoute({
   auth: false,
   responseSchema: OkResponseSchema,
