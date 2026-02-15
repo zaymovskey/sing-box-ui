@@ -2,15 +2,17 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import { serverEnv } from "../env-server";
+import { getServerEnv } from "../env-server";
 
 export function getAuthCookieName() {
+  const serverEnv = getServerEnv();
   return serverEnv.AUTH_COOKIE_NAME;
 }
 
 export async function setSessionCookie(token: string) {
   const name = getAuthCookieName();
   const jar = await cookies();
+  const serverEnv = getServerEnv();
 
   jar.set(name, token, {
     httpOnly: true,

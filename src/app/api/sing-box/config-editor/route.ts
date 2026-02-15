@@ -4,7 +4,7 @@ import { Configuration } from "@black-duty/sing-box-schema";
 import { z } from "zod";
 
 import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
-import { ServerApiError, serverEnv, withRoute } from "@/shared/lib/server";
+import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
 const throwInvalidConfigResponse = (error: z.ZodError): never => {
   throw new ServerApiError(
@@ -35,6 +35,7 @@ export const GET = withRoute({
   auth: true,
   responseSchema: ConfigSchema,
   handler: async () => {
+    const serverEnv = getServerEnv();
     const path = serverEnv.SINGBOX_CONFIG_PATH;
 
     try {
@@ -75,6 +76,7 @@ export const PUT = withRoute({
   requestSchema: ConfigSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
+    const serverEnv = getServerEnv();
     const path = serverEnv.SINGBOX_CONFIG_PATH;
     const parseResult = Configuration.safeParse(body);
 

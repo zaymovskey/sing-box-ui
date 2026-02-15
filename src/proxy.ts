@@ -2,13 +2,12 @@ import { jwtVerify } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { appRoutes } from "@/shared/lib";
-import { serverEnv } from "@/shared/lib/server";
-
-const COOKIE_NAME = serverEnv.AUTH_COOKIE_NAME;
+import { getServerEnv } from "@/shared/lib/server";
 
 const encoder = new TextEncoder();
 
 function getSecret() {
+  const serverEnv = getServerEnv();
   const secret = serverEnv.AUTH_JWT_SECRET;
   if (!secret) throw new Error("AUTH_JWT_SECRET is not set");
   return encoder.encode(secret);
@@ -30,6 +29,9 @@ export async function proxy(req: NextRequest) {
   if (pathname.startsWith("/_next") || pathname === "/favicon.ico") {
     return NextResponse.next();
   }
+
+  const serverEnv = getServerEnv();
+  const COOKIE_NAME = serverEnv.AUTH_COOKIE_NAME;
 
   const token = req.cookies.get(COOKIE_NAME)?.value;
 

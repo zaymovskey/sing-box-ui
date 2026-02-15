@@ -1,7 +1,7 @@
 import { LoginRequestSchema, OkResponseSchema } from "@/shared/api/contracts";
 import {
+  getServerEnv,
   ServerApiError,
-  serverEnv,
   setSessionCookie,
   signSession,
   withRoute,
@@ -29,6 +29,7 @@ export const POST = withRoute({
     const email = body.email.trim();
     const password = body.password;
 
+    const serverEnv = getServerEnv();
     const demoEmail = serverEnv.AUTH_DEMO_EMAIL;
     const demoPassword = serverEnv.AUTH_DEMO_PASSWORD;
 

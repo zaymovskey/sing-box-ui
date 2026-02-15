@@ -2,7 +2,7 @@ import "server-only";
 
 import { jwtVerify, SignJWT } from "jose";
 
-import { serverEnv } from "../env-server";
+import { getServerEnv } from "../env-server";
 
 const encoder = new TextEncoder();
 
@@ -13,6 +13,7 @@ export type SessionPayload = {
 };
 
 function getSecretKey() {
+  const serverEnv = getServerEnv();
   const secret = serverEnv.AUTH_JWT_SECRET;
   if (!secret) throw new Error("AUTH_JWT_SECRET is not set");
   return encoder.encode(secret);
