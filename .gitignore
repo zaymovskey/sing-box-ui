@@ -11,3 +11,6 @@ dist/
 .env.*.local
 coverage/
 
+docker/data/sing-box/certs/hy2.crt
+docker/data/sing-box/certs/hy2.key
+docker/data/sing-box/config.json

@@ -1,0 +1,28 @@
+services:
+  sing-box:
+    image: ghcr.io/sagernet/sing-box:v1.12.21
+    container_name: sing-box
+    restart: unless-stopped
+    command: ["run", "-c", "/etc/sing-box/config.json"]
+    volumes:
+      - ./data/sing-box:/etc/sing-box:ro
+      - ./data/sing-box-state:/var/lib/sing-box
+    ports:
+      - "18443:18443/tcp"
+      - "18443:18443/udp"
+
+  ui:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: sing-box-ui
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "3000:3000"
+    depends_on:
+      - sing-box
