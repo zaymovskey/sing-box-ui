@@ -66,8 +66,9 @@ export function InboundFormVlessFields() {
           variant="outline"
           onClick={() =>
             append({
-              name: "user",
-              password: "",
+              name: "",
+              uuid: "",
+              flow: "",
             })
           }
         >

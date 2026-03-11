@@ -17,13 +17,13 @@ import {
 import {
   InboundFormSchema,
   type InboundFormValues,
-} from "../../config-core/model/config-core.inbounds-schema";
+} from "../../../config-core/model/config-core.inbounds-schema";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
-} from "../model/inbound-create.command";
-import { InboundForm } from "./InboundForm/InboundForm";
-import { defaultsByType } from "./InboundForm/InboundForm.constants";
+} from "../../model/inbound-create.command";
+import { InboundForm } from "../InboundForm/InboundForm";
+import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
 

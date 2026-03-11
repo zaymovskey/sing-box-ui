@@ -10,8 +10,8 @@ import { useConfigQuery } from "../../config-core/model/config-core.query";
 import { type Inbound } from "../../config-core/model/config-core.types";
 import { mapInboundsToRows } from "../model/inbound-row.mapper";
 import { type InboundRow } from "../model/inbound-row.type";
-import { CreateInboundDialog } from "./CreateInboundDialog";
-import { EditInboundDialog } from "./EditInboundDialog";
+import { CreateInboundDialog } from "./dialogs/CreateInboundDialog";
+import { EditInboundDialog } from "./dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 
 export function InboundsTableScreen() {
