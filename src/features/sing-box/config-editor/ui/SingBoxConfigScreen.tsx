@@ -82,7 +82,7 @@ export function SingBoxConfigScreen() {
   const {
     data: singBoxConfig,
     isError: isConfigQueryError,
-    isLoading: isConfigQueryLoading,
+    isFetching: isConfigQueryFetching,
   } = useConfigQuery();
 
   const [configDraft, setConfigDraft] = useState<Config | null>(null);
@@ -90,7 +90,9 @@ export function SingBoxConfigScreen() {
 
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const draftIsDifferent = !isObjectsContentEqual(configDraft, singBoxConfig);
+  const isDraftReady = configDraft !== null && singBoxConfig !== undefined;
+  const draftIsDifferent =
+    isDraftReady && !isObjectsContentEqual(configDraft, singBoxConfig);
 
   const mutationServerErrorsToastIdRef = useRef<string | number | null>(null);
 
@@ -267,14 +269,14 @@ export function SingBoxConfigScreen() {
         <div className="fixed flex flex-col gap-1">
           <Button
             disabled={
-              invalidKeys.size > 0 || !draftIsDifferent || isConfigQueryLoading
+              invalidKeys.size > 0 || !draftIsDifferent || isConfigQueryFetching
             }
             onClick={saveConfigChanges}
           >
             <Save /> Сохранить
           </Button>
           <Button
-            disabled={!draftIsDifferent || isConfigQueryLoading}
+            disabled={!draftIsDifferent || isConfigQueryFetching}
             variant="outline"
             onClick={resetConfigChanges}
           >

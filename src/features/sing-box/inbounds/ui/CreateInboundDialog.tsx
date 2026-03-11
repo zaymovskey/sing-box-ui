@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
 
 import {
   Button,
@@ -12,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  serverToast,
 } from "@/shared/ui";
 
 import {
@@ -40,23 +40,29 @@ export function CreateInboundDialog() {
 
   const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
-    toast.loading("Сохранение...", { id: "save-inbound" });
+    serverToast.loading("Сохранение...", { id: "save-inbound" });
 
     try {
       await createInbound(values);
-      toast.success("Инбаунд успешно создан", { id: "save-inbound" });
+      serverToast.success("Инбаунд успешно создан", {
+        id: "save-inbound",
+        duration: 2000,
+      });
       form.reset(defaultsByType[type]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
-        toast.error("Конфиг получился невалидным (баг маппера).", {
+        serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "save-inbound",
         });
         return;
       }
 
-      toast.error("Не удалось создать инбаунд", { id: "save-inbound" });
+      serverToast.error("Не удалось создать инбаунд", {
+        id: "save-inbound",
+        duration: 2000,
+      });
     }
   };
 

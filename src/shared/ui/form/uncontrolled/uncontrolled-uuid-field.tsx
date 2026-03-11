@@ -1,6 +1,7 @@
 "use client";
 
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
+import { get } from "react-hook-form";
 
 import { UuidInput } from "../../uuid-input";
 import { FormItem, FormLabel } from "../form";
@@ -16,13 +17,26 @@ export function UncontrolledUuidField<T extends FieldValues>({
 }) {
   const form = useFormContext<T>();
 
-  const message: string =
-    form.formState.errors[name]?.message?.toString() ?? "";
+  const error = get(form.formState.errors, name);
+  const message = error?.message?.toString() ?? "";
+
+  const safeName = String(name).replace(/[^a-zA-Z0-9_-]/g, "_");
+  const inputId = `field_${safeName}`;
+  const messageId = `${inputId}_message`;
+
   return (
     <FormItem className="gap-2">
       <FormLabel>{label}</FormLabel>
-      <UuidInput {...form.register(name)} placeholder={placeholder} />
-      <div className="min-h-5">{message}</div>
+      <UuidInput
+        aria-describedby={message ? messageId : undefined}
+        aria-invalid={!!error}
+        id={inputId}
+        {...form.register(name)}
+        placeholder={placeholder}
+      />
+      <div className="text-destructive min-h-5 text-sm" id={messageId}>
+        {message}
+      </div>
     </FormItem>
   );
 }

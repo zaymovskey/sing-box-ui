@@ -27,7 +27,12 @@ export const UuidInput = forwardRef<HTMLInputElement, Props>(
       const el = innerRef.current;
       if (!el) return;
 
-      el.value = uuid;
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        "value",
+      )?.set;
+
+      nativeInputValueSetter?.call(el, uuid);
       el.dispatchEvent(new Event("input", { bubbles: true }));
     };
 

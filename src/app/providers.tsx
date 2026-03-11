@@ -7,7 +7,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/shared/lib";
 import { infraToast, sonnerErrorCloseButton, Toaster } from "@/shared/ui";
@@ -60,6 +60,10 @@ export function Providers({ children }: ProvidersProps) {
         }),
       }),
   );
+
+  useEffect(() => {
+    window.__TANSTACK_QUERY_CLIENT__ = queryClient;
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
