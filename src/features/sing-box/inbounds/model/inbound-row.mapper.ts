@@ -23,6 +23,7 @@ export function mapInboundsToRows(config: Config): InboundRow[] {
       type,
       listen_port,
       usersCount,
+      inbound: inb,
     };
   });
 }

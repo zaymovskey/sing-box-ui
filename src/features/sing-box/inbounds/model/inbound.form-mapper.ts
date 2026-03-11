@@ -1,8 +1,5 @@
-import { type Config } from "@/shared/api/contracts";
-
 import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
-
-type Inbound = NonNullable<Config["inbounds"]>[number];
+import { type Inbound } from "../../config-core/model/config-core.types";
 
 function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,
@@ -69,4 +66,56 @@ export function mapFormToInbound(values: InboundFormValues): Inbound {
   }
 
   return mapHy2FormToInbound(values);
+}
+
+export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
+  if (inbound.type === "vless") {
+    const user = inbound.users?.[0];
+
+    return {
+      type: "vless",
+      tag: inbound.tag ?? "",
+      listen_port: inbound.listen_port ?? 0,
+
+      sniff: inbound.sniff ?? false,
+      sniff_override_destination: inbound.sniff_override_destination ?? false,
+
+      user_name: user?.name ?? "",
+      uuid: user?.uuid ?? "",
+      flow: user?.flow ?? "",
+
+      tls_server_name: inbound.tls?.server_name ?? "",
+      reality_private_key: inbound.tls?.reality?.private_key ?? "",
+      reality_handshake_server: inbound.tls?.reality?.handshake?.server ?? "",
+      reality_handshake_port:
+        inbound.tls?.reality?.handshake?.server_port ?? 443,
+    };
+  }
+
+  if (inbound.type === "hysteria2") {
+    const user = inbound.users?.[0];
+
+    return {
+      type: "hysteria2",
+      tag: inbound.tag ?? "",
+      listen_port: inbound.listen_port ?? 0,
+
+      sniff: inbound.sniff ?? false,
+      sniff_override_destination: inbound.sniff_override_destination ?? false,
+
+      up_mbps: inbound.up_mbps ?? 0,
+      down_mbps: inbound.down_mbps ?? 0,
+
+      user_name: user?.name ?? "",
+      password: user?.password ?? "",
+
+      tls_server_name: inbound.tls?.server_name ?? "",
+      certificate_path: inbound.tls?.certificate_path ?? "",
+      key_path: inbound.tls?.key_path ?? "",
+      reality_handshake_port:
+        inbound.tls?.reality?.handshake?.server_port ?? 443,
+    };
+  }
+
+  throw new Error(`Unsupported inbound type: ${inbound.type}`);
 }

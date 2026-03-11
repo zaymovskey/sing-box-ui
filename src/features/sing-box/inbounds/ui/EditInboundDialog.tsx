@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
@@ -10,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   serverToast,
 } from "@/shared/ui";
 
@@ -18,49 +16,60 @@ import {
   InboundFormSchema,
   type InboundFormValues,
 } from "../../config-core/model/config-core.inbounds-schema";
+import { type Inbound } from "../../config-core/model/config-core.types";
+import { mapInboundToFormValues } from "../model/inbound.form-mapper";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
-  useCreateInbound,
-} from "../model/inbound-create.command";
+  useEditInbound,
+} from "../model/inbound-edit.command";
 import { InboundForm } from "./InboundForm/InboundForm";
 import { defaultsByType } from "./InboundForm/InboundForm.constants";
 
-const FORM_ID = "create-inbound-form";
+const FORM_ID = "edit-inbound-form";
 
-export function CreateInboundDialog() {
+interface EditInboundDialogProps {
+  inbound: Inbound;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function EditInboundDialog({
+  inbound,
+  open,
+  onOpenChange,
+}: EditInboundDialogProps) {
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
-    defaultValues: defaultsByType.vless,
+    defaultValues: mapInboundToFormValues(inbound),
   });
 
   const type = useWatch({ control: form.control, name: "type" });
 
-  const { createInbound, isPending } = useCreateInbound();
+  const { editInbound, isPending } = useEditInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
-    serverToast.loading("Сохранение...", { id: "save-inbound" });
+    serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
-      await createInbound(values);
-      serverToast.success("Инбаунд успешно создан", {
-        id: "save-inbound",
+      await editInbound(values);
+      serverToast.success("Инбаунд успешно обновлен", {
+        id: "edit-inbound",
         duration: 2000,
       });
-      form.reset(defaultsByType[type]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
-          id: "save-inbound",
+          id: "edit-inbound",
         });
         return;
       }
 
-      serverToast.error("Не удалось создать инбаунд", {
-        id: "save-inbound",
+      serverToast.error("Не удалось обновить инбаунд", {
+        id: "edit-inbound",
         duration: 2000,
       });
     }
@@ -72,16 +81,10 @@ export function CreateInboundDialog() {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-fit">
-          <PlusCircle />
-          Создать инбаунд
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="shrink-0 px-6 pt-6">
-          <DialogTitle>Создать инбаунд</DialogTitle>
+          <DialogTitle>Редактировать инбаунд</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
@@ -100,7 +103,7 @@ export function CreateInboundDialog() {
             </Button>
 
             <Button form={FORM_ID} loading={isPending} type="submit">
-              Создать
+              Редактировать
             </Button>
           </div>
         </div>
