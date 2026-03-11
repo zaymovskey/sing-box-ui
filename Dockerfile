@@ -1,4 +1,4 @@
-# ---------- 1️⃣ Base image ----------
+# ---------- 1 Base image ----------
 FROM node:20-alpine AS base
 
 # Для корректной работы некоторых зависимостей
@@ -6,13 +6,13 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# ---------- 2️⃣ Dependencies ----------
+# ---------- 2 Dependencies ----------
 FROM base AS deps
 
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# ---------- 3️⃣ Build ----------
+# ---------- 3 Build ----------
 FROM base AS builder
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -22,7 +22,7 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-# ---------- 4️⃣ Production runtime ----------
+# ---------- 4️ Production runtime ----------
 FROM node:20-alpine AS runner
 
 WORKDIR /app
