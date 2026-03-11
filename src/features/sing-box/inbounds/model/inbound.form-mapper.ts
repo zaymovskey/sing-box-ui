@@ -11,13 +11,11 @@ function mapVlessFormToInbound(
     listen_port: values.listen_port,
     sniff: values.sniff,
     sniff_override_destination: values.sniff_override_destination,
-    users: [
-      {
-        name: values.user_name ?? "user",
-        uuid: values.uuid,
-        flow: values.flow || undefined,
-      },
-    ],
+    users: values.users.map((user) => ({
+      name: user.name ?? "user",
+      uuid: user.uuid,
+      flow: user.flow || undefined,
+    })),
     tls: {
       enabled: true,
       server_name: values.tls_server_name ?? "www.cloudflare.com",
@@ -45,12 +43,10 @@ function mapHy2FormToInbound(
     sniff_override_destination: values.sniff_override_destination,
     up_mbps: values.up_mbps,
     down_mbps: values.down_mbps,
-    users: [
-      {
-        name: values.user_name,
-        password: values.password,
-      },
-    ],
+    users: values.users.map((user) => ({
+      name: user.name ?? "user",
+      password: user.password,
+    })),
     tls: {
       enabled: true,
       server_name: values.tls_server_name ?? "www.cloudflare.com",
@@ -70,8 +66,6 @@ export function mapFormToInbound(values: InboundFormValues): Inbound {
 
 export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
   if (inbound.type === "vless") {
-    const user = inbound.users?.[0];
-
     return {
       type: "vless",
       tag: inbound.tag ?? "",
@@ -80,9 +74,11 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       sniff: inbound.sniff ?? false,
       sniff_override_destination: inbound.sniff_override_destination ?? false,
 
-      user_name: user?.name ?? "",
-      uuid: user?.uuid ?? "",
-      flow: user?.flow ?? "",
+      users: inbound.users?.map((user) => ({
+        name: user.name ?? "",
+        uuid: user.uuid ?? "",
+        flow: user.flow ?? "",
+      })) ?? [{ name: "", uuid: "", flow: "" }],
 
       tls_server_name: inbound.tls?.server_name ?? "",
       reality_private_key: inbound.tls?.reality?.private_key ?? "",
@@ -93,8 +89,6 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
   }
 
   if (inbound.type === "hysteria2") {
-    const user = inbound.users?.[0];
-
     return {
       type: "hysteria2",
       tag: inbound.tag ?? "",
@@ -106,14 +100,14 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       up_mbps: inbound.up_mbps ?? 0,
       down_mbps: inbound.down_mbps ?? 0,
 
-      user_name: user?.name ?? "",
-      password: user?.password ?? "",
+      users: inbound.users?.map((user) => ({
+        name: user.name ?? "",
+        password: user.password ?? "",
+      })) ?? [{ name: "", password: "" }],
 
       tls_server_name: inbound.tls?.server_name ?? "",
       certificate_path: inbound.tls?.certificate_path ?? "",
       key_path: inbound.tls?.key_path ?? "",
-      reality_handshake_port:
-        inbound.tls?.reality?.handshake?.server_port ?? 443,
     };
   }
 

@@ -1,22 +1,72 @@
-import { UncontrolledNumberField, UncontrolledTextField } from "@/shared/ui";
+import { Trash2 } from "lucide-react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+
+import {
+  Button,
+  UncontrolledNumberField,
+  UncontrolledTextField,
+} from "@/shared/ui";
 
 import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export function InboundFormHy2Fields() {
+  const form = useFormContext<InboundFormValues>();
+
+  const {
+    fields: users,
+    append,
+    remove,
+  } = useFieldArray({
+    control: form.control,
+    name: "users",
+  });
+
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          label="User name"
-          name="user_name"
-          placeholder="user"
-        />
+      <div className="space-y-4">
+        {users.map((user, index) => (
+          <div key={user.id} className="space-y-4 rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium">Пользователь {index + 1}</h4>
 
-        <UncontrolledTextField<InboundFormValues>
-          label="Password"
-          name="password"
-          placeholder="password"
-        />
+              <Button
+                disabled={users.length === 1}
+                size="icon"
+                type="button"
+                variant="outline"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <UncontrolledTextField<InboundFormValues>
+                label="User name"
+                name={`users.${index}.name`}
+                placeholder="user"
+              />
+
+              <UncontrolledTextField<InboundFormValues>
+                label="Password"
+                name={`users.${index}.password`}
+                placeholder="password"
+              />
+            </div>
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            append({
+              name: "user",
+              password: "",
+            })
+          }
+        >
+          Добавить пользователя
+        </Button>
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <UncontrolledNumberField<InboundFormValues>
