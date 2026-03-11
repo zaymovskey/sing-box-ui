@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { z } from "zod";
 
 const serverEnvSchema = z.object({
@@ -11,7 +13,11 @@ const serverEnvSchema = z.object({
   SINGBOX_CONFIG_PATH: z.string().min(1),
 });
 
-export type ServerEnv = z.infer<typeof serverEnvSchema>;
+type ServerEnvSchema = z.infer<typeof serverEnvSchema>;
+
+export type ServerEnv = ServerEnvSchema & {
+  SINGBOX_CONFIG_PATH: string;
+};
 
 let cached: ServerEnv | null = null;
 
@@ -29,18 +35,21 @@ export function getServerEnv(): ServerEnv {
 
   const isBuild = process.env.NEXT_PHASE === "phase-production-build";
 
-  if (isBuild) {
-    cached = serverEnvSchema.parse({
-      ...raw,
-      AUTH_JWT_SECRET: raw.AUTH_JWT_SECRET ?? "build-placeholder",
-      AUTH_DEMO_EMAIL: raw.AUTH_DEMO_EMAIL ?? "build@example.com",
-      AUTH_DEMO_PASSWORD: raw.AUTH_DEMO_PASSWORD ?? "build-placeholder",
-      SINGBOX_CONFIG_PATH:
-        raw.SINGBOX_CONFIG_PATH ?? "/data/sing-box/config.json",
-    });
-    return cached;
-  }
+  const parsed = isBuild
+    ? serverEnvSchema.parse({
+        ...raw,
+        AUTH_JWT_SECRET: raw.AUTH_JWT_SECRET ?? "build-placeholder",
+        AUTH_DEMO_EMAIL: raw.AUTH_DEMO_EMAIL ?? "build@example.com",
+        AUTH_DEMO_PASSWORD: raw.AUTH_DEMO_PASSWORD ?? "build-placeholder",
+        SINGBOX_CONFIG_PATH:
+          raw.SINGBOX_CONFIG_PATH ?? "/data/sing-box/config.json",
+      })
+    : serverEnvSchema.parse(raw);
 
-  cached = serverEnvSchema.parse(raw);
+  cached = {
+    ...parsed,
+    SINGBOX_CONFIG_PATH: path.resolve(parsed.SINGBOX_CONFIG_PATH),
+  };
+
   return cached;
 }

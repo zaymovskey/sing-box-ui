@@ -4,7 +4,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev:full": "npm run docker:singbox:up && npm run dev",
     "dev:docker": "next dev --hostname 0.0.0.0 --webpack",
+    "docker:singbox:up": "docker compose -f docker/docker-compose.singbox.yml up -d",
+    "docker:singbox:down": "docker compose -f docker/docker-compose.singbox.yml down",
+    "docker:singbox:logs": "docker compose -f docker/docker-compose.singbox.yml logs -f",
     "docker:dev:build": "docker compose -f docker/docker-compose.dev.yml --env-file docker/.env up --build",
     "docker:dev:stop": "docker compose -f docker/docker-compose.dev.yml stop",
     "docker:dev:start": "docker compose -f docker/docker-compose.dev.yml start",
