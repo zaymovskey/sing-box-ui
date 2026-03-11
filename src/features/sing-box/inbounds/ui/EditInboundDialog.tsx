@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import {
   Button,
@@ -23,7 +24,6 @@ import {
   useEditInbound,
 } from "../model/inbound-edit.command";
 import { InboundForm } from "./InboundForm/InboundForm";
-import { defaultsByType } from "./InboundForm/InboundForm.constants";
 
 const FORM_ID = "edit-inbound-form";
 
@@ -38,13 +38,19 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
+  // Костыль для сброса формы при переключении между типами (VLESS/Hysteria2)
+  const [resetKey, setResetKey] = useState(0);
+
+  const initialValues = useMemo(
+    () => mapInboundToFormValues(inbound),
+    [inbound],
+  );
+
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
-    defaultValues: mapInboundToFormValues(inbound),
+    defaultValues: initialValues,
   });
-
-  const type = useWatch({ control: form.control, name: "type" });
 
   const { editInbound, isPending } = useEditInbound();
 
@@ -77,7 +83,8 @@ export function EditInboundDialog({
 
   const handleReset = () => {
     form.clearErrors();
-    form.reset(defaultsByType[type]);
+    form.reset(initialValues);
+    setResetKey((k) => k + 1);
   };
 
   return (
@@ -88,7 +95,12 @@ export function EditInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          <InboundForm
+            key={`${inbound.tag}-${resetKey}`}
+            form={form}
+            formId={FORM_ID}
+            onSubmit={handleSubmit}
+          />
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
