@@ -114,8 +114,13 @@ export function EditInboundDialog({
               Сбросить
             </Button>
 
-            <Button form={FORM_ID} loading={isPending} type="submit">
-              Редактировать
+            <Button
+              disabled={!form.formState.isDirty}
+              form={FORM_ID}
+              loading={isPending}
+              type="submit"
+            >
+              Сохранить
             </Button>
           </div>
         </div>
