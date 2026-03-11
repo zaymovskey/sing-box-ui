@@ -60,7 +60,7 @@ export function InboundFormHy2Fields() {
           variant="outline"
           onClick={() =>
             append({
-              name: "user",
+              name: "",
               password: "",
             })
           }

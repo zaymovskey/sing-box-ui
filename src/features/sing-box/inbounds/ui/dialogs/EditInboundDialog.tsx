@@ -16,14 +16,14 @@ import {
 import {
   InboundFormSchema,
   type InboundFormValues,
-} from "../../config-core/model/config-core.inbounds-schema";
-import { type Inbound } from "../../config-core/model/config-core.types";
-import { mapInboundToFormValues } from "../model/inbound.form-mapper";
+} from "../../../config-core/model/config-core.inbounds-schema";
+import { type Inbound } from "../../../config-core/model/config-core.types";
+import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
-} from "../model/inbound-edit.command";
-import { InboundForm } from "./InboundForm/InboundForm";
+} from "../../model/inbound-edit.command";
+import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
 
