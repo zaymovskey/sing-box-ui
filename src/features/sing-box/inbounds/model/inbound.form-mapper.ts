@@ -69,6 +69,7 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
     return {
       type: "vless",
       tag: inbound.tag ?? "",
+      listen: inbound.listen ?? "",
       listen_port: inbound.listen_port ?? 0,
 
       sniff: inbound.sniff ?? false,
@@ -91,6 +92,7 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
   if (inbound.type === "hysteria2") {
     return {
       type: "hysteria2",
+      listen: inbound.listen ?? "",
       tag: inbound.tag ?? "",
       listen_port: inbound.listen_port ?? 0,
 
