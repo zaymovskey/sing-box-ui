@@ -13,7 +13,6 @@ const throwInvalidConfigResponse = (error: z.ZodError): never => {
     path: issue.path.join("."),
   }));
 
-  console.log("INVALID CONFIG DETAILS:", details);
   throw new ServerApiError(
     422,
     "SINGBOX_CONFIG_INVALID",
@@ -41,23 +40,15 @@ export const GET = withRoute({
     const serverEnv = getServerEnv();
     const path = serverEnv.SINGBOX_CONFIG_PATH;
 
-    try {
-      const content = await fs.readFile(path, "utf-8");
-      const parsed = JSON.parse(content);
-      const parseResult = Configuration.safeParse(parsed);
+    const content = await fs.readFile(path, "utf-8");
+    const parsed = JSON.parse(content);
+    const parseResult = Configuration.safeParse(parsed);
 
-      if (!parseResult.success) {
-        throwInvalidConfigResponse(parseResult.error);
-      }
-
-      return parsed;
-    } catch {
-      throw new ServerApiError(
-        503,
-        "SINGBOX_CONFIG_READ_FAILED",
-        "Не удалось прочитать конфиг sing-box",
-      );
+    if (!parseResult.success) {
+      throwInvalidConfigResponse(parseResult.error);
     }
+
+    return parsed;
   },
 });
 
