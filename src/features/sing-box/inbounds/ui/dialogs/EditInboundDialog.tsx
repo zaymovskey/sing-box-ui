@@ -18,11 +18,11 @@ import {
   type InboundFormValues,
 } from "../../../config-core/model/config-core.inbounds-schema";
 import { type Inbound } from "../../../config-core/model/config-core.types";
-import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
-} from "../../model/inbound-edit.command";
+} from "../../model/commands/inbound-edit.command";
+import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";

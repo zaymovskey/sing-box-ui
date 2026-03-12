@@ -5,18 +5,18 @@ import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 import { Input } from "../../input";
 import { FormItem, FormLabel } from "../form";
 
+type InputProps = React.ComponentProps<typeof Input>;
+
 type Props<T extends FieldValues> = {
   name: Path<T>;
   label: string;
-  placeholder?: string;
-  type?: string;
-};
+} & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
 
 export function UncontrolledTextField<T extends FieldValues>({
   name,
   label,
-  placeholder,
   type = "text",
+  ...inputProps
 }: Props<T>) {
   const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
@@ -31,12 +31,12 @@ export function UncontrolledTextField<T extends FieldValues>({
       <FormLabel htmlFor={inputId}>{label}</FormLabel>
 
       <Input
+        {...form.register(name)}
+        {...inputProps}
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}
         id={inputId}
-        placeholder={placeholder}
         type={type}
-        {...form.register(name)}
       />
 
       <div className="text-destructive min-h-5 text-sm" id={messageId}>

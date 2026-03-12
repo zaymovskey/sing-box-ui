@@ -2,29 +2,25 @@ import { useCallback } from "react";
 
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 
-import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
-import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
-import { useConfigQuery } from "../../config-core/model/config-core.query";
-import { mapFormToInbound } from "./inbound.form-mapper";
+import { useUpdateConfigMutation } from "../../../config-core/model/config-core.mutation";
+import { useConfigQuery } from "../../../config-core/model/config-core.query";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
-export function useCreateInbound() {
+export function useDeleteInbound() {
   const { data: singBoxConfig } = useConfigQuery();
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const createInbound = useCallback(
-    async (newInbound: InboundFormValues) => {
+  const deleteInbound = useCallback(
+    async (tag: string) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }
 
-      const parsedNewInbound = mapFormToInbound(newInbound);
-
-      const inbounds = singBoxConfig.inbounds ?? [];
+      const inbounds = singBoxConfig.inbounds?.filter((inb) => inb.tag !== tag);
       const nextConfig: Config = {
         ...singBoxConfig,
-        inbounds: [...inbounds, parsedNewInbound],
+        inbounds,
       };
 
       const parsed = ConfigSchema.safeParse(nextConfig);
@@ -38,7 +34,7 @@ export function useCreateInbound() {
   );
 
   return {
-    createInbound,
+    deleteInbound,
     isPending: updateConfigMutation.isPending,
   };
 }

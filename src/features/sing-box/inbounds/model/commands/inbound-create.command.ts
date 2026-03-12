@@ -2,36 +2,29 @@ import { useCallback } from "react";
 
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 
-import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
-import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
-import { useConfigQuery } from "../../config-core/model/config-core.query";
-import { mapFormToInbound } from "./inbound.form-mapper";
+import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import { useUpdateConfigMutation } from "../../../config-core/model/config-core.mutation";
+import { useConfigQuery } from "../../../config-core/model/config-core.query";
+import { mapFormToInbound } from "../inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
-export function useEditInbound() {
+export function useCreateInbound() {
   const { data: singBoxConfig } = useConfigQuery();
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const editInbound = useCallback(
-    async (updatedInbound: InboundFormValues) => {
+  const createInbound = useCallback(
+    async (newInbound: InboundFormValues) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }
 
-      const parsedEditedInbound = mapFormToInbound(updatedInbound);
+      const parsedNewInbound = mapFormToInbound(newInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
       const nextConfig: Config = {
         ...singBoxConfig,
-        inbounds: [
-          ...inbounds.map((inbound) => {
-            if (inbound.tag === updatedInbound.tag) {
-              return parsedEditedInbound;
-            }
-            return inbound;
-          }),
-        ],
+        inbounds: [...inbounds, parsedNewInbound],
       };
 
       const parsed = ConfigSchema.safeParse(nextConfig);
@@ -45,7 +38,7 @@ export function useEditInbound() {
   );
 
   return {
-    editInbound,
+    createInbound,
     isPending: updateConfigMutation.isPending,
   };
 }

@@ -11,18 +11,22 @@ export const typeItems = [
 export const defaultsByType = {
   vless: {
     type: "vless",
+    listen: "::",
     tag: "",
     listen_port: 443,
-    reality_handshake_port: 443,
     sniff: true,
     sniff_override_destination: true,
     users: [{ name: "", uuid: "", flow: "" }],
     tls_server_name: "www.cloudflare.com",
     reality_handshake_server: "www.cloudflare.com",
     reality_private_key: "",
+    tls_enabled: false,
+    reality_enabled: false,
+    reality_handshake_server_port: 443,
   },
   hysteria2: {
     type: "hysteria2",
+    listen: "::",
     tag: "",
     listen_port: 443,
     users: [{ name: "", password: "" }],

@@ -27,6 +27,11 @@ export function InboundFormBaseFields() {
           name="reality_handshake_port"
           placeholder="443"
         />
+        <UncontrolledTextField<InboundFormValues>
+          label="Listen"
+          name="listen"
+          placeholder="::"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

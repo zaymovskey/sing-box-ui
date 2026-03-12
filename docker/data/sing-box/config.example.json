@@ -1,6 +1,6 @@
 {
   "log": {
-    "disabled": true,
+    "disabled": false,
     "level": "info",
     "timestamp": true
   },
@@ -12,12 +12,12 @@
       "down_mbps": 100,
       "obfs": {
         "type": "salamander",
-        "password": "-"
+        "password": "OBFS_PASSWORD"
       },
       "users": [
         {
-          "name": "-",
-          "password": "-"
+          "name": "test",
+          "password": "HY2_PASSWORD"
         }
       ],
       "ignore_client_bandwidth": false,
@@ -28,7 +28,7 @@
         "key_path": "/etc/sing-box/hy2.key"
       },
       "listen": "::",
-      "listen_port": 443,
+      "listen_port": 8443,
       "sniff": true,
       "sniff_override_destination": true
     },
@@ -37,8 +37,8 @@
       "tag": "reality-in",
       "users": [
         {
-          "name": "-",
-          "uuid": "-",
+          "name": "test",
+          "uuid": "fc6b9605-e8db-4bd8-9281-991a10b3041f",
           "flow": "xtls-rprx-vision"
         }
       ],
@@ -51,11 +51,11 @@
             "server": "www.cloudflare.com",
             "server_port": 443
           },
-          "private_key": "-"
+          "private_key": "ECofwc7lnIC-TdJCr-2eEfdsafdsdfsgw95QauUQ"
         }
       },
       "listen": "::",
-      "listen_port": 8443,
+      "listen_port": 443,
       "sniff": true,
       "sniff_override_destination": true
     }
@@ -67,12 +67,6 @@
     }
   ],
   "route": {
-    "rules": [
-      {
-        "domain_suffix": ["example.com"],
-        "action": "reject"
-      }
-    ],
     "final": "direct"
   }
 }

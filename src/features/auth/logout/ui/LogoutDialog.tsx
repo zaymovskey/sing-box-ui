@@ -4,7 +4,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -29,32 +28,38 @@ export function LogoutDialog({ renderTrigger }: LogoutDialogProps) {
         {renderTrigger({ disabled: logoutMutation.isPending })}
       </DialogTrigger>
 
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Выйти из аккаунта?</DialogTitle>
-          <DialogDescription>Текущая сессия будет завершена.</DialogDescription>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
 
-        <DialogFooter>
-          <DialogClose asChild>
+        <div className="flex-1 overflow-y-auto px-6 pt-1 pb-1">
+          Текущая сессия будет завершена.
+        </div>
+
+        <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
+          <div className="flex justify-end gap-2">
+            <DialogClose asChild>
+              <Button
+                disabled={logoutMutation.isPending}
+                type="button"
+                variant="outline"
+              >
+                Отмена
+              </Button>
+            </DialogClose>
+
             <Button
               disabled={logoutMutation.isPending}
+              loading={logoutMutation.isPending}
               type="button"
-              variant="outline"
+              onClick={() => logoutMutation.mutate()}
             >
-              Отмена
+              Выйти
             </Button>
-          </DialogClose>
-
-          <Button
-            disabled={logoutMutation.isPending}
-            loading={logoutMutation.isPending}
-            type="button"
-            onClick={() => logoutMutation.mutate()}
-          >
-            Выйти
-          </Button>
-        </DialogFooter>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

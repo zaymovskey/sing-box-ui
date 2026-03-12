@@ -1,7 +1,7 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge, Button, Card, Separator } from "@/shared/ui";
@@ -11,11 +11,14 @@ import { type Inbound } from "../../config-core/model/config-core.types";
 import { mapInboundsToRows } from "../model/inbound-row.mapper";
 import { type InboundRow } from "../model/inbound-row.type";
 import { CreateInboundDialog } from "./dialogs/CreateInboundDialog";
+import { DeleteInboundDialog } from "./dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "./dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 
 export function InboundsTableScreen() {
   const [editingInbound, setEditingInbound] = useState<Inbound | null>(null);
+  const [deletingInbound, setDeletingInbound] = useState<Inbound | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const { data: singBoxConfig } = useConfigQuery();
@@ -25,15 +28,26 @@ export function InboundsTableScreen() {
       id: "actions",
       header: "",
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setEditingInbound(row.original.inbound);
-            setIsEditOpen(true);
-          }}
-        >
-          <Pencil className="size-4" />
-        </Button>
+        <>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setEditingInbound(row.original.inbound);
+              setIsEditOpen(true);
+            }}
+          >
+            <Pencil className="size-4" />
+          </Button>{" "}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setDeletingInbound(row.original.inbound);
+              setIsDeleteOpen(true);
+            }}
+          >
+            <Trash2 className="text-destructive size-4" />
+          </Button>
+        </>
       ),
       meta: {
         className: "w-[1%] whitespace-nowrap",
@@ -86,6 +100,13 @@ export function InboundsTableScreen() {
           inbound={editingInbound}
           open={isEditOpen}
           onOpenChange={setIsEditOpen}
+        />
+      )}
+      {deletingInbound && (
+        <DeleteInboundDialog
+          inbound={deletingInbound}
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
         />
       )}
     </div>

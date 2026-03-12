@@ -21,7 +21,7 @@ import {
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
-} from "../../model/inbound-create.command";
+} from "../../model/commands/inbound-create.command";
 import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 

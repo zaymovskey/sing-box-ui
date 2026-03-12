@@ -9,12 +9,14 @@ type SwitchFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 export function ControlledSwitchField<T extends FieldValues>({
   name,
   label,
   placeholder,
+  disabled = false,
 }: SwitchFieldProps<T>) {
   const form = useFormContext();
 
@@ -31,6 +33,7 @@ export function ControlledSwitchField<T extends FieldValues>({
           <FormControl>
             <Switch
               checked={Boolean(field.value)}
+              disabled={disabled}
               onCheckedChange={(v) => {
                 form.clearErrors("root");
                 field.onChange(v);
