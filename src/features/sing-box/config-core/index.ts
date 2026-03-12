@@ -1,3 +1,4 @@
+export { useConfigQueryToasts } from "./lib/config-core.query-toasts";
 export type { InboundFormValues } from "./model/config-core.inbounds-schema";
 export { InboundFormSchema } from "./model/config-core.inbounds-schema";
 export { useUpdateConfigMutation } from "./model/config-core.mutation";

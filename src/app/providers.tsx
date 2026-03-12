@@ -42,7 +42,6 @@ export function Providers({ children }: ProvidersProps) {
 
             infraToast.error(errorToMessage(err), {
               id: `m:${mutation.options.mutationKey?.join?.(":") ?? "mutation"}`,
-              position: "bottom-left",
               ...sonnerErrorCloseButton,
             });
           },
@@ -53,7 +52,6 @@ export function Providers({ children }: ProvidersProps) {
 
             infraToast.error(errorToMessage(err), {
               id: `q:${query.queryHash}`,
-              position: "bottom-left",
               ...sonnerErrorCloseButton,
             });
           },

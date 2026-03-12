@@ -4,7 +4,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useConfigQuery } from "@/features/sing-box/config-core";
+import {
+  useConfigQuery,
+  useConfigQueryToasts,
+} from "@/features/sing-box/config-core";
 import { type Inbound } from "@/features/sing-box/config-core";
 import { Badge, Button, Card, Separator } from "@/shared/ui";
 
@@ -21,7 +24,8 @@ export function InboundsTableScreen() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: singBoxConfig, error } = useConfigQuery();
+  useConfigQueryToasts(error);
 
   const inboundColumns: ColumnDef<InboundRow>[] = [
     {
