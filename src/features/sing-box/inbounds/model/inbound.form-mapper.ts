@@ -7,7 +7,7 @@ function mapVlessFormToInbound(
   return {
     type: "vless",
     tag: values.tag,
-    listen: "::",
+    listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,
     sniff_override_destination: values.sniff_override_destination,
@@ -17,13 +17,13 @@ function mapVlessFormToInbound(
       flow: user.flow || undefined,
     })),
     tls: {
-      enabled: true,
+      enabled: values.tls_enabled,
       server_name: values.tls_server_name,
       reality: {
-        enabled: true,
+        enabled: values.reality_enabled,
         handshake: {
-          server: values.reality_handshake_server,
-          server_port: values.reality_handshake_port,
+          server: values.reality_handshake_server ?? "",
+          server_port: values.reality_handshake_server_port,
         },
         private_key: values.reality_private_key,
       },
@@ -37,7 +37,7 @@ function mapHy2FormToInbound(
   return {
     type: "hysteria2",
     tag: values.tag,
-    listen: "::",
+    listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,
     sniff_override_destination: values.sniff_override_destination,
@@ -70,7 +70,11 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       type: "vless",
       tag: inbound.tag ?? "",
       listen: inbound.listen ?? "",
+      reality_handshake_server_port:
+        inbound.tls?.reality?.handshake?.server_port ?? 443,
+      reality_enabled: inbound.tls?.reality?.enabled ?? false,
       listen_port: inbound.listen_port ?? 0,
+      tls_enabled: inbound.tls?.enabled ?? false,
 
       sniff: inbound.sniff ?? false,
       sniff_override_destination: inbound.sniff_override_destination ?? false,
@@ -84,8 +88,6 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       tls_server_name: inbound.tls?.server_name ?? "",
       reality_private_key: inbound.tls?.reality?.private_key ?? "",
       reality_handshake_server: inbound.tls?.reality?.handshake?.server ?? "",
-      reality_handshake_port:
-        inbound.tls?.reality?.handshake?.server_port ?? 443,
     };
   }
 
