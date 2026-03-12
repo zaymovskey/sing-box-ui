@@ -7,15 +7,18 @@ import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
 const throwInvalidConfigResponse = (error: z.ZodError): never => {
+  const details = error.issues.map((issue) => ({
+    code: issue.code,
+    message: issue.message,
+    path: issue.path.join("."),
+  }));
+
+  console.log("INVALID CONFIG DETAILS:", details);
   throw new ServerApiError(
     422,
     "SINGBOX_CONFIG_INVALID",
     "Некорректный формат конфига sing-box",
-    error.issues.map((issue) => ({
-      code: issue.code,
-      message: issue.message,
-      path: issue.path.join("."),
-    })),
+    details,
   );
 };
 
