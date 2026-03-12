@@ -5,6 +5,10 @@ import { PlusCircle } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
+  InboundFormSchema,
+  type InboundFormValues,
+} from "@/features/sing-box/config-core";
+import {
   Button,
   Dialog,
   DialogContent,
@@ -14,10 +18,6 @@ import {
   serverToast,
 } from "@/shared/ui";
 
-import {
-  InboundFormSchema,
-  type InboundFormValues,
-} from "../../../config-core/model/config-core.inbounds-schema";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,

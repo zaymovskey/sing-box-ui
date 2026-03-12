@@ -1,4 +1,4 @@
-import type { InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
+import type { InboundFormValues } from "@/features/sing-box/config-core";
 
 export const typeItems = [
   { label: "VLESS", value: "vless" },
@@ -38,5 +38,6 @@ export const defaultsByType = {
     tls_server_name: "www.cloudflare.com",
     certificate_path: "/etc/sing-box/hy2.crt",
     key_path: "/etc/sing-box/hy2.key",
+    tls_enabled: false,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

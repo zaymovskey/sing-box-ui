@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
+import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   FormControl,
   FormField,
@@ -18,7 +19,6 @@ import {
   Separator,
 } from "@/shared/ui";
 
-import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
 import { InboundFormHy2Fields } from "./InboundFormHy2Fields";

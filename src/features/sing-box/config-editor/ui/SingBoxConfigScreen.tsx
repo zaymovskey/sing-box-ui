@@ -19,6 +19,10 @@ import {
   useState,
 } from "react";
 
+import {
+  useConfigQuery,
+  useUpdateConfigMutation,
+} from "@/features/sing-box/config-core";
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
 import {
@@ -28,9 +32,6 @@ import {
   serverToast,
   sonnerErrorCloseButton,
 } from "@/shared/ui";
-
-import { useUpdateConfigMutation } from "../../config-core/model/config-core.mutation";
-import { useConfigQuery } from "../../config-core/model/config-core.query";
 
 const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
   const allInvalidKeys: Set<string> = new Set();

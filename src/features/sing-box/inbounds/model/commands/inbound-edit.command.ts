@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 
+import {
+  type InboundFormValues,
+  useConfigQuery,
+  useUpdateConfigMutation,
+} from "@/features/sing-box/config-core";
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 
-import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
-import { useUpdateConfigMutation } from "../../../config-core/model/config-core.mutation";
-import { useConfigQuery } from "../../../config-core/model/config-core.query";
 import { mapFormToInbound } from "../inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
