@@ -1,8 +1,11 @@
 import { Trash2 } from "lucide-react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useEffect } from "react";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import {
   Button,
+  ControlledSwitchField,
+  Separator,
   UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
@@ -10,16 +13,28 @@ import {
 import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export function InboundFormHy2Fields() {
-  const form = useFormContext<InboundFormValues>();
+  const { control, clearErrors, setValue } =
+    useFormContext<InboundFormValues>();
 
   const {
     fields: users,
     append,
     remove,
   } = useFieldArray({
-    control: form.control,
+    control,
     name: "users",
   });
+
+  const tlsEnabled = useWatch({
+    control,
+    name: "tls_enabled",
+  });
+
+  useEffect(() => {
+    if (!tlsEnabled) {
+      clearErrors(["certificate_path", "tls_server_name", "key_path"]);
+    }
+  }, [tlsEnabled, clearErrors, setValue]);
 
   return (
     <>
@@ -86,20 +101,31 @@ export function InboundFormHy2Fields() {
         name="obfs_password"
         placeholder="obfs_password"
       />
+      <div className="text-l mt-7 mb-2 font-medium opacity-80">
+        TLS - Transport Layer Security
+      </div>
+      <Separator />
+      <ControlledSwitchField<InboundFormValues>
+        label="TLS"
+        name="tls_enabled"
+      />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <UncontrolledTextField<InboundFormValues>
+          disabled={!tlsEnabled}
           label="TLS server name"
           name="tls_server_name"
           placeholder="www.cloudflare.com"
         />
 
         <UncontrolledTextField<InboundFormValues>
+          disabled={!tlsEnabled}
           label="Certificate path (.crt)"
           name="certificate_path"
           placeholder="/etc/sing-box/cert.crt"
         />
       </div>
       <UncontrolledTextField<InboundFormValues>
+        disabled={!tlsEnabled}
         label="Key path (.key)"
         name="key_path"
         placeholder="/etc/sing-box/private.key"

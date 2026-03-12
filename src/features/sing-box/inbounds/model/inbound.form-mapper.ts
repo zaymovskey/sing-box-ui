@@ -97,6 +97,7 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       listen: inbound.listen ?? "",
       tag: inbound.tag ?? "",
       listen_port: inbound.listen_port ?? 0,
+      tls_enabled: inbound.tls?.enabled ?? false,
 
       sniff: inbound.sniff ?? false,
       sniff_override_destination: inbound.sniff_override_destination ?? false,
