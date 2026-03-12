@@ -11,6 +11,7 @@ export const typeItems = [
 export const defaultsByType = {
   vless: {
     type: "vless",
+    listen: "::",
     tag: "",
     listen_port: 443,
     reality_handshake_port: 443,
@@ -23,6 +24,7 @@ export const defaultsByType = {
   },
   hysteria2: {
     type: "hysteria2",
+    listen: "::",
     tag: "",
     listen_port: 443,
     users: [{ name: "", password: "" }],
