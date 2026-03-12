@@ -1,9 +1,10 @@
 import { useCallback } from "react";
 
+import {
+  useConfigQuery,
+  useUpdateConfigMutation,
+} from "@/features/sing-box/config-core";
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
-
-import { useUpdateConfigMutation } from "../../../config-core/model/config-core.mutation";
-import { useConfigQuery } from "../../../config-core/model/config-core.query";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 

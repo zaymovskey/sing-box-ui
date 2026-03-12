@@ -1,3 +1,4 @@
+import { type Inbound } from "@/features/sing-box/config-core";
 import {
   Button,
   Dialog,
@@ -8,8 +9,7 @@ import {
   serverToast,
 } from "@/shared/ui";
 
-import { type Inbound } from "../../../config-core/model/config-core.types";
-import { useDeleteInbound } from "../../../inbounds/model/commands/inbound-delete.command";
+import { useDeleteInbound } from "../../model/commands/inbound-delete.command";
 
 interface DeleteInboundDialogProps {
   inbound: Inbound;

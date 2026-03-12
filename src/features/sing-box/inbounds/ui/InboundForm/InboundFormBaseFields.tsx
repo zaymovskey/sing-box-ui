@@ -1,10 +1,9 @@
+import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   ControlledSwitchField,
   UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
-
-import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export function InboundFormBaseFields() {
   return (
@@ -22,11 +21,6 @@ export function InboundFormBaseFields() {
           placeholder="8443"
         />
 
-        <UncontrolledNumberField<InboundFormValues>
-          label="Handshake port"
-          name="reality_handshake_port"
-          placeholder="443"
-        />
         <UncontrolledTextField<InboundFormValues>
           label="Listen"
           name="listen"

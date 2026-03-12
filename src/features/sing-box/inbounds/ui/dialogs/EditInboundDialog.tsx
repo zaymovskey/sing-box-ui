@@ -5,6 +5,11 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
+  type Inbound,
+  InboundFormSchema,
+  type InboundFormValues,
+} from "@/features/sing-box/config-core";
+import {
   Button,
   Dialog,
   DialogContent,
@@ -13,11 +18,6 @@ import {
   serverToast,
 } from "@/shared/ui";
 
-import {
-  InboundFormSchema,
-  type InboundFormValues,
-} from "../../../config-core/model/config-core.inbounds-schema";
-import { type Inbound } from "../../../config-core/model/config-core.types";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,

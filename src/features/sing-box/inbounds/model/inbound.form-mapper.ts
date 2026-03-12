@@ -1,5 +1,7 @@
-import { type InboundFormValues } from "../../config-core/model/config-core.inbounds-schema";
-import { type Inbound } from "../../config-core/model/config-core.types";
+import {
+  type Inbound,
+  type InboundFormValues,
+} from "@/features/sing-box/config-core";
 
 function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,

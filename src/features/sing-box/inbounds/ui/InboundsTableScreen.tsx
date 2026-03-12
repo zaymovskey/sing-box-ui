@@ -4,10 +4,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { useConfigQuery } from "@/features/sing-box/config-core";
+import { type Inbound } from "@/features/sing-box/config-core";
 import { Badge, Button, Card, Separator } from "@/shared/ui";
 
-import { useConfigQuery } from "../../config-core/model/config-core.query";
-import { type Inbound } from "../../config-core/model/config-core.types";
 import { mapInboundsToRows } from "../model/inbound-row.mapper";
 import { type InboundRow } from "../model/inbound-row.type";
 import { CreateInboundDialog } from "./dialogs/CreateInboundDialog";

@@ -87,13 +87,16 @@ const sharedLayerPatterns = () => [
   blockLayerAlias("shared"),
 ];
 
+const blockSelfFeatureAlias = (featurePath, featureName) =>
+  block(
+    [`@/features/${featurePath}`, `@/features/${featurePath}/**`],
+    `Внутри feature "${featureName}" не импортируй саму себя через alias (@/features/${featurePath}). Используй относительные импорты.`,
+  );
+
 const featuresLayerPatterns = () => [
   blockNoImportsFrom("app", "features не должны импортить из app"),
 
-  // внутри features запрещаем alias @/features/**
-  blockLayerAlias("features"),
-
-  // между фичами — только public API
+  // Между feature-модулями разрешён только public API, deep-import запрещён
   blockDeepImport("features", "feature"),
 
   // shared — только public API
@@ -220,6 +223,25 @@ export default defineConfig([
   {
     files: ["src/features/**/*.{ts,tsx,js,jsx}"],
     rules: noRestrictedImports(featuresLayerPatterns()),
+  },
+
+  {
+    files: ["src/features/sing-box/config-core/**/*.{ts,tsx,js,jsx}"],
+    rules: noRestrictedImports([
+      blockSelfFeatureAlias("sing-box/config-core", "sing-box/config-core"),
+    ]),
+  },
+  {
+    files: ["src/features/sing-box/config-editor/**/*.{ts,tsx,js,jsx}"],
+    rules: noRestrictedImports([
+      blockSelfFeatureAlias("sing-box/config-editor", "sing-box/config-editor"),
+    ]),
+  },
+  {
+    files: ["src/features/sing-box/inbounds/**/*.{ts,tsx,js,jsx}"],
+    rules: noRestrictedImports([
+      blockSelfFeatureAlias("sing-box/inbounds", "sing-box/inbounds"),
+    ]),
   },
 
   {

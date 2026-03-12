@@ -2,6 +2,7 @@ import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
+import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   Button,
   ControlledSwitchField,
@@ -10,8 +11,6 @@ import {
   UncontrolledTextField,
   UncontrolledUuidField,
 } from "@/shared/ui";
-
-import { type InboundFormValues } from "../../../config-core/model/config-core.inbounds-schema";
 
 export function InboundFormVlessFields() {
   const { control, clearErrors, setValue } =
