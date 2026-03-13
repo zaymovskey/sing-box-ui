@@ -41,7 +41,7 @@ export function InboundsTableScreen() {
             }}
           >
             <Pencil className="size-4" />
-          </Button>{" "}
+          </Button>
           <Button
             variant="ghost"
             onClick={() => {
