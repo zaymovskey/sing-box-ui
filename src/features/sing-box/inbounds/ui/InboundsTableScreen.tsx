@@ -1,7 +1,7 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import {
@@ -27,7 +27,43 @@ export function InboundsTableScreen() {
   const { data: singBoxConfig, error } = useConfigQuery();
   useConfigQueryToasts(error);
 
+  const [expandedRowIds, setExpandedRowIds] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const toggleExpandedRow = (rowId: string) => {
+    setExpandedRowIds((prev) => ({
+      ...prev,
+      [rowId]: !prev[rowId],
+    }));
+  };
+
   const inboundColumns: ColumnDef<InboundRow>[] = [
+    {
+      id: "expand",
+      header: "",
+      cell: ({ row }) => {
+        const isExpanded = !!expandedRowIds[row.id];
+
+        return (
+          <Button
+            size="icon"
+            type="button"
+            variant="ghost"
+            onClick={() => toggleExpandedRow(row.id)}
+          >
+            {isExpanded ? (
+              <ChevronDown className="size-4" />
+            ) : (
+              <ChevronRight className="size-4" />
+            )}
+          </Button>
+        );
+      },
+      meta: {
+        className: "w-[1%] whitespace-nowrap",
+      },
+    },
     {
       id: "actions",
       header: "",
@@ -115,7 +151,11 @@ export function InboundsTableScreen() {
       <Card className="mb-4 gap-5 p-4">
         <CreateInboundDialog />
         <Separator />
-        <InboundsTable columns={inboundColumns} data={tableRows} />
+        <InboundsTable
+          columns={inboundColumns}
+          data={tableRows}
+          expandedRowIds={expandedRowIds}
+        />
       </Card>
       {editingInbound && (
         <EditInboundDialog

@@ -23,9 +23,14 @@ import { type InboundRow } from "../model/inbound-row.type";
 type InboundsTableProps = {
   columns: ColumnDef<InboundRow>[];
   data: InboundRow[];
+  expandedRowIds: Record<string, boolean>;
 };
 
-export function InboundsTable({ columns, data }: InboundsTableProps) {
+export function InboundsTable({
+  columns,
+  data,
+  expandedRowIds,
+}: InboundsTableProps) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
@@ -62,16 +67,23 @@ export function InboundsTable({ columns, data }: InboundsTableProps) {
               let usersRows: JSX.Element[] = [];
               const inbound = row.original.inbound;
 
-              if ("users" in inbound && Array.isArray(inbound.users)) {
+              const isExpanded = !!expandedRowIds[row.id];
+
+              if (
+                isExpanded &&
+                "users" in inbound &&
+                Array.isArray(inbound.users)
+              ) {
                 usersRows = inbound.users.map((user, index) => {
                   const name =
                     typeof user === "object" && "name" in user
                       ? user.name
                       : null;
+
                   return (
                     <TableRow key={`${row.id}-user-${index}`}>
                       <TableCell
-                        className="bg-muted/30 py-3"
+                        className="bg-muted/30 py-3 pl-15"
                         colSpan={columns.length}
                       >
                         <div className="bg-background rounded-md border px-4 py-3">
