@@ -38,8 +38,8 @@ export function InboundUserRow({
         clientToast.success("Ссылка скопирована в буфер обмена", {
           duration: 2000,
         });
-        setCopyIcon(<Check />);
-        setTimeout(() => setCopyIcon(<Copy />), 1000);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 1000);
       } else {
         clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
           duration: 2000,
@@ -52,7 +52,7 @@ export function InboundUserRow({
     }
   };
 
-  const [copyIcon, setCopyIcon] = useState(<Copy />);
+  const [isCopied, setIsCopied] = useState(false);
 
   return (
     <TableRow>
@@ -67,7 +67,7 @@ export function InboundUserRow({
 
             <div className="flex shrink-0 items-center gap-2">
               <Button type="button" onClick={() => handleCopy(inbound, user)}>
-                {copyIcon}
+                {isCopied ? <Check /> : <Copy />}
                 Ссылка
               </Button>
               <Button type="button">
