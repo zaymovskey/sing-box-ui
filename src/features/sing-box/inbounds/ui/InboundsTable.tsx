@@ -6,8 +6,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Fragment, type JSX } from "react";
 
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -56,18 +58,64 @@ export function InboundsTable({ columns, data }: InboundsTableProps) {
 
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={cell.column.columnDef.meta?.className}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            table.getRowModel().rows.map((row) => {
+              let usersRows: JSX.Element[] = [];
+              const inbound = row.original.inbound;
+
+              if ("users" in inbound && Array.isArray(inbound.users)) {
+                usersRows = inbound.users.map((user, index) => {
+                  const name =
+                    typeof user === "object" && "name" in user
+                      ? user.name
+                      : null;
+                  return (
+                    <TableRow key={`${row.id}-user-${index}`}>
+                      <TableCell
+                        className="bg-muted/30 py-3"
+                        colSpan={columns.length}
+                      >
+                        <div className="bg-background rounded-md border px-4 py-3">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="min-w-0 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">
+                                  {name}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex shrink-0 items-center gap-2">
+                              <Button type="button">Ссылка</Button>
+                              <Button type="button">QR</Button>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              }
+
+              return (
+                <Fragment key={row.id}>
+                  <TableRow>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={cell.column.columnDef.meta?.className}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {usersRows}
+                </Fragment>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
