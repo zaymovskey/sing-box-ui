@@ -1,5 +1,13 @@
 import { Configuration } from "@black-duty/sing-box-schema";
-import { type z } from "zod";
+import { z } from "zod";
 
-export const ConfigSchema = Configuration;
+const PanelMetadataSchema = z.object({
+  realityPublicKeys: z.record(z.string(), z.string()),
+});
+
+export const ConfigSchema = Configuration.extend({
+  _panel: PanelMetadataSchema.optional(),
+});
+
 export type Config = z.infer<typeof ConfigSchema>;
+export type PanelMetadata = z.infer<typeof PanelMetadataSchema>;

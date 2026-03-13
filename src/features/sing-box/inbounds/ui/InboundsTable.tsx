@@ -9,7 +9,6 @@ import {
 import { Fragment, type JSX } from "react";
 
 import {
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +18,7 @@ import {
 } from "@/shared/ui";
 
 import { type InboundRow } from "../model/inbound-row.type";
+import { InboundUserRow } from "./InboundUserRow";
 
 type InboundsTableProps = {
   columns: ColumnDef<InboundRow>[];
@@ -75,35 +75,8 @@ export function InboundsTable({
                 Array.isArray(inbound.users)
               ) {
                 usersRows = inbound.users.map((user, index) => {
-                  const name =
-                    typeof user === "object" && "name" in user
-                      ? user.name
-                      : null;
-
                   return (
-                    <TableRow key={`${row.id}-user-${index}`}>
-                      <TableCell
-                        className="bg-muted/30 py-3 pl-15"
-                        colSpan={columns.length}
-                      >
-                        <div className="bg-background rounded-md border px-4 py-3">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0 space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">
-                                  {name}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex shrink-0 items-center gap-2">
-                              <Button type="button">Ссылка</Button>
-                              <Button type="button">QR</Button>
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                    <InboundUserRow key={index} inbound={inbound} user={user} />
                   );
                 });
               }

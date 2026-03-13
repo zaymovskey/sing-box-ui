@@ -45,6 +45,10 @@ export function InboundsTableScreen() {
       cell: ({ row }) => {
         const isExpanded = !!expandedRowIds[row.id];
 
+        if (row.original.usersCount === 0) {
+          return null;
+        }
+
         return (
           <Button
             size="icon"
