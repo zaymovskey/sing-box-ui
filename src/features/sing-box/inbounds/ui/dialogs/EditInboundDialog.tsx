@@ -106,7 +106,7 @@ export function EditInboundDialog({
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
           <div className="flex justify-end gap-2">
             <Button
-              disabled={isPending}
+              disabled={isPending || !form.formState.isDirty}
               type="button"
               variant="outline"
               onClick={handleReset}

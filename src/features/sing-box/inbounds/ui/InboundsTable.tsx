@@ -16,15 +16,14 @@ import {
   TableRow,
 } from "@/shared/ui";
 
-interface InboundsTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
+import { type InboundRow } from "../model/inbound-row.type";
 
-export function InboundsTable<TData, TValue>({
-  columns,
-  data,
-}: InboundsTableProps<TData, TValue>) {
+type InboundsTableProps = {
+  columns: ColumnDef<InboundRow>[];
+  data: InboundRow[];
+};
+
+export function InboundsTable({ columns, data }: InboundsTableProps) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
@@ -38,28 +37,27 @@ export function InboundsTable<TData, TValue>({
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className={header.column.columnDef.meta?.className}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
+              <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
@@ -73,7 +71,7 @@ export function InboundsTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                No results.
+                Inbounds не найдены.
               </TableCell>
             </TableRow>
           )}
