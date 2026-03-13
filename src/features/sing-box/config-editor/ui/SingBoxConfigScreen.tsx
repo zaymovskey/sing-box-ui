@@ -257,7 +257,7 @@ export function SingBoxConfigScreen() {
   );
 
   return (
-    <Card className="sb-config-editor mb-4 w-190 flex-row gap-3 p-4">
+    <Card className="sb-config-editor mb-4 flex-row gap-3 p-4">
       <JsonEditor
         className="border-border border"
         data={configDraft}
