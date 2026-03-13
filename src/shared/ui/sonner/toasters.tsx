@@ -13,6 +13,10 @@ export const infraToast = {
 export const clientToast = {
   error: (msg: string, opts?: Parameters<typeof toast.error>[1]) =>
     toast.error(msg, { position: "top-right", ...opts }),
+  success: (msg: string, opts?: Parameters<typeof toast.success>[1]) =>
+    toast.success(msg, { position: "top-right", ...opts }),
+  loading: (msg: string, opts?: Parameters<typeof toast.loading>[1]) =>
+    toast.loading(msg, { position: "top-right", ...opts }),
   dismiss: (id?: string | number) => toast.dismiss(id),
 };
 

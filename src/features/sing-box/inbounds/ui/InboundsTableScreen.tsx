@@ -1,10 +1,13 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useConfigQuery } from "@/features/sing-box/config-core";
+import {
+  useConfigQuery,
+  useConfigQueryToasts,
+} from "@/features/sing-box/config-core";
 import { type Inbound } from "@/features/sing-box/config-core";
 import { Badge, Button, Card, Separator } from "@/shared/ui";
 
@@ -21,9 +24,50 @@ export function InboundsTableScreen() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: singBoxConfig, error } = useConfigQuery();
+  useConfigQueryToasts(error);
+
+  const [expandedRowIds, setExpandedRowIds] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const toggleExpandedRow = (rowId: string) => {
+    setExpandedRowIds((prev) => ({
+      ...prev,
+      [rowId]: !prev[rowId],
+    }));
+  };
 
   const inboundColumns: ColumnDef<InboundRow>[] = [
+    {
+      id: "expand",
+      header: "",
+      cell: ({ row }) => {
+        const isExpanded = !!expandedRowIds[row.id];
+
+        if (row.original.usersCount === 0) {
+          return null;
+        }
+
+        return (
+          <Button
+            size="icon"
+            type="button"
+            variant="ghost"
+            onClick={() => toggleExpandedRow(row.id)}
+          >
+            {isExpanded ? (
+              <ChevronDown className="size-4" />
+            ) : (
+              <ChevronRight className="size-4" />
+            )}
+          </Button>
+        );
+      },
+      meta: {
+        className: "w-[1%] whitespace-nowrap",
+      },
+    },
     {
       id: "actions",
       header: "",
@@ -37,7 +81,7 @@ export function InboundsTableScreen() {
             }}
           >
             <Pencil className="size-4" />
-          </Button>{" "}
+          </Button>
           <Button
             variant="ghost"
             onClick={() => {
@@ -61,11 +105,29 @@ export function InboundsTableScreen() {
     {
       accessorKey: "type",
       header: "Тип (Type)",
-      cell: ({ row }) => (
-        <Badge className="rounded-full px-2 py-0 text-xs" variant="outline">
-          {row.original.type}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const inbound = row.original.inbound;
+        const badges: string[] = [];
+        badges.push(row.original.type!);
+        if (inbound.type === "vless") {
+          if (inbound.tls?.reality?.enabled) {
+            badges.push("reality");
+          }
+        }
+        return (
+          <>
+            {badges.map((badge, index) => (
+              <Badge
+                key={index}
+                className="mr-1 rounded-full px-2 py-0 text-xs"
+                variant="outline"
+              >
+                {badge}
+              </Badge>
+            ))}
+          </>
+        );
+      },
     },
     {
       id: "listen",
@@ -93,7 +155,11 @@ export function InboundsTableScreen() {
       <Card className="mb-4 gap-5 p-4">
         <CreateInboundDialog />
         <Separator />
-        <InboundsTable columns={inboundColumns} data={tableRows} />
+        <InboundsTable
+          columns={inboundColumns}
+          data={tableRows}
+          expandedRowIds={expandedRowIds}
+        />
       </Card>
       {editingInbound && (
         <EditInboundDialog

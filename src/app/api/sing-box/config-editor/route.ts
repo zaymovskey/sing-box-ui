@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 
-import { Configuration } from "@black-duty/sing-box-schema";
 import { z } from "zod";
 
 import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
@@ -42,7 +41,7 @@ export const GET = withRoute({
 
     const content = await fs.readFile(path, "utf-8");
     const parsed = JSON.parse(content);
-    const parseResult = Configuration.safeParse(parsed);
+    const parseResult = ConfigSchema.safeParse(parsed);
 
     if (!parseResult.success) {
       throwInvalidConfigResponse(parseResult.error);
@@ -72,7 +71,7 @@ export const PUT = withRoute({
   handler: async ({ body }) => {
     const serverEnv = getServerEnv();
     const path = serverEnv.SINGBOX_CONFIG_PATH;
-    const parseResult = Configuration.safeParse(body);
+    const parseResult = ConfigSchema.safeParse(body);
 
     if (!parseResult.success) {
       throwInvalidConfigResponse(parseResult.error);

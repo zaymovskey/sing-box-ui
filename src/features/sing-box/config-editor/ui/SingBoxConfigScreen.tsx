@@ -182,7 +182,6 @@ export function SingBoxConfigScreen() {
           {
             description: issue.message,
             ...sonnerErrorCloseButton,
-            position: "top-right",
           },
         );
       });
