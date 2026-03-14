@@ -70,7 +70,11 @@ export function InboundUserRow({
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <Button type="button" onClick={handleCopy}>
+              <Button
+                className="transition-transform active:scale-95"
+                type="button"
+                onClick={handleCopy}
+              >
                 {isCopied ? <Check /> : <Copy />}
                 Ссылка
               </Button>
