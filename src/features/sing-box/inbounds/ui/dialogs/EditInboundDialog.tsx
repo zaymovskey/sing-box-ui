@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -51,6 +51,11 @@ export function EditInboundDialog({
     mode: "onSubmit",
     defaultValues: initialValues,
   });
+
+  useEffect(() => {
+    form.reset(initialValues);
+    setResetKey(0);
+  }, [form, initialValues]);
 
   const { editInbound, isPending } = useEditInbound();
 
