@@ -5,7 +5,8 @@ import { type Inbound, useConfigQuery } from "@/features/sing-box/config-core";
 import { clientEnv } from "@/shared/lib";
 import { Button, clientToast, TableCell, TableRow } from "@/shared/ui";
 
-import { buildInboundShareLink } from "../lib/build-Inbound-share-link";
+import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
+import { InboundShareQrDialog } from "../dialogs/InboundShareQrDialog";
 
 export function InboundUserRow({
   inbound,
@@ -16,6 +17,8 @@ export function InboundUserRow({
 }) {
   const { data: singBoxConfig } = useConfigQuery();
 
+  const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
+
   const name =
     typeof user === "object" &&
     user &&
@@ -24,15 +27,16 @@ export function InboundUserRow({
       ? user.name
       : "Без имени";
 
-  const handleCopy = async (inbound: Inbound, user: unknown) => {
+  const realityPublicKeys = singBoxConfig?._panel?.realityPublicKeys || {};
+  const link = buildInboundShareLink(
+    inbound,
+    user,
+    clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
+    realityPublicKeys,
+  );
+
+  const handleCopy = async () => {
     try {
-      const realityPublicKeys = singBoxConfig?._panel?.realityPublicKeys || {};
-      const link = buildInboundShareLink(
-        inbound,
-        user,
-        clientEnv.NEXT_PUBLIC_HOST_IP || "localhost",
-        realityPublicKeys,
-      );
       if (link) {
         await navigator.clipboard.writeText(link);
         clientToast.success("Ссылка скопирована в буфер обмена", {
@@ -66,11 +70,11 @@ export function InboundUserRow({
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <Button type="button" onClick={() => handleCopy(inbound, user)}>
+              <Button type="button" onClick={handleCopy}>
                 {isCopied ? <Check /> : <Copy />}
                 Ссылка
               </Button>
-              <Button type="button">
+              <Button type="button" onClick={() => setQrCodeDialogOpen(true)}>
                 <ScanQrCode />
                 QR
               </Button>
@@ -78,6 +82,14 @@ export function InboundUserRow({
           </div>
         </div>
       </TableCell>
+      {link && (
+        <InboundShareQrDialog
+          link={link}
+          open={qrCodeDialogOpen}
+          type={inbound.type}
+          onOpenChange={setQrCodeDialogOpen}
+        />
+      )}
     </TableRow>
   );
 }

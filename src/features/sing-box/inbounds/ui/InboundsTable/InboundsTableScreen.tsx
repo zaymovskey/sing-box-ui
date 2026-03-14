@@ -11,11 +11,11 @@ import {
 import { type Inbound } from "@/features/sing-box/config-core";
 import { Badge, Button, Card, Separator } from "@/shared/ui";
 
-import { mapInboundsToRows } from "../model/inbound-row.mapper";
-import { type InboundRow } from "../model/inbound-row.type";
-import { CreateInboundDialog } from "./dialogs/CreateInboundDialog";
-import { DeleteInboundDialog } from "./dialogs/DeleteInboundDialog";
-import { EditInboundDialog } from "./dialogs/EditInboundDialog";
+import { mapInboundsToRows } from "../../model/inbound-row.mapper";
+import { type InboundRow } from "../../model/inbound-row.type";
+import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
+import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
+import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 
 export function InboundsTableScreen() {
