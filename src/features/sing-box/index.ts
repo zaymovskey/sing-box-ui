@@ -1,3 +1,3 @@
 export { SingBoxConfigScreen } from "./config-editor/ui/SingBoxConfigScreen";
-export { InboundsTable } from "./inbounds/ui/InboundsTable";
-export { InboundsTableScreen } from "./inbounds/ui/InboundsTableScreen";
+export { InboundsTable } from "./inbounds/ui/InboundsTable/InboundsTable";
+export { InboundsTableScreen } from "./inbounds/ui/InboundsTable/InboundsTableScreen";

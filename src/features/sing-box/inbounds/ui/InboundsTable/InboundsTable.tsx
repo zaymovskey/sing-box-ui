@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/shared/ui";
 
-import { type InboundRow } from "../model/inbound-row.type";
+import { type InboundRow } from "../../model/inbound-row.type";
 import { InboundUserRow } from "./InboundUserRow";
 
 type InboundsTableProps = {
