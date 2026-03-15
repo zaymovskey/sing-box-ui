@@ -109,12 +109,9 @@ export function InboundFormVlessFields() {
           Добавить пользователя
         </Button>
       </div>
-      <div className="text-l mt-7 mb-2 font-medium opacity-80">
-        TLS - Transport Layer Security
-      </div>
       <Separator />
       <ControlledSwitchField<InboundFormValues>
-        label="TLS"
+        label="TLS - Transport Layer Security"
         name="tls_enabled"
       />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

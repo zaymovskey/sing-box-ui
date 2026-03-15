@@ -16,7 +16,7 @@ export function useEditInbound() {
   const updateConfigMutation = useUpdateConfigMutation();
 
   const editInbound = useCallback(
-    async (updatedInbound: InboundFormValues) => {
+    (updatedInbound: InboundFormValues) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }

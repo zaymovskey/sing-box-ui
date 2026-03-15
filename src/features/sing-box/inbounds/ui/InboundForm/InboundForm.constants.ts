@@ -36,8 +36,8 @@ export const defaultsByType = {
     down_mbps: 100,
     obfs_password: "",
     tls_server_name: "www.cloudflare.com",
-    certificate_path: "/etc/sing-box/hy2.crt",
-    key_path: "/etc/sing-box/hy2.key",
+    certificate_path: "/data/sing-box/certs/hy2.crt",
+    key_path: "/data/sing-box/certs/hy2.key",
     tls_enabled: false,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

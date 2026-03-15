@@ -16,7 +16,7 @@ export function useCreateInbound() {
   const updateConfigMutation = useUpdateConfigMutation();
 
   const createInbound = useCallback(
-    async (newInbound: InboundFormValues) => {
+    (newInbound: InboundFormValues) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }

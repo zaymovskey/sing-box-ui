@@ -6,5 +6,10 @@ export const apiRoutes = {
   },
   singBox: {
     configEditor: "/api/sing-box/config-editor",
+    hy2: {
+      tls: {
+        check: "/api/sing-box/hy2/tls/check",
+      },
+    },
   },
 } as const;
