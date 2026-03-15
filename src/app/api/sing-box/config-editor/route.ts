@@ -77,17 +77,10 @@ export const PUT = withRoute({
       throwInvalidConfigResponse(parseResult.error);
     }
 
-    try {
-      const content = JSON.stringify(parseResult.data, null, 2);
-      await fs.writeFile(path, content, "utf-8");
-      return { ok: true };
-    } catch {
-      throw new ServerApiError(
-        503,
-        "SINGBOX_CONFIG_WRITE_FAILED",
-        "Не удалось записать конфиг sing-box",
-      );
-    }
+    const content = JSON.stringify(parseResult.data, null, 2);
+    await fs.writeFile(path, content, "utf-8");
+
+    return { ok: true };
   },
 });
 

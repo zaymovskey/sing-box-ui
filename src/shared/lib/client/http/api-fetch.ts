@@ -7,10 +7,18 @@ type ApiFetchOptions = Omit<RequestInit, "headers"> & {
 
 type ResponseMode = "auto" | "text" | "json";
 
+export async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function apiFetch<T = unknown>(
   input: string,
   init?: ApiFetchOptions & { responseMode?: ResponseMode },
 ): Promise<T> {
+  if (process.env.NODE_ENV === "development") {
+    await sleep(800);
+  }
+
   const { responseMode = "json", ...rest } = init ?? {};
   try {
     const res = await fetch(input, {

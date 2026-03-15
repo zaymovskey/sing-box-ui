@@ -13,7 +13,7 @@ export function useDeleteInbound() {
   const updateConfigMutation = useUpdateConfigMutation();
 
   const deleteInbound = useCallback(
-    async (tag: string) => {
+    (tag: string) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }

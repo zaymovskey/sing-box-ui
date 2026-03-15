@@ -69,6 +69,7 @@ export function EditInboundDialog({
         id: "edit-inbound",
         duration: 2000,
       });
+      form.reset(values);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
@@ -111,7 +112,8 @@ export function EditInboundDialog({
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
           <div className="flex justify-end gap-2">
             <Button
-              disabled={isPending || !form.formState.isDirty}
+              disabled={!form.formState.isDirty}
+              loading={isPending}
               type="button"
               variant="outline"
               onClick={handleReset}

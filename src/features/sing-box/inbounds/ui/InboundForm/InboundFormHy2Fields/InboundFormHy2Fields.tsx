@@ -11,6 +11,8 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
+import { Hy2TlsToolsSection } from "./Hy2TlsToolsSection";
+
 export function InboundFormHy2Fields() {
   const { control, clearErrors, setValue } =
     useFormContext<InboundFormValues>();
@@ -31,9 +33,20 @@ export function InboundFormHy2Fields() {
 
   useEffect(() => {
     if (!tlsEnabled) {
-      clearErrors(["certificate_path", "tls_server_name", "key_path"]);
+      setValue("_tlsChecked", false, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+
+      clearErrors([
+        "tls_server_name",
+        "certificate_path",
+        "key_path",
+        "_tlsChecked",
+      ]);
     }
-  }, [tlsEnabled, clearErrors, setValue]);
+  }, [tlsEnabled, setValue, clearErrors]);
 
   return (
     <>
@@ -100,12 +113,9 @@ export function InboundFormHy2Fields() {
         name="obfs_password"
         placeholder="obfs_password"
       />
-      <div className="text-l mt-7 mb-2 font-medium opacity-80">
-        TLS - Transport Layer Security
-      </div>
       <Separator />
       <ControlledSwitchField<InboundFormValues>
-        label="TLS"
+        label="TLS - Transport Layer Security"
         name="tls_enabled"
       />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -120,15 +130,16 @@ export function InboundFormHy2Fields() {
           disabled={!tlsEnabled}
           label="Certificate path (.crt)"
           name="certificate_path"
-          placeholder="/etc/sing-box/cert.crt"
+          placeholder="/data/sing-box/certs/hy2.crt"
         />
       </div>
       <UncontrolledTextField<InboundFormValues>
         disabled={!tlsEnabled}
         label="Key path (.key)"
         name="key_path"
-        placeholder="/etc/sing-box/private.key"
+        placeholder="/data/sing-box/certs/hy2.key"
       />
+      <Hy2TlsToolsSection />
     </>
   );
 }
