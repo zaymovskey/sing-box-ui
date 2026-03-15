@@ -69,6 +69,7 @@ export function EditInboundDialog({
         id: "edit-inbound",
         duration: 2000,
       });
+      form.reset(values);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
