@@ -85,18 +85,12 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
   obfs_password: z.string().trim().optional(),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
   tls_enabled: z.boolean(),
-  key_path: z.string().trim().min(1, "Нужен путь к .key").optional(),
-  tls_server_name: z.string().trim().min(1).optional(),
-  certificate_path: z.string().trim().min(1, "Нужен путь к .crt").optional(),
+  tls_server_name: z.string().trim().optional(),
+  key_path: z.string().trim().optional(),
+  certificate_path: z.string().trim().optional(),
+  _tlsChecked: z.boolean().optional(),
 }).superRefine((data, ctx) => {
   if (data.tls_enabled) {
-    if (!data.key_path) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["key_path"],
-        message: "Нужен Key path",
-      });
-    }
     if (!data.tls_server_name) {
       ctx.addIssue({
         code: "custom",
@@ -104,11 +98,28 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
         message: "Нужен TLS server name",
       });
     }
+
     if (!data.certificate_path) {
       ctx.addIssue({
         code: "custom",
         path: ["certificate_path"],
-        message: "Нужен Certificate Path",
+        message: "Нужен путь к .crt",
+      });
+    }
+
+    if (!data.key_path) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["key_path"],
+        message: "Нужен путь к .key",
+      });
+    }
+
+    if (data._tlsChecked !== true) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["_tlsChecked"],
+        message: "Сначала проверьте TLS сертификат и ключ",
       });
     }
   }

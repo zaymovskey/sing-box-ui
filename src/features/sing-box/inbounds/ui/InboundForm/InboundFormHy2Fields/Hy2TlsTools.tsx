@@ -1,5 +1,7 @@
 import { Loader2, ShieldCheck, ShieldX, Wand2 } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 
+import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button } from "@/shared/ui";
 
@@ -28,8 +30,17 @@ export function Hy2TlsTools({
     "loading",
   );
 
+  const form = useFormContext<InboundFormValues>();
+
+  const error = form.getFieldState("_tlsChecked", form.formState).error;
+
   return (
-    <div className="space-y-4 rounded-lg border p-4">
+    <div
+      className={cn(
+        "space-y-4 rounded-lg border p-4",
+        disabled && "opacity-70",
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="text-sm font-medium">TLS certificates</div>
       </div>
@@ -41,6 +52,14 @@ export function Hy2TlsTools({
       <p className="text-muted-foreground text-xs">
         Проверка и генерация TLS сертификатов для inbound.
       </p>
+
+      {error && (
+        <div className="border-destructive/40 bg-destructive/5 mt-2 rounded-md border px-3 py-2">
+          <p className="text-destructive text-sm font-medium">
+            {error.message}
+          </p>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <Button

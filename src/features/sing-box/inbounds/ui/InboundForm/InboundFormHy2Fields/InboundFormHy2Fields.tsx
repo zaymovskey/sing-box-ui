@@ -33,9 +33,20 @@ export function InboundFormHy2Fields() {
 
   useEffect(() => {
     if (!tlsEnabled) {
-      clearErrors(["certificate_path", "tls_server_name", "key_path"]);
+      setValue("_tlsChecked", false, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+
+      clearErrors([
+        "tls_server_name",
+        "certificate_path",
+        "key_path",
+        "_tlsChecked",
+      ]);
     }
-  }, [tlsEnabled, clearErrors, setValue]);
+  }, [tlsEnabled, setValue, clearErrors]);
 
   return (
     <>

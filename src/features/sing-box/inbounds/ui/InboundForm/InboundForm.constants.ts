@@ -39,5 +39,6 @@ export const defaultsByType = {
     certificate_path: "/data/sing-box/certs/hy2.crt",
     key_path: "/data/sing-box/certs/hy2.key",
     tls_enabled: false,
+    _tlsChecked: false,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;
