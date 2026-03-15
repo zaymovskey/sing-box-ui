@@ -56,13 +56,26 @@ function Button({
     <Comp
       className={cn(
         buttonVariants({ variant, size, className }),
-        "cursor-pointer",
+        "relative cursor-pointer",
       )}
       data-slot="button"
       {...props}
       disabled={loading || props.disabled}
     >
-      {loading ? <LoaderCircle className="animate-spin" /> : children}
+      <LoaderCircle
+        className={cn(
+          "absolute animate-spin",
+          loading ? "visible" : "invisible",
+        )}
+      />
+      <div
+        className={cn(
+          "flex items-center gap-2",
+          !loading ? "visible" : "invisible",
+        )}
+      >
+        {children}
+      </div>
     </Comp>
   );
 }
