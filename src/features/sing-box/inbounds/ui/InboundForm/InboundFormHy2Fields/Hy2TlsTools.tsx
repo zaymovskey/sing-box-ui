@@ -61,8 +61,8 @@ export function Hy2TlsTools({
       </p>
 
       {error && (
-        <div className="border-destructive/40 bg-destructive/5 mt-2 rounded-md border px-3 py-2">
-          <p className="text-destructive text-sm font-medium">
+        <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">
+          <p className="text-destructive-foreground text-sm font-medium">
             {error.message}
           </p>
         </div>

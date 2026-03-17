@@ -57,7 +57,8 @@ const makeTheme = (invalidKeys: Set<string>): Theme => {
   const invalidBox: CSSProperties = {
     borderRadius: 2,
     padding: "2px 4px",
-    background: "color-mix(in srgb, var(--destructive) 12%, transparent)",
+    background:
+      "color-mix(in srgb, var(--destructive-foreground) 12%, transparent)",
   } as const;
 
   const checkInvalidBox = (path: (string | number)[]) => {

@@ -9,8 +9,8 @@ export type ToastCancelOptions = Pick<
 
 export const sonnerErrorCloseButton: ToastCancelOptions = {
   cancelButtonStyle: {
-    backgroundColor: "var(--destructive)",
-    color: "var(--secondary)",
+    backgroundColor: "var(--destructive-foreground)",
+    color: "white",
   },
   cancel: {
     label: "Закрыть",

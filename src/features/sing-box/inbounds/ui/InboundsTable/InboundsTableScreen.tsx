@@ -89,7 +89,7 @@ export function InboundsTableScreen() {
               setIsDeleteOpen(true);
             }}
           >
-            <Trash2 className="text-destructive size-4" />
+            <Trash2 className="text-destructive-foreground size-4" />
           </Button>
         </>
       ),
