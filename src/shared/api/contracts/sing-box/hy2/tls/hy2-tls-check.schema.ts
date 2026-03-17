@@ -21,5 +21,6 @@ export const Hy2TlsCheckResponseSchema = z.object({
   pair: Hy2TlsCheckItemSchema,
 });
 
+export type Hy2TlsCheckItem = z.infer<typeof Hy2TlsCheckItemSchema>;
 export type Hy2TlsCheckRequest = z.infer<typeof Hy2TlsCheckRequestSchema>;
 export type Hy2TlsCheckResponse = z.infer<typeof Hy2TlsCheckResponseSchema>;

@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import { ApiError } from "@/shared/lib";
 import { infraToast, sonnerErrorCloseButton, Toaster } from "@/shared/ui";
 
+import { ThemeProvider } from "./theme-provider";
+
 type ProvidersProps = {
   children: React.ReactNode;
 };
@@ -64,9 +66,16 @@ export function Providers({ children }: ProvidersProps) {
   }, [queryClient]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <Toaster />
-    </QueryClientProvider>
+    <ThemeProvider
+      disableTransitionOnChange
+      enableSystem
+      attribute="class"
+      defaultTheme="system"
+    >
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <Toaster />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

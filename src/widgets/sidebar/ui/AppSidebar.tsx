@@ -16,6 +16,8 @@ import {
   SidebarMenuItem,
 } from "@/shared/ui";
 
+import { ThemeToggle } from "./ThemeToggle";
+
 const items = [
   {
     title: "JSON Конфиг",
@@ -37,6 +39,10 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            <div className="mb-3">
+              <ThemeToggle />
+            </div>
+
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>

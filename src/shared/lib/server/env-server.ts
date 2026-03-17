@@ -11,26 +11,24 @@ const serverEnvSchema = z.object({
   AUTH_DEMO_EMAIL: z.email(),
   AUTH_DEMO_PASSWORD: z.string().min(1),
   SINGBOX_CONFIG_PATH: z.string().min(1),
+  SINGBOX_CERTS_DIR: z.string(),
 });
 
 type ServerEnvSchema = z.infer<typeof serverEnvSchema>;
 
-export type ServerEnv = ServerEnvSchema & {
-  SINGBOX_CONFIG_PATH: string;
-};
+let cached: ServerEnvSchema | null = null;
 
-let cached: ServerEnv | null = null;
-
-export function getServerEnv(): ServerEnv {
+export function getServerEnv(): ServerEnvSchema {
   if (cached) return cached;
 
-  const raw = {
+  const raw: Record<keyof ServerEnvSchema, string | undefined> = {
     NODE_ENV: process.env.NODE_ENV,
     AUTH_COOKIE_NAME: process.env.AUTH_COOKIE_NAME,
     AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET,
     AUTH_DEMO_EMAIL: process.env.AUTH_DEMO_EMAIL,
     AUTH_DEMO_PASSWORD: process.env.AUTH_DEMO_PASSWORD,
     SINGBOX_CONFIG_PATH: process.env.SINGBOX_CONFIG_PATH,
+    SINGBOX_CERTS_DIR: process.env.SINGBOX_CERTS_DIR,
   };
 
   const isBuild = process.env.NEXT_PHASE === "phase-production-build";

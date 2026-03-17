@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { hasExtension } from "../lib/hy2/hy2-tls-path.utils";
+
 const BaseInboundFormSchema = z.object({
   type: z.enum(["vless", "hysteria2"]),
   tag: z.string().trim().min(1, "Tag обязателен"),
@@ -105,6 +107,14 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
         path: ["certificate_path"],
         message: "Нужен путь к .crt",
       });
+    } else {
+      if (!hasExtension(data.certificate_path, ".crt")) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["certificate_path"],
+          message: "Файл сертификата должен иметь расширение .crt",
+        });
+      }
     }
 
     if (!data.key_path) {
@@ -113,6 +123,14 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
         path: ["key_path"],
         message: "Нужен путь к .key",
       });
+    } else {
+      if (!hasExtension(data.key_path, ".key")) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["key_path"],
+          message: "Файл ключа должен иметь расширение .key",
+        });
+      }
     }
 
     if (data._tlsChecked !== true) {
