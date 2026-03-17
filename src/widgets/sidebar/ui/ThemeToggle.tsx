@@ -10,6 +10,7 @@ export function ThemeToggle() {
 
   return (
     <Button
+      className="h-8 w-8"
       size="icon"
       type="button"
       variant="outline"

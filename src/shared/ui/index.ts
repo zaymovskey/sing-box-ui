@@ -71,6 +71,7 @@ export {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "./sidebar";
 export { Toaster } from "./sonner/sonner";
 export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
