@@ -7,9 +7,11 @@ import { AppSidebar } from "@/widgets/sidebar";
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGate>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="p-2">{children}</SidebarInset>
+      <SidebarProvider defaultOpen>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset className="p-2">{children}</SidebarInset>
+        </SidebarProvider>
       </SidebarProvider>
     </AuthGate>
   );
