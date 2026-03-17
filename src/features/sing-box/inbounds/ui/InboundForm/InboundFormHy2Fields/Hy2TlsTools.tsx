@@ -5,12 +5,17 @@ import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button } from "@/shared/ui";
 
-type Status = "idle" | "loading" | "success" | "error";
+export type Status = "idle" | "loading" | "success" | "error";
+
+export type TlsStatus = {
+  status: Status;
+  message?: string;
+};
 
 export type TlsStatuses = {
-  crt: Status;
-  key: Status;
-  pair: Status;
+  crt: TlsStatus;
+  key: TlsStatus;
+  pair: TlsStatus;
 };
 
 interface Hy2TlsToolsProps {
@@ -26,9 +31,11 @@ export function Hy2TlsTools({
   onGenerate,
   disabled = false,
 }: Hy2TlsToolsProps) {
-  const isChecking = [statuses.crt, statuses.key, statuses.pair].includes(
-    "loading",
-  );
+  const isChecking = [
+    statuses.crt.status,
+    statuses.key.status,
+    statuses.pair.status,
+  ].includes("loading");
 
   const form = useFormContext<InboundFormValues>();
 
@@ -88,7 +95,7 @@ export function Hy2TlsTools({
   );
 }
 
-const StatusRow = ({ status, label }: { status: Status; label: string }) => {
+const StatusRow = ({ status, label }: { status: TlsStatus; label: string }) => {
   const statusConfig = {
     idle: {
       label: "Не проверено",
@@ -116,13 +123,13 @@ const StatusRow = ({ status, label }: { status: Status; label: string }) => {
     },
   };
 
-  const current = statusConfig[status];
+  const current = statusConfig[status.status];
 
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className={cn("h-2.5 w-2.5 rounded-full", current.color)} />
       <span className={current.text}>
-        {label}: {current.label}
+        {label}: {status.message || "Неизвестно"}
       </span>
     </div>
   );

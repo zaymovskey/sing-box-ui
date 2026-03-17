@@ -13,6 +13,7 @@ export {
   type PanelMetadata,
 } from "./sing-box/config/config.schema";
 export {
+  type Hy2TlsCheckItem,
   type Hy2TlsCheckRequest,
   Hy2TlsCheckRequestSchema,
   type Hy2TlsCheckResponse,
