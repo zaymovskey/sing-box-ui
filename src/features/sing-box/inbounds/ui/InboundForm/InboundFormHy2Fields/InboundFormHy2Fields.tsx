@@ -3,11 +3,13 @@ import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
+import { clientEnv } from "@/shared/lib";
 import {
   Button,
   ControlledSwitchField,
   Separator,
   UncontrolledNumberField,
+  UncontrolledPathField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
@@ -126,18 +128,20 @@ export function InboundFormHy2Fields() {
           placeholder="www.cloudflare.com"
         />
 
-        <UncontrolledTextField<InboundFormValues>
+        <UncontrolledPathField<InboundFormValues>
           disabled={!tlsEnabled}
           label="Certificate path (.crt)"
           name="certificate_path"
-          placeholder="/data/sing-box/certs/hy2.crt"
+          path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
+          placeholder="hy2.crt"
         />
       </div>
-      <UncontrolledTextField<InboundFormValues>
+      <UncontrolledPathField<InboundFormValues>
         disabled={!tlsEnabled}
         label="Key path (.key)"
         name="key_path"
-        placeholder="/data/sing-box/certs/hy2.key"
+        path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
+        placeholder="hy2.key"
       />
       <Hy2TlsToolsSection />
     </>

@@ -3,6 +3,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { type Hy2TlsCheckItem } from "@/shared/api/contracts";
+import { clientEnv } from "@/shared/lib";
 import { clientToast } from "@/shared/ui";
 
 import { useHy2TlsCheckMutation } from "../../../model/commands/hy2/hy2-tls-check.mutation";
@@ -70,8 +71,9 @@ export function Hy2TlsToolsSection() {
 
     try {
       const result = await mutateAsync({
-        certificatePath,
-        keyPath,
+        certificatePath:
+          clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + certificatePath,
+        keyPath: clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + keyPath,
       });
 
       setStatuses({

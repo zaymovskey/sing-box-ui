@@ -2,6 +2,7 @@ import {
   type Inbound,
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
+import { clientEnv } from "@/shared/lib";
 
 function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,
@@ -52,8 +53,9 @@ function mapHy2FormToInbound(
     tls: {
       enabled: true,
       server_name: values.tls_server_name,
-      certificate_path: values.certificate_path,
-      key_path: values.key_path,
+      certificate_path:
+        clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + values.certificate_path,
+      key_path: clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + values.key_path,
     },
   };
 }
