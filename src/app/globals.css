@@ -156,3 +156,7 @@
 .scrollbar-transparent::-webkit-scrollbar-thumb:hover {
   background-color: rgb(0 0 0 / 50%);
 }
+
+* {
+  scrollbar-color: var(--muted-foreground) transparent;
+}
