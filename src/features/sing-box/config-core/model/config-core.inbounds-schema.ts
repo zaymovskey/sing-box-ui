@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  hasExtension,
-  looksLikeAbsoluteUnixPath,
-} from "../lib/hy2/hy2-tls-path.utils";
+import { hasExtension } from "../lib/hy2/hy2-tls-path.utils";
 
 const BaseInboundFormSchema = z.object({
   type: z.enum(["vless", "hysteria2"]),
@@ -111,14 +108,6 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
         message: "Нужен путь к .crt",
       });
     } else {
-      if (!looksLikeAbsoluteUnixPath(data.certificate_path)) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["certificate_path"],
-          message: "Путь должен начинаться с /",
-        });
-      }
-
       if (!hasExtension(data.certificate_path, ".crt")) {
         ctx.addIssue({
           code: "custom",
@@ -135,14 +124,6 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
         message: "Нужен путь к .key",
       });
     } else {
-      if (!looksLikeAbsoluteUnixPath(data.key_path)) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["key_path"],
-          message: "Путь должен начинаться с /",
-        });
-      }
-
       if (!hasExtension(data.key_path, ".key")) {
         ctx.addIssue({
           code: "custom",
