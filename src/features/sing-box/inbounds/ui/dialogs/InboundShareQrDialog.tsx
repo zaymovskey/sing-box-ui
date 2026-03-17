@@ -59,7 +59,7 @@ export function InboundShareQrDialog({
             </Badge>
           )}
           <button
-            className="group hover:bg-accent/30 relative cursor-pointer rounded-2xl border p-5 transition-all duration-200 hover:shadow-sm active:scale-95"
+            className="group relative cursor-pointer rounded-2xl border bg-white p-5 transition-all duration-200 hover:shadow-sm active:scale-95"
             type="button"
             onClick={handleCopyQr}
           >
