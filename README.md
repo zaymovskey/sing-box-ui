@@ -1,120 +1,76 @@
-# sing-box UI
+# sing-box-ui
 
-Web UI для управления конфигурацией **sing-box**.
-
-Позволяет редактировать `config.json` через интерфейс вместо ручного редактирования файла.
+Административная панель для управления конфигурацией sing-box
 
 ---
 
-# Возможности
+## 🚀 Overview
 
-- создание и редактирование **inbound**
-- управление **пользователями**
-- редактирование конфигурации `sing-box`
-- валидация конфигов через **Zod**
-- работа через **Docker**
+Веб-интерфейс для управления VPN-конфигурациями sing-box.
 
----
-
-# Режимы запуска
-
-Проект поддерживает **3 режима**.
-
-## 1️⃣ Local development (основной)
-
-Рекомендуемый режим для разработки.
-
-- `sing-box` запускается в **Docker**
-- `Next.js UI` запускается **локально**
-
-Запуск:
-
-```bash
-npm run docker:singbox:up
-npm run dev
-```
-
-или
-
-```bash
-npm run dev:full
-```
+Позволяет удобно управлять настройками, редактировать конфигурацию с валидацией
+и генерировать подключения для клиентов.
 
 ---
 
-## 2️⃣ Full Docker development
+## ✨ Features
 
-И `sing-box`, и UI работают в Docker.
-
-Используется для проверки docker dev-окружения.
-
-```bash
-npm run docker:dev:build
-```
-
----
-
-## 3️⃣ Full Docker production
-
-Production-like запуск обоих сервисов в Docker.
-
-```bash
-npm run docker:prod:build
-```
+- CRUD для inbound'ов
+- Динамические формы (React Hook Form + Zod)
+- Валидация конфигурации sing-box (schema-based)
+- JSON editor с подсветкой ошибок
+- Генерация QR-кодов и ссылок для клиентов
+- JWT авторизация
+- Переключение темы (light/dark)
+- Feature-based архитектура
 
 ---
 
-# Docker команды
+## 🖼 Screenshots
 
-### sing-box
+### Inbounds management
 
-```bash
-npm run docker:singbox:up
-npm run docker:singbox:down
-npm run docker:singbox:logs
-```
-
-### Docker dev
-
-```bash
-npm run docker:dev:build
-npm run docker:dev:start
-npm run docker:dev:stop
-npm run docker:dev:logs
-```
-
-### Docker prod
-
-```bash
-npm run docker:prod:build
-npm run docker:prod:start
-npm run docker:prod:stop
-npm run docker:prod:logs
-```
+![Inbounds](./screenshots/inbounds.png)
 
 ---
 
-# Конфигурация
+### Create / Edit inbound
 
-Основной конфиг `sing-box` хранится в:
-
-```
-docker/data/sing-box/config.json
-```
-
-Этот файл используется:
-
-- контейнером `sing-box`
-- UI для чтения и редактирования конфигурации
+![Inbound Form](./screenshots/inbound-form.png)
 
 ---
 
-# Технологии
+### JSON config editor (with validation)
 
-- Next.js
-- React
-- TypeScript
-- Tailwind
+![Config Editor](./screenshots/config-editor.png)
+
+---
+
+### Client connections (QR / links)
+
+![Connections](./screenshots/connections.png)
+
+---
+
+## 🧱 Architecture
+
+Проект построен с использованием feature-based архитектуры:
+
+- разделение по доменам (auth, inbound, config)
+- строгий public API между фичами
+- изоляция бизнес-логики
+- переиспользуемые shared-компоненты
+
+---
+
+## ⚙️ Tech Stack
+
+- Next.js (App Router)
+- React 18
+- TypeScript (strict)
+- Tailwind CSS + shadcn/ui
+- React Query
+- Zustand
 - React Hook Form
 - Zod
 - Docker
@@ -122,10 +78,46 @@ docker/data/sing-box/config.json
 
 ---
 
-# Документация
+## 🐳 Infrastructure
 
-Подробная документация находится в:
+Приложение разворачивается через Docker Compose:
 
+- Next.js UI (frontend)
+- sing-box (отдельный контейнер)
+- volume для хранения конфигурации
+
+Архитектура приближена к production setup.
+
+---
+
+## 🧩 Code Quality
+
+- ESLint с кастомными правилами для соблюдения feature-based архитектуры
+- Prettier + EditorConfig для консистентного форматирования
+- Husky + lint-staged (pre-commit проверки)
+
+---
+
+## ▶️ Run locally
+
+```bash
+docker compose up --build
 ```
-docs/
-```
+
+---
+
+## 📌 Notes
+
+Проект реализован как практическое приложение с упором на:
+
+- архитектуру
+- работу с конфигурациями
+- продакшн-подход к разработке
+
+---
+
+## 📎 Related
+
+- sing-box: https://github.com/SagerNet/sing-box
+
+---
