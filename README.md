@@ -90,6 +90,14 @@
 
 ---
 
+## 🧩 Code Quality
+
+- ESLint с кастомными правилами для соблюдения feature-based архитектуры
+- Prettier + EditorConfig для консистентного форматирования
+- Husky + lint-staged (pre-commit проверки)
+
+---
+
 ## ▶️ Run locally
 
 ```bash
