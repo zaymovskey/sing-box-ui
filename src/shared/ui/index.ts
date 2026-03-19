@@ -46,6 +46,16 @@ export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField
 export { UncontrolledUuidField } from "./form/uncontrolled/UncontrolledUuidField";
 export { Input } from "./input";
 export { Label } from "./label";
+export { MultiSelect } from "./MultiSelect";
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./pagination";
 export { PasswordInput } from "./password-input";
 export {
   Select,
