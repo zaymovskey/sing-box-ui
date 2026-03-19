@@ -1,164 +1,50 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   useConfigQuery,
   useConfigQueryToasts,
 } from "@/features/sing-box/config-core";
-import { type Inbound } from "@/features/sing-box/config-core";
-import { Badge, Button, Card, MultiSelect, Separator } from "@/shared/ui";
+import { Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
+import { useInboundsColumns } from "../../lib/use-inbounds-columns";
+import { useInboundsListState } from "../../lib/use-inbounds-list-state";
 import { mapInboundsToRows } from "../../model/inbound-row.mapper";
-import { type InboundRow } from "../../model/inbound-row.type";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 import { InboundsTablePagination } from "./InboundsTablePagination";
-import { InboundsTableSearch } from "./InboundsTableSearch";
 
 const PER_PAGE = 10;
 
+const inboundTypeOptions = [
+  { label: "VLESS", value: "vless" },
+  { label: "Hysteria2", value: "hysteria2" },
+];
+
 export function InboundsTableScreen() {
-  const [editingInbound, setEditingInbound] = useState<Inbound | null>(null);
-  const [deletingInbound, setDeletingInbound] = useState<Inbound | null>(null);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const inboundColumns = useInboundsColumns();
 
   const { data: singBoxConfig, error } = useConfigQuery();
   useConfigQueryToasts(error);
 
-  const [expandedRowTags, setExpandedRowTags] = useState<
-    Record<string, boolean>
-  >({});
-
-  const toggleExpandedRow = (rowTag: string) => {
-    setExpandedRowTags((prev) => ({
-      ...prev,
-      [rowTag]: !prev[rowTag],
-    }));
-  };
-
-  const inboundColumns: ColumnDef<InboundRow>[] = [
-    {
-      id: "expand",
-      header: "",
-      cell: ({ row }) => {
-        const isExpanded = !!expandedRowTags[row.original.inbound.tag!];
-
-        if (row.original.usersCount === 0) {
-          return null;
-        }
-
-        return (
-          <Button
-            size="icon"
-            type="button"
-            variant="ghost"
-            onClick={() => toggleExpandedRow(row.original.inbound.tag!)}
-          >
-            {isExpanded ? (
-              <ChevronDown className="size-4" />
-            ) : (
-              <ChevronRight className="size-4" />
-            )}
-          </Button>
-        );
-      },
-      meta: {
-        className: "w-[48px] whitespace-nowrap",
-      },
-    },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setEditingInbound(row.original.inbound);
-              setIsEditOpen(true);
-            }}
-          >
-            <Pencil className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setDeletingInbound(row.original.inbound);
-              setIsDeleteOpen(true);
-            }}
-          >
-            <Trash2 className="text-destructive-foreground size-4" />
-          </Button>
-        </div>
-      ),
-      meta: {
-        className: "w-[96px] whitespace-nowrap",
-      },
-    },
-    {
-      accessorKey: "tag",
-      header: "Тег (Tag)",
-      cell: ({ row }) => row.original.tag ?? "—",
-    },
-    {
-      accessorKey: "type",
-      header: "Тип (Type)",
-      cell: ({ row }) => {
-        const inbound = row.original.inbound;
-        const badges: string[] = [];
-        badges.push(row.original.type!);
-        if (inbound.type === "vless") {
-          if (inbound.tls?.reality?.enabled) {
-            badges.push("reality");
-          }
-        }
-        return (
-          <>
-            {badges.map((badge, index) => (
-              <Badge
-                key={index}
-                className="mr-1 rounded-full px-2 py-0 text-xs"
-                variant="outline"
-              >
-                {badge}
-              </Badge>
-            ))}
-          </>
-        );
-      },
-    },
-    {
-      id: "listen",
-      header: "Порт (Listen)",
-      cell: ({ row }) => row.original.listen_port ?? "—",
-    },
-    {
-      id: "users",
-      header: "Пользователи (Users)",
-      cell: ({ row }) => (
-        <Badge className="rounded-full px-2 py-0 text-xs" variant="outline">
-          {row.original.usersCount}
-        </Badge>
-      ),
-    },
-  ];
-
-  const [activePage, setActivePage] = useState(1);
-
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    selectedTypes,
+    setSelectedTypes,
+    searchQuery,
+    setSearchQuery,
+    debouncedSearchQuery,
+    activePage,
+    setGetParam,
+  } = useInboundsListState();
 
   const tableRows = useMemo(
     () =>
       mapInboundsToRows(singBoxConfig ?? { inbounds: [] }).filter((row) => {
-        const query = searchQuery.toLowerCase();
+        const query = debouncedSearchQuery.toLowerCase();
+
         const queryFilter =
           row.tag?.toLowerCase().includes(query) ||
           row.type?.toLowerCase().includes(query) ||
@@ -166,15 +52,11 @@ export function InboundsTableScreen() {
 
         const typeFilter =
           selectedTypes.length === 0 || selectedTypes.includes(row.type ?? "");
+
         return queryFilter && typeFilter;
       }),
-    [singBoxConfig, searchQuery, selectedTypes],
+    [singBoxConfig, debouncedSearchQuery, selectedTypes],
   );
-
-  const inboundTypeOptions = [
-    { label: "VLESS", value: "vless" },
-    { label: "Hysteria2", value: "hysteria2" },
-  ];
 
   const paginatedRows = useMemo(() => {
     const startIndex = (activePage - 1) * PER_PAGE;
@@ -187,7 +69,12 @@ export function InboundsTableScreen() {
         <CreateInboundDialog />
         <Separator />
         <div className="flex items-center justify-between">
-          <InboundsTableSearch onSearch={(query) => setSearchQuery(query)} />
+          <Input
+            className="max-w-100"
+            placeholder="Поиск"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <MultiSelect
             options={inboundTypeOptions}
             placeholder="Тип инбаунда"
@@ -197,30 +84,30 @@ export function InboundsTableScreen() {
         </div>
 
         <InboundsTable
-          columns={inboundColumns}
+          columns={inboundColumns.columns}
           data={paginatedRows}
-          expandedRowTags={expandedRowTags}
+          expandedRowTags={inboundColumns.expandedRowTags.tags}
         />
 
         <InboundsTablePagination
           activePage={activePage}
           count={tableRows.length}
           perPage={PER_PAGE}
-          onPageChange={(page) => setActivePage(page)}
+          onPageChange={(page) => setGetParam(page.toString(), "page")}
         />
       </Card>
-      {editingInbound && (
+      {inboundColumns.actions.edit.inbound && (
         <EditInboundDialog
-          inbound={editingInbound}
-          open={isEditOpen}
-          onOpenChange={setIsEditOpen}
+          inbound={inboundColumns.actions.edit.inbound}
+          open={inboundColumns.actions.edit.isOpen}
+          onOpenChange={inboundColumns.actions.edit.setIsOpen}
         />
       )}
-      {deletingInbound && (
+      {inboundColumns.actions.delete.inbound && (
         <DeleteInboundDialog
-          inbound={deletingInbound}
-          open={isDeleteOpen}
-          onOpenChange={setIsDeleteOpen}
+          inbound={inboundColumns.actions.delete.inbound}
+          open={inboundColumns.actions.delete.isOpen}
+          onOpenChange={inboundColumns.actions.delete.setIsOpen}
         />
       )}
     </>
