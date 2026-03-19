@@ -28,27 +28,36 @@
 
 ## 🖼 Screenshots
 
-### Inbounds management
+### 🚪 Inbounds management
 
-![Inbounds](./screenshots/inbounds.png)
-
----
-
-### Create / Edit inbound
-
-![Inbound Form](./screenshots/inbound-form.png)
+<p align="center">
+  <img src="./screenshots/inbounds.png" width="48%" />
+  <img src="./screenshots/inbounds-search.png" width="48%" />
+</p>
 
 ---
 
-### JSON config editor (with validation)
+### ✏️ Create / Edit inbound
 
-![Config Editor](./screenshots/config-editor.png)
+<p align="center">
+  <img src="./screenshots/inbound-form.png" width="60%" />
+</p>
 
 ---
 
-### Client connections (QR / links)
+### 🧩 JSON config editor (with validation)
 
-![Connections](./screenshots/connections.png)
+<p align="center">
+  <img src="./screenshots/config-editor.png" width="70%" />
+</p>
+
+---
+
+### 📱 Client connections (QR / links)
+
+<p align="center">
+  <img src="./screenshots/connections.png" width="60%" />
+</p>
 
 ---
 
