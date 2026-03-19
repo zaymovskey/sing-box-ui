@@ -9,7 +9,7 @@ import {
   useConfigQueryToasts,
 } from "@/features/sing-box/config-core";
 import { type Inbound } from "@/features/sing-box/config-core";
-import { Badge, Button, Card, Separator } from "@/shared/ui";
+import { Badge, Button, Card, MultiSelect, Separator } from "@/shared/ui";
 
 import { mapInboundsToRows } from "../../model/inbound-row.mapper";
 import { type InboundRow } from "../../model/inbound-row.type";
@@ -146,31 +146,46 @@ export function InboundsTableScreen() {
     },
   ];
 
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const tableRows = useMemo(
     () =>
       mapInboundsToRows(singBoxConfig ?? { inbounds: [] }).filter((row) => {
         const query = searchQuery.toLowerCase();
-        return (
+        const queryFilter =
           row.tag?.toLowerCase().includes(query) ||
           row.type?.toLowerCase().includes(query) ||
-          row.listen_port?.toString().includes(query)
-        );
+          row.listen_port?.toString().includes(query);
+
+        const typeFilter =
+          selectedTypes.length === 0 || selectedTypes.includes(row.type ?? "");
+        return queryFilter && typeFilter;
       }),
-    [searchQuery, singBoxConfig],
+    [searchQuery, singBoxConfig, selectedTypes],
   );
 
-  const onSearch = (query: string) => {
-    setSearchQuery(query);
-  };
+  const inboundTypeOptions = [
+    { label: "VLESS", value: "vless" },
+    { label: "Hysteria2", value: "hysteria2" },
+  ];
 
   return (
     <>
       <Card className="mb-4 gap-5 p-4">
         <CreateInboundDialog />
         <Separator />
-        <InboundsTableSearch onSearch={onSearch} />
+        <div className="flex items-center justify-between">
+          <InboundsTableSearch onSearch={(query) => setSearchQuery(query)} />
+          <MultiSelect
+            options={inboundTypeOptions}
+            placeholder="Тип инбаунда"
+            value={selectedTypes}
+            onValueChange={setSelectedTypes}
+          />
+        </div>
+
         <InboundsTable
           columns={inboundColumns}
           data={tableRows}
