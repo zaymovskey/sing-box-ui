@@ -17,6 +17,7 @@ import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
+import { InboundsTableSearch } from "./InboundsTableSearch";
 
 export function InboundsTableScreen() {
   const [editingInbound, setEditingInbound] = useState<Inbound | null>(null);
@@ -145,16 +146,31 @@ export function InboundsTableScreen() {
     },
   ];
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const tableRows = useMemo(
-    () => mapInboundsToRows(singBoxConfig ?? { inbounds: [] }),
-    [singBoxConfig],
+    () =>
+      mapInboundsToRows(singBoxConfig ?? { inbounds: [] }).filter((row) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          row.tag?.toLowerCase().includes(query) ||
+          row.type?.toLowerCase().includes(query) ||
+          row.listen_port?.toString().includes(query)
+        );
+      }),
+    [searchQuery, singBoxConfig],
   );
 
+  const onSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
-    <div>
+    <>
       <Card className="mb-4 gap-5 p-4">
         <CreateInboundDialog />
         <Separator />
+        <InboundsTableSearch onSearch={onSearch} />
         <InboundsTable
           columns={inboundColumns}
           data={tableRows}
@@ -175,6 +191,6 @@ export function InboundsTableScreen() {
           onOpenChange={setIsDeleteOpen}
         />
       )}
-    </div>
+    </>
   );
 }
