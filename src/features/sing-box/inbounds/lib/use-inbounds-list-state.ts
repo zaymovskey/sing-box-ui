@@ -1,14 +1,14 @@
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { useDebounceValue, useSetGetParam } from "@/shared/hooks";
+import { useDebounceValue, useUpdateQueryParams } from "@/shared/hooks";
 
 export function useInboundsListState() {
   const searchParams = useSearchParams();
 
-  const typesFromUrl =
-    searchParams.get("types")?.split(",").filter(Boolean) ?? [];
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(typesFromUrl);
+  const selectedTypes = useMemo(() => {
+    return searchParams.get("types")?.split(",").filter(Boolean) ?? [];
+  }, [searchParams]);
 
   const searchFromUrl = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
@@ -19,24 +19,17 @@ export function useInboundsListState() {
     Number.parseInt(searchParams.get("page") || "1", 10) || 1,
   );
 
-  const setGetParam = useSetGetParam();
+  const setGetParam = useUpdateQueryParams<"search" | "page" | "types">();
 
   useEffect(() => {
-    setGetParam(debouncedSearchQuery, "search");
-    setGetParam("1", "page");
+    setGetParam({
+      search: debouncedSearchQuery,
+      page: "1",
+    });
   }, [debouncedSearchQuery, setGetParam]);
-
-  useEffect(() => {
-    setGetParam(
-      selectedTypes.length > 0 ? selectedTypes.join(",") : "",
-      "types",
-    );
-    setGetParam("1", "page");
-  }, [selectedTypes, setGetParam]);
 
   return {
     selectedTypes,
-    setSelectedTypes,
     searchQuery,
     setSearchQuery,
     debouncedSearchQuery,
