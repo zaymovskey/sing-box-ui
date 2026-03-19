@@ -17,7 +17,10 @@ import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
+import { InboundsTablePagination } from "./InboundsTablePagination";
 import { InboundsTableSearch } from "./InboundsTableSearch";
+
+const PER_PAGE = 10;
 
 export function InboundsTableScreen() {
   const [editingInbound, setEditingInbound] = useState<Inbound | null>(null);
@@ -28,14 +31,14 @@ export function InboundsTableScreen() {
   const { data: singBoxConfig, error } = useConfigQuery();
   useConfigQueryToasts(error);
 
-  const [expandedRowIds, setExpandedRowIds] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [expandedRowTags, setExpandedRowTags] = useState<
+    Record<string, boolean>
+  >({});
 
-  const toggleExpandedRow = (rowId: string) => {
-    setExpandedRowIds((prev) => ({
+  const toggleExpandedRow = (rowTag: string) => {
+    setExpandedRowTags((prev) => ({
       ...prev,
-      [rowId]: !prev[rowId],
+      [rowTag]: !prev[rowTag],
     }));
   };
 
@@ -44,7 +47,7 @@ export function InboundsTableScreen() {
       id: "expand",
       header: "",
       cell: ({ row }) => {
-        const isExpanded = !!expandedRowIds[row.id];
+        const isExpanded = !!expandedRowTags[row.original.inbound.tag!];
 
         if (row.original.usersCount === 0) {
           return null;
@@ -55,7 +58,7 @@ export function InboundsTableScreen() {
             size="icon"
             type="button"
             variant="ghost"
-            onClick={() => toggleExpandedRow(row.id)}
+            onClick={() => toggleExpandedRow(row.original.inbound.tag!)}
           >
             {isExpanded ? (
               <ChevronDown className="size-4" />
@@ -66,14 +69,14 @@ export function InboundsTableScreen() {
         );
       },
       meta: {
-        className: "w-[1%] whitespace-nowrap",
+        className: "w-[48px] whitespace-nowrap",
       },
     },
     {
       id: "actions",
       header: "",
       cell: ({ row }) => (
-        <>
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             onClick={() => {
@@ -92,10 +95,10 @@ export function InboundsTableScreen() {
           >
             <Trash2 className="text-destructive-foreground size-4" />
           </Button>
-        </>
+        </div>
       ),
       meta: {
-        className: "w-[1%] whitespace-nowrap",
+        className: "w-[96px] whitespace-nowrap",
       },
     },
     {
@@ -146,6 +149,8 @@ export function InboundsTableScreen() {
     },
   ];
 
+  const [activePage, setActivePage] = useState(1);
+
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -163,13 +168,18 @@ export function InboundsTableScreen() {
           selectedTypes.length === 0 || selectedTypes.includes(row.type ?? "");
         return queryFilter && typeFilter;
       }),
-    [searchQuery, singBoxConfig, selectedTypes],
+    [singBoxConfig, searchQuery, selectedTypes],
   );
 
   const inboundTypeOptions = [
     { label: "VLESS", value: "vless" },
     { label: "Hysteria2", value: "hysteria2" },
   ];
+
+  const paginatedRows = useMemo(() => {
+    const startIndex = (activePage - 1) * PER_PAGE;
+    return tableRows.slice(startIndex, startIndex + PER_PAGE);
+  }, [tableRows, activePage]);
 
   return (
     <>
@@ -188,8 +198,15 @@ export function InboundsTableScreen() {
 
         <InboundsTable
           columns={inboundColumns}
-          data={tableRows}
-          expandedRowIds={expandedRowIds}
+          data={paginatedRows}
+          expandedRowTags={expandedRowTags}
+        />
+
+        <InboundsTablePagination
+          activePage={activePage}
+          count={tableRows.length}
+          perPage={PER_PAGE}
+          onPageChange={(page) => setActivePage(page)}
         />
       </Card>
       {editingInbound && (

@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { type Inbound, useConfigQuery } from "@/features/sing-box/config-core";
 import { clientEnv } from "@/shared/lib";
-import { Button, clientToast, TableCell, TableRow } from "@/shared/ui";
+import { Button, clientToast } from "@/shared/ui";
 
 import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
 import { InboundShareQrDialog } from "../dialogs/InboundShareQrDialog";
@@ -59,33 +59,31 @@ export function InboundUserRow({
   const [isCopied, setIsCopied] = useState(false);
 
   return (
-    <TableRow>
-      <TableCell className="bg-muted/30 py-3 pl-15" colSpan={999}>
-        <div className="bg-background rounded-md border px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0 space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{name}</span>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2">
-              <Button
-                className="transition-transform active:scale-95"
-                type="button"
-                onClick={handleCopy}
-              >
-                {isCopied ? <Check /> : <Copy />}
-                Ссылка
-              </Button>
-              <Button type="button" onClick={() => setQrCodeDialogOpen(true)}>
-                <ScanQrCode />
-                QR
-              </Button>
+    <>
+      <div className="bg-background rounded-md border px-4 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{name}</span>
             </div>
           </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              className="transition-transform active:scale-95"
+              type="button"
+              onClick={handleCopy}
+            >
+              {isCopied ? <Check /> : <Copy />}
+              Ссылка
+            </Button>
+            <Button type="button" onClick={() => setQrCodeDialogOpen(true)}>
+              <ScanQrCode />
+              QR
+            </Button>
+          </div>
         </div>
-      </TableCell>
+      </div>
       {link && (
         <InboundShareQrDialog
           link={link}
@@ -94,6 +92,6 @@ export function InboundUserRow({
           onOpenChange={setQrCodeDialogOpen}
         />
       )}
-    </TableRow>
+    </>
   );
 }

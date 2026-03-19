@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Fragment, type JSX } from "react";
+import { Fragment } from "react";
 
 import {
   Table,
@@ -23,13 +23,13 @@ import { InboundUserRow } from "./InboundUserRow";
 type InboundsTableProps = {
   columns: ColumnDef<InboundRow>[];
   data: InboundRow[];
-  expandedRowIds: Record<string, boolean>;
+  expandedRowTags: Record<string, boolean>;
 };
 
 export function InboundsTable({
   columns,
   data,
-  expandedRowIds,
+  expandedRowTags,
 }: InboundsTableProps) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -40,7 +40,7 @@ export function InboundsTable({
 
   return (
     <div className="overflow-hidden rounded-md border">
-      <Table>
+      <Table className="w-full table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -64,22 +64,13 @@ export function InboundsTable({
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => {
-              let usersRows: JSX.Element[] = [];
               const inbound = row.original.inbound;
+              const isExpanded = !!expandedRowTags[inbound.tag!];
 
-              const isExpanded = !!expandedRowIds[row.id];
-
-              if (
-                isExpanded &&
+              const hasUsers =
                 "users" in inbound &&
-                Array.isArray(inbound.users)
-              ) {
-                usersRows = inbound.users.map((user, index) => {
-                  return (
-                    <InboundUserRow key={index} inbound={inbound} user={user} />
-                  );
-                });
-              }
+                Array.isArray(inbound.users) &&
+                inbound.users.length > 0;
 
               return (
                 <Fragment key={row.id}>
@@ -97,7 +88,26 @@ export function InboundsTable({
                     ))}
                   </TableRow>
 
-                  {usersRows}
+                  {isExpanded && hasUsers && (
+                    <TableRow>
+                      <TableCell
+                        className="bg-muted/20 p-0"
+                        colSpan={row.getVisibleCells().length}
+                      >
+                        <div className="py-4 pr-4 pl-15">
+                          <div className="space-y-4">
+                            {inbound.users?.map((user, index) => (
+                              <InboundUserRow
+                                key={`${row.id}-${index}`}
+                                inbound={inbound}
+                                user={user}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </Fragment>
               );
             })
