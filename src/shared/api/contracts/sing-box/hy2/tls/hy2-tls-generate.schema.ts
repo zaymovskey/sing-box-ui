@@ -3,6 +3,7 @@ import z from "zod";
 export const Hy2TlsGenerateRequestSchema = z.object({
   certificatePath: z.string().trim().min(1),
   keyPath: z.string().trim().min(1),
+  serverName: z.string().trim().min(1),
   overwrite: z.boolean().optional().default(false),
 });
 

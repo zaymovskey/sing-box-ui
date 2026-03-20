@@ -1,5 +1,4 @@
 {
-  // -------------- Rest Client --------------
   "rest-client.rememberCookiesForSubsequentRequests": true,
   "rest-client.environmentVariables": {
     "$shared": {

@@ -78,9 +78,9 @@ async function validatePair(
 }
 
 /**
- * Check Hysteria2 TLS certificate and key
- * @description Validates Hysteria2 TLS files stored in the managed sing-box certificates directory.
- * Checks that the certificate and key exist, are readable, are valid PEM files, and match each other.
+ * Проверка TLS-сертификата и ключа Hysteria2
+ * @description Валидирует TLS-файлы Hysteria2, хранящиеся в управляемой директории сертификатов sing-box.
+ * Проверяет, что сертификат и ключ существуют, доступны для чтения, являются корректными PEM-файлами и соответствуют друг другу.
  * @tag SingBox
  *
  * @body Hy2TlsCheckRequestSchema
