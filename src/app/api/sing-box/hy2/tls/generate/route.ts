@@ -1,6 +1,9 @@
-// import { Hy2TlsGenerateResponseSchema } from "@/shared/api/contracts";
-// import { Hy2TlsGenerateRequestSchema } from "@/shared/api/contracts/sing-box/hy2/tls/hy2-tls-generate.schema";
-// import { withRoute } from "@/shared/lib/server";
+import {
+  Hy2TlsGenerateRequestSchema,
+  type Hy2TlsGenerateResponse,
+  Hy2TlsGenerateResponseSchema,
+} from "@/shared/api/contracts";
+import { checkFilePresence, withRoute } from "@/shared/lib/server";
 
 /**
  * Check Hysteria2 TLS certificate and key
@@ -15,9 +18,35 @@
  *
  * @openapi
  */
-// export const POST = withRoute({
-//   auth: true,
-//   requestSchema: Hy2TlsGenerateRequestSchema,
-//   responseSchema: Hy2TlsGenerateResponseSchema,
-//   handler: async ({ body }) => {},
-// });
+export const POST = withRoute({
+  auth: true,
+  requestSchema: Hy2TlsGenerateRequestSchema,
+  responseSchema: Hy2TlsGenerateResponseSchema,
+  handler: async ({ body }) => {
+    const isThereCert = await checkFilePresence(body.certificatePath);
+    const isThereKey = await checkFilePresence(body.keyPath);
+    const overwrite = body.overwrite;
+
+    // Есть ли сертификат или ключ, и не разрешено ли перезаписывать существующие файлы
+    if ((isThereCert === "exists" || isThereKey === "exists") && !overwrite) {
+      let message: string;
+
+      if (isThereCert === "exists" && isThereKey === "exists") {
+        message = "Сертификат и ключ уже существуют по заданным путям";
+      } else if (isThereCert === "exists") {
+        message = "Сертификат уже существует по заданному пути";
+      } else {
+        message = "Ключ уже существует по заданному пути";
+      }
+      return {
+        result: "conflict",
+        message,
+      } satisfies Hy2TlsGenerateResponse;
+    }
+
+    return {
+      result: "error",
+      message: "Certificate generation is not implemented yet.",
+    } satisfies Hy2TlsGenerateResponse;
+  },
+});
