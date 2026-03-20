@@ -19,3 +19,7 @@ export {
   type Hy2TlsCheckResponse,
   Hy2TlsCheckResponseSchema,
 } from "./sing-box/hy2/tls/hy2-tls-check.schema";
+export {
+  Hy2TlsGenerateResponseSchema,
+  Hy2TlsGenerateResultSchema,
+} from "./sing-box/hy2/tls/hy2-tls-generate.schema";

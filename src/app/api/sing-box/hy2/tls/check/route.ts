@@ -12,29 +12,37 @@ import {
   type Hy2TlsCheckResponse,
   Hy2TlsCheckResponseSchema,
 } from "@/shared/api/contracts";
-import { withRoute } from "@/shared/lib/server";
+import { getServerEnv, withRoute } from "@/shared/lib/server";
 
-const CONTAINER_CERTS_DIR = "/data/sing-box/certs";
+const serverEnv = getServerEnv();
+
 const HOST_CERTS_DIR = path.resolve(
   process.cwd(),
-  "docker/data/sing-box/certs",
+  "docker" + serverEnv.SINGBOX_CERTS_DIR,
 );
 
 function resolveHostCertPath(containerPath: string): string | null {
-  const normalizedContainerDir = path.posix.normalize(CONTAINER_CERTS_DIR);
-  const normalizedInput = path.posix.normalize(containerPath);
+  const containerBaseDir = path.posix
+    .normalize(serverEnv.SINGBOX_CERTS_DIR)
+    .replace(/\/+$/, "");
+  const normalizedContainerPath = path.posix.normalize(containerPath);
 
-  if (
-    !normalizedInput.startsWith(normalizedContainerDir + "/") &&
-    normalizedInput !== normalizedContainerDir
-  ) {
+  const isInsideBaseDir =
+    normalizedContainerPath === containerBaseDir ||
+    normalizedContainerPath.startsWith(containerBaseDir + "/");
+
+  if (!isInsideBaseDir) {
     return null;
   }
 
   const relativePath = path.posix.relative(
-    normalizedContainerDir,
-    normalizedInput,
+    containerBaseDir,
+    normalizedContainerPath,
   );
+
+  if (!relativePath || relativePath.startsWith("..")) {
+    return null;
+  }
 
   return path.resolve(HOST_CERTS_DIR, relativePath);
 }
