@@ -16,7 +16,7 @@ export const Hy2TlsGenerateResultSchema = z.enum([
 
 export const Hy2TlsGenerateResponseSchema = z.object({
   result: Hy2TlsGenerateResultSchema,
-  message: z.string().optional(),
+  message: z.string(),
 });
 
 export type Hy2TlsGenerateRequest = z.infer<typeof Hy2TlsGenerateRequestSchema>;

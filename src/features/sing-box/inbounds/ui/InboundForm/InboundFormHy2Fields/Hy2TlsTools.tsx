@@ -1,11 +1,23 @@
-import { Loader2, ShieldCheck, ShieldX, Wand2 } from "lucide-react";
+import {
+  AlertCircleIcon,
+  Loader2,
+  ShieldCheck,
+  ShieldX,
+  Wand2,
+} from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
-import { Button } from "@/shared/ui";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  ControlledSwitchField,
+} from "@/shared/ui";
 
-export type Status = "idle" | "loading" | "success" | "error";
+export type Status = "idle" | "loading" | "success" | "error" | "generating";
 
 export type TlsStatus = {
   status: Status;
@@ -23,6 +35,7 @@ interface Hy2TlsToolsProps {
   onCheck: () => void;
   onGenerate: () => void;
   disabled?: boolean;
+  generateError?: string;
 }
 
 export function Hy2TlsTools({
@@ -30,12 +43,13 @@ export function Hy2TlsTools({
   onCheck,
   onGenerate,
   disabled = false,
+  generateError,
 }: Hy2TlsToolsProps) {
   const isChecking = [
     statuses.crt.status,
     statuses.key.status,
     statuses.pair.status,
-  ].includes("loading");
+  ].some((item) => item === "loading" || item === "generating");
 
   const form = useFormContext<InboundFormValues>();
 
@@ -56,6 +70,14 @@ export function Hy2TlsTools({
       <StatusRow label="Ключ (.key)" status={statuses.key} />
       <StatusRow label="Пара" status={statuses.pair} />
 
+      {generateError && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>Ошибка генерации</AlertTitle>
+          <AlertDescription>{generateError}</AlertDescription>
+        </Alert>
+      )}
+
       <p className="text-muted-foreground text-xs">
         Проверка и генерация TLS сертификатов для inbound.
       </p>
@@ -67,6 +89,12 @@ export function Hy2TlsTools({
           </p>
         </div>
       )}
+
+      <ControlledSwitchField<InboundFormValues>
+        disabled={disabled}
+        label="Перезапись (overwrite)"
+        name="_tlsOverwrite"
+      />
 
       <div className="flex gap-2">
         <Button
@@ -120,6 +148,12 @@ const StatusRow = ({ status, label }: { status: TlsStatus; label: string }) => {
       color: "bg-red-500",
       text: "text-red-600",
       icon: <ShieldX className="h-4 w-4" />,
+    },
+    generating: {
+      label: "Генерация...",
+      color: "bg-yellow-500",
+      text: "text-yellow-600",
+      icon: <Wand2 className="h-4 w-4" />,
     },
   };
 

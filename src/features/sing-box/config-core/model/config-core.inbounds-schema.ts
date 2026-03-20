@@ -91,6 +91,7 @@ const Hy2FormSchema = BaseInboundFormSchema.extend({
   key_path: z.string().trim().optional(),
   certificate_path: z.string().trim().optional(),
   _tlsChecked: z.boolean().optional(),
+  _tlsOverwrite: z.boolean().default(false),
 }).superRefine((data, ctx) => {
   if (data.tls_enabled) {
     if (!data.tls_server_name) {
