@@ -175,7 +175,7 @@ export function Hy2TlsToolsSection() {
 
       setGenerateError("");
       setStatuses(successesStatuses);
-      handleCheck();
+      await handleCheck();
     } catch {
       setGenerateError("Не удалось сгенерировать TLS сертификаты");
     }
