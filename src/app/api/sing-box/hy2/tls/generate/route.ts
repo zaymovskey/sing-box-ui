@@ -1,14 +1,24 @@
+import { mkdir, rm } from "node:fs/promises";
+import path from "node:path";
+
 import {
   Hy2TlsGenerateRequestSchema,
   type Hy2TlsGenerateResponse,
   Hy2TlsGenerateResponseSchema,
 } from "@/shared/api/contracts";
-import { checkFilePresence, withRoute } from "@/shared/lib/server";
+import {
+  checkFilePresence,
+  generateSelfSignedCert,
+  resolveHostCertPath,
+  withRoute,
+} from "@/shared/lib/server";
+
+export const runtime = "nodejs";
 
 /**
- * Check Hysteria2 TLS certificate and key
- * @description Validates Hysteria2 TLS files stored in the managed sing-box certificates directory.
- * Checks that the certificate and key exist, are readable, are valid PEM files, and match each other.
+ * Генерация TLS-сертификата и ключа Hysteria2
+ * @description Генерирует TLS-сертификат и приватный ключ для Hysteria2 в управляемой директории сертификатов sing-box.
+ * Проверяет корректность путей, наличие существующих файлов и, при необходимости, перезаписывает их.
  * @tag SingBox
  *
  * @body Hy2TlsGenerateRequestSchema
@@ -23,20 +33,48 @@ export const POST = withRoute({
   requestSchema: Hy2TlsGenerateRequestSchema,
   responseSchema: Hy2TlsGenerateResponseSchema,
   handler: async ({ body }) => {
-    const isThereCert = await checkFilePresence(body.certificatePath);
-    const isThereKey = await checkFilePresence(body.keyPath);
-    const overwrite = body.overwrite;
+    const certificatePath = resolveHostCertPath(body.certificatePath);
+    const keyPath = resolveHostCertPath(body.keyPath);
 
-    // Есть ли сертификат или ключ, и не разрешено ли перезаписывать существующие файлы
-    if ((isThereCert === "exists" || isThereKey === "exists") && !overwrite) {
+    // Если сертификат или ключ не находятся в управляемой директории сертификатов, возвращаем ошибку
+    if (!certificatePath || !keyPath) {
       let message: string;
 
-      if (isThereCert === "exists" && isThereKey === "exists") {
-        message = "Сертификат и ключ уже существуют по заданным путям";
-      } else if (isThereCert === "exists") {
-        message = "Сертификат уже существует по заданному пути";
+      if (!certificatePath && !keyPath) {
+        message =
+          "Сертификат и ключ должны находиться в управляемой директории сертификатов.";
+      } else if (!certificatePath) {
+        message =
+          "Сертификат должен находиться в управляемой директории сертификатов.";
       } else {
-        message = "Ключ уже существует по заданному пути";
+        message =
+          "Ключ должен находиться в управляемой директории сертификатов.";
+      }
+
+      return {
+        result: "error",
+        message,
+      } satisfies Hy2TlsGenerateResponse;
+    }
+
+    const isThereCert = await checkFilePresence(certificatePath);
+    const isThereKey = await checkFilePresence(keyPath);
+    const overwrite = body.overwrite;
+    const commonName = body.serverName;
+
+    // Есть ли сертификат или ключ, и не разрешено перезаписывать существующие файлы
+    if ((isThereCert === "exists" || isThereKey === "exists") && !overwrite) {
+      let message: string;
+      const postfix =
+        '. Если вы хотите перезаписать существующие файлы, установите флаг "overwrite" в true.';
+
+      if (isThereCert === "exists" && isThereKey === "exists") {
+        message =
+          "Сертификат и ключ уже существуют по заданным путям" + postfix;
+      } else if (isThereCert === "exists") {
+        message = "Сертификат уже существует по заданному пути" + postfix;
+      } else {
+        message = "Ключ уже существует по заданному пути" + postfix;
       }
       return {
         result: "conflict",
@@ -44,9 +82,33 @@ export const POST = withRoute({
       } satisfies Hy2TlsGenerateResponse;
     }
 
-    return {
-      result: "error",
-      message: "Certificate generation is not implemented yet.",
-    } satisfies Hy2TlsGenerateResponse;
+    try {
+      await mkdir(path.posix.dirname(certificatePath), { recursive: true });
+      await mkdir(path.posix.dirname(keyPath), { recursive: true });
+
+      if (overwrite) {
+        await rm(certificatePath, { force: true });
+        await rm(keyPath, { force: true });
+      }
+
+      await generateSelfSignedCert({
+        certificatePath,
+        keyPath,
+        commonName,
+      });
+
+      return {
+        result: "generated",
+        message: "Сертификат и ключ успешно сгенерированы.",
+      } satisfies Hy2TlsGenerateResponse;
+    } catch (error) {
+      return {
+        result: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Неизвестная ошибка при генерации сертификата.",
+      } satisfies Hy2TlsGenerateResponse;
+    }
   },
 });

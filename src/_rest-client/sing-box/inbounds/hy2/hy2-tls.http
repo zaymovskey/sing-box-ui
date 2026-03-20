@@ -13,3 +13,16 @@ Content-Type: {{json}}
 }
 
 ###
+
+### POST Generate
+POST {{baseUrl}}{{apiPrefix}}/sing-box/hy2/tls/generate
+Content-Type: {{json}}
+
+{
+  "certificatePath": "{{singBoxCertsDir}}test/server.crt",
+  "keyPath": "{{singBoxCertsDir}}test/server.key",
+  "serverName": "my-domain.com",
+  "overwrite": false
+}
+
+###

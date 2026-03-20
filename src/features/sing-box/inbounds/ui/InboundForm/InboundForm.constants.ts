@@ -40,5 +40,6 @@ export const defaultsByType = {
     key_path: "hy2.key",
     tls_enabled: false,
     _tlsChecked: false,
+    _tlsOverwrite: false,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

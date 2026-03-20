@@ -7,6 +7,7 @@ import { clientEnv } from "@/shared/lib";
 import { clientToast } from "@/shared/ui";
 
 import { useHy2TlsCheckMutation } from "../../../model/commands/hy2/hy2-tls-check.mutation";
+import { useHy2TlsGenerateMutation } from "../../../model/commands/hy2/hy2-tls-generate.mutation";
 import { Hy2TlsTools, type TlsStatuses } from "./Hy2TlsTools";
 
 const messageByCheckResultMap = {
@@ -31,8 +32,21 @@ const loadingStatuses: TlsStatuses = {
   pair: { status: "loading", message: "Проверка..." },
 };
 
+const generatingStatuses: TlsStatuses = {
+  crt: { status: "generating", message: "Генерация..." },
+  key: { status: "generating", message: "Генерация..." },
+  pair: { status: "generating", message: "Генерация..." },
+};
+
+const successesStatuses: TlsStatuses = {
+  crt: { status: "success", message: "Успешно" },
+  key: { status: "success", message: "Успешно" },
+  pair: { status: "success", message: "Успешно" },
+};
+
 export function Hy2TlsToolsSection() {
-  const { mutateAsync } = useHy2TlsCheckMutation();
+  const { mutateAsync: checkMutateAsync } = useHy2TlsCheckMutation();
+  const { mutateAsync: generateMutateAsync } = useHy2TlsGenerateMutation();
   const { control, setValue, clearErrors } =
     useFormContext<InboundFormValues>();
 
@@ -50,6 +64,17 @@ export function Hy2TlsToolsSection() {
     control,
     name: "key_path",
   });
+
+  const serverName = useWatch({
+    control,
+    name: "tls_server_name",
+  });
+
+  const tlsOverwrite =
+    useWatch({
+      control,
+      name: "_tlsOverwrite",
+    }) ?? false;
 
   const [statuses, setStatuses] = useState<TlsStatuses>(idleStatuses);
 
@@ -70,7 +95,7 @@ export function Hy2TlsToolsSection() {
     setStatuses(loadingStatuses);
 
     try {
-      const result = await mutateAsync({
+      const result = await checkMutateAsync({
         certificatePath:
           clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + certificatePath,
         keyPath: clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + keyPath,
@@ -102,6 +127,7 @@ export function Hy2TlsToolsSection() {
           shouldValidate: false,
         });
         clearErrors("_tlsChecked");
+        setGenerateError("");
       } else {
         setValue("_tlsChecked", false, {
           shouldDirty: false,
@@ -116,12 +142,52 @@ export function Hy2TlsToolsSection() {
     }
   };
 
+  const [generateError, setGenerateError] = useState<string>("");
+
+  const handleGenerate = async () => {
+    if (!tlsEnabled || !certificatePath || !keyPath || !serverName) {
+      return;
+    }
+
+    setStatuses(generatingStatuses);
+    setGenerateError("");
+
+    try {
+      const result = await generateMutateAsync({
+        certificatePath:
+          clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + certificatePath,
+        keyPath: clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + keyPath,
+        serverName,
+        overwrite: tlsOverwrite,
+      });
+
+      if (result.result === "error") {
+        setGenerateError(result.message);
+        setStatuses(idleStatuses);
+        return;
+      }
+
+      if (result.result === "conflict") {
+        setGenerateError(result.message);
+        setStatuses(idleStatuses);
+        return;
+      }
+
+      setGenerateError("");
+      setStatuses(successesStatuses);
+      await handleCheck();
+    } catch {
+      setGenerateError("Не удалось сгенерировать TLS сертификаты");
+    }
+  };
+
   return (
     <Hy2TlsTools
       disabled={!tlsEnabled}
+      generateError={generateError}
       statuses={statuses}
       onCheck={handleCheck}
-      onGenerate={() => {}}
+      onGenerate={handleGenerate}
     />
   );
 }

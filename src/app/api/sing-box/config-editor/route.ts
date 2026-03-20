@@ -21,8 +21,8 @@ const throwInvalidConfigResponse = (error: z.ZodError): never => {
 };
 
 /**
- * Get sing-box config
- * @description Returns the current sing-box configuration. Requires authentication.
+ * Получение конфигурации sing-box
+ * @description Возвращает текущую конфигурацию sing-box. Требуется аутентификация.
  * @responseSet getSingBoxConfig
  * @tag SingBox
  *
@@ -52,8 +52,8 @@ export const GET = withRoute({
 });
 
 /**
- * Update sing-box config
- * @description Updates the current sing-box configuration. Requires authentication.
+ * Обновление конфигурации sing-box
+ * @description Обновляет текущую конфигурацию sing-box. Требуется аутентификация.
  * @responseSet updateSingBoxConfig
  * @tag SingBox
  *

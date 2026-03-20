@@ -9,6 +9,7 @@ export const apiRoutes = {
     hy2: {
       tls: {
         check: "/api/sing-box/hy2/tls/check",
+        generate: "/api/sing-box/hy2/tls/generate",
       },
     },
   },
