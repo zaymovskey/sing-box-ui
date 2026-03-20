@@ -3,80 +3,24 @@ import {
   createPublicKey,
   X509Certificate,
 } from "node:crypto";
-import { constants as fsConstants } from "node:fs";
-import { access, readFile, stat } from "node:fs/promises";
-import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import {
   Hy2TlsCheckRequestSchema,
   type Hy2TlsCheckResponse,
   Hy2TlsCheckResponseSchema,
 } from "@/shared/api/contracts";
-import { withRoute } from "@/shared/lib/server";
-
-const CONTAINER_CERTS_DIR = "/data/sing-box/certs";
-const HOST_CERTS_DIR = path.resolve(
-  process.cwd(),
-  "docker/data/sing-box/certs",
-);
-
-function resolveHostCertPath(containerPath: string): string | null {
-  const normalizedContainerDir = path.posix.normalize(CONTAINER_CERTS_DIR);
-  const normalizedInput = path.posix.normalize(containerPath);
-
-  if (
-    !normalizedInput.startsWith(normalizedContainerDir + "/") &&
-    normalizedInput !== normalizedContainerDir
-  ) {
-    return null;
-  }
-
-  const relativePath = path.posix.relative(
-    normalizedContainerDir,
-    normalizedInput,
-  );
-
-  return path.resolve(HOST_CERTS_DIR, relativePath);
-}
-
-async function checkFilePresence(
-  filePath: string,
-): Promise<"success" | "not_found" | "no_access"> {
-  try {
-    const fileStat = await stat(filePath);
-
-    if (!fileStat.isFile()) {
-      return "not_found";
-    }
-
-    await access(filePath, fsConstants.R_OK);
-    return "success";
-  } catch (error) {
-    const code =
-      typeof error === "object" &&
-      error &&
-      "code" in error &&
-      typeof error.code === "string"
-        ? error.code
-        : "";
-
-    if (code === "ENOENT") {
-      return "not_found";
-    }
-
-    if (code === "EACCES" || code === "EPERM") {
-      return "no_access";
-    }
-
-    return "no_access";
-  }
-}
+import {
+  checkFilePresence,
+  resolveHostCertPath,
+  withRoute,
+} from "@/shared/lib/server";
 
 async function validateCertificate(
   filePath: string,
 ): Promise<"success" | "not_found" | "no_access" | "invalid"> {
   const presence = await checkFilePresence(filePath);
-  if (presence !== "success") {
+  if (presence !== "exists") {
     return presence;
   }
 
@@ -93,7 +37,7 @@ async function validatePrivateKey(
   filePath: string,
 ): Promise<"success" | "not_found" | "no_access" | "invalid"> {
   const presence = await checkFilePresence(filePath);
-  if (presence !== "success") {
+  if (presence !== "exists") {
     return presence;
   }
 

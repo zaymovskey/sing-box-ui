@@ -2,43 +2,21 @@
 
 Веб-панель для управления `sing-box` с редактированием конфигурации через UI.
 
-Проект поддерживает **3 режима запуска**:
+Проект работает **полностью в Docker** и поддерживает 2 режима:
 
-1. **Local development**
+1. **Docker development**
    - `sing-box` в Docker
-   - `Next.js UI` запускается локально через `npm run dev`
+   - `Next.js UI` в Docker (dev server)
+   - используется для разработки
 
-2. **Full Docker development**
+2. **Docker production**
    - `sing-box` в Docker
-   - `Next.js UI` в Docker
-   - используется для проверки контейнерного dev-окружения
-
-3. **Full Docker production**
-   - `sing-box` в Docker
-   - `Next.js UI` в Docker
-   - production-like запуск через multi-stage build
+   - `Next.js UI` в Docker (production build)
+   - production-like запуск
 
 ---
 
 # Архитектура
-
-## 1. Local development
-
-```text
-Browser
-  ↓
-Next.js UI (локально)
-  ↓
-читает / пишет config.json на хосте
-  ↓
-docker/data/sing-box/config.json
-  ↓
-volume
-  ↓
-sing-box container
-```
-
-## 2. Full Docker development / production
 
 ```text
 Browser
@@ -61,15 +39,14 @@ sing-box container
 ├─ docker/
 │  ├─ docker-compose.yml
 │  ├─ docker-compose.dev.yml
-│  ├─ docker-compose.singbox.yml
 │  ├─ .env
 │  └─ data/
 │     ├─ sing-box/
-│     │  └─ config.json
+│     │  ├─ config.json
+│     │  └─ certs/
 │     └─ sing-box-state/
 ├─ Dockerfile
 ├─ Dockerfile.dev
-├─ .env.local
 └─ src/
 ```
 
@@ -77,45 +54,51 @@ sing-box container
 
 # Конфиг и данные
 
-Основной конфиг `sing-box` хранится на хосте в:
+Основной конфиг `sing-box` хранится на хосте:
 
 ```text
 docker/data/sing-box/config.json
 ```
 
-Это единый источник правды.
-
 ## В контейнере `sing-box`
-
-Этот файл монтируется как:
 
 ```text
 /etc/sing-box/config.json
 ```
 
-## В Docker UI режиме
-
-UI работает с путем:
+## В UI контейнере
 
 ```text
 /data/sing-box/config.json
 ```
 
-## В локальном UI режиме
+---
 
-UI работает с путем:
+# Сертификаты
+
+Сертификаты хранятся в:
 
 ```text
-./docker/data/sing-box/config.json
+docker/data/sing-box/certs/
+```
+
+## В контейнере `sing-box`
+
+```text
+/etc/sing-box/certs/
+```
+
+## В UI контейнере
+
+```text
+/data/sing-box/certs/
 ```
 
 ---
 
 # Переменные окружения
 
-## Для локального UI (`.env.local`)
-
-Пример:
+Файл: `docker/.env`
 
 ```env
 AUTH_JWT_SECRET=your_secret
@@ -123,81 +106,26 @@ AUTH_COOKIE_NAME=sbui_session
 AUTH_DEMO_EMAIL=admin@example.com
 AUTH_DEMO_PASSWORD=admin12345
 
-SINGBOX_CONFIG_PATH=./docker/data/sing-box/config.json
-```
-
-## Для Docker (`docker/.env`)
-
-Пример:
-
-```env
 SINGBOX_CONFIG_PATH=/data/sing-box/config.json
+
+NEXT_PUBLIC_SINGBOX_CERTS_DIR=/etc/sing-box/certs/
+SINGBOX_CERTS_HOST_DIR=/data/sing-box/certs
 ```
 
 ---
 
 # Docker-режимы
 
-## 1. Local development
+## 1. Docker development
 
-Это основной режим для повседневной фронтенд-разработки.
-
-### Что работает
-
-- `sing-box` запускается в Docker
-- `Next.js UI` запускается локально
-- hot reload быстрый
-- лучший DX для разработки интерфейса
-
-### Запуск
-
-Поднять только `sing-box`:
-
-```bash
-npm run docker:singbox:up
-```
-
-Запустить UI локально:
-
-```bash
-npm run dev
-```
-
-или одной командой:
-
-```bash
-npm run dev:full
-```
-
-### Остановить `sing-box`
-
-```bash
-npm run docker:singbox:down
-```
-
-### Логи `sing-box`
-
-```bash
-npm run docker:singbox:logs
-```
-
----
-
-## 2. Full Docker development
-
-Это режим, в котором и `sing-box`, и `UI` работают в Docker.
-
-Используется для:
-
-- проверки docker dev-окружения
-- теста bind mounts / hot reload в контейнере
-- проверки, что UI корректно работает в контейнерной среде
+Основной режим разработки.
 
 ### Особенности
 
-- UI запускается через `Dockerfile.dev`
-- hot reload работает, но медленнее, чем при локальном `npm run dev`
-- нужен только когда хочется проверить именно docker-dev сценарий
+- UI работает внутри контейнера
+- используется `Dockerfile.dev`
+- hot reload есть (может быть медленнее, чем локально)
+- окружение полностью совпадает с runtime
 
 ### Запуск
 
@@ -205,7 +133,7 @@ npm run docker:singbox:logs
 npm run docker:dev:build
 ```
 
-### Повторный старт остановленных контейнеров
+### Повторный запуск
 
 ```bash
 npm run docker:dev:start
@@ -225,16 +153,15 @@ npm run docker:dev:logs
 
 ---
 
-## 3. Full Docker production
+## 2. Docker production
 
-Production-like режим, где оба сервиса работают в Docker, а UI собирается через multi-stage build.
+Production-like режим.
 
 ### Особенности
 
 - используется `Dockerfile`
-- production runtime
+- production build
 - без hot reload
-- минимизированный финальный образ UI
 
 ### Запуск
 
@@ -242,7 +169,7 @@ Production-like режим, где оба сервиса работают в Doc
 npm run docker:prod:build
 ```
 
-### Повторный старт остановленных контейнеров
+### Повторный запуск
 
 ```bash
 npm run docker:prod:start
@@ -264,18 +191,8 @@ npm run docker:prod:logs
 
 # Docker scripts
 
-Используемые npm scripts:
-
 ```json
 {
-  "dev": "next dev",
-  "dev:full": "npm run docker:singbox:up && next dev",
-
-  "docker:singbox:up": "docker compose -f docker/docker-compose.singbox.yml up -d",
-  "docker:singbox:down": "docker compose -f docker/docker-compose.singbox.yml down",
-  "docker:singbox:logs": "docker compose -f docker/docker-compose.singbox.yml logs -f",
-
-  "docker:dev:ui": "next dev --hostname 0.0.0.0 --webpack",
   "docker:dev:build": "docker compose -f docker/docker-compose.dev.yml --env-file docker/.env up --build",
   "docker:dev:stop": "docker compose -f docker/docker-compose.dev.yml stop",
   "docker:dev:start": "docker compose -f docker/docker-compose.dev.yml start",
@@ -292,29 +209,17 @@ npm run docker:prod:logs
 
 # Docker Compose файлы
 
-## `docker/docker-compose.singbox.yml`
-
-Поднимает только `sing-box`.
-
-Используется в режиме **local development**.
-
 ## `docker/docker-compose.dev.yml`
 
-Поднимает:
-
 - `sing-box`
-- `UI` в Docker dev-режиме
+- `UI` (dev server)
 
-Используется в режиме **full docker development**.
+---
 
 ## `docker/docker-compose.yml`
 
-Поднимает:
-
 - `sing-box`
-- `UI` в production-like режиме
-
-Используется в режиме **full docker production**.
+- `UI` (production build)
 
 ---
 
@@ -322,56 +227,30 @@ npm run docker:prod:logs
 
 ## `Dockerfile.dev`
 
-Используется для docker-dev режима.
-
-Особенности:
-
 - dev server
 - bind mount исходников
-- hot reload внутри контейнера
+- hot reload
 
 ## `Dockerfile`
 
-Используется для production-like режима.
-
-Особенности:
-
 - multi-stage build
-- build stage + runtime stage
-- в финальный образ попадает только необходимое для запуска
+- production runtime
 
 ---
 
 # Какой режим использовать
 
-## Для обычной ежедневной разработки
-
-Использовать:
-
-```bash
-npm run dev:full
-```
-
-или отдельно:
-
-```bash
-npm run docker:singbox:up
-npm run dev
-```
-
-Это основной и самый удобный режим.
-
-## Для проверки контейнерного dev-окружения
-
-Использовать:
+## Для разработки
 
 ```bash
 npm run docker:dev:build
 ```
 
-## Для проверки production-like контейнерной сборки
+👉 основной режим
 
-Использовать:
+---
+
+## Для проверки production
 
 ```bash
 npm run docker:prod:build
@@ -379,24 +258,13 @@ npm run docker:prod:build
 
 ---
 
-# Почему сделано именно так
+# Почему так
 
-Полностью dockerized dev-режим для Next.js на Windows работает, но hot reload там медленнее.
-Поэтому для нормального DX выбран отдельный основной режим:
+Проект полностью изолирован в Docker:
 
-- инфраструктура (`sing-box`) — в Docker
-- UI — локально
-
-Так получаем:
-
-- быстрый hot reload
-- реальный `sing-box`
-- удобную разработку интерфейса
-
-При этом остаются оба полностью dockerized режима:
-
-- dev
-- prod
+- нет зависимости от локального окружения
+- одинаковое поведение dev / prod
+- все runtime-операции (файлы, сертификаты, конфиг) работают одинаково
 
 ---
 
@@ -419,7 +287,8 @@ npm run docker:prod:build
 
 Панель нужна для:
 
-- просмотра и редактирования JSON-конфига `sing-box`
+- редактирования JSON-конфига `sing-box`
 - управления inbound'ами
-- создания / редактирования пользователей
-- локального удобного управления `sing-box` без ручного редактирования конфигов
+- управления пользователями
+- генерации TLS сертификатов
+- управления runtime без ручного редактирования файлов

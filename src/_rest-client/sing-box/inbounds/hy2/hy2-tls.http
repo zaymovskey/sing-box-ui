@@ -1,0 +1,15 @@
+# =========================
+# HY2-INBOUND-TLS — sing-box-ui
+# Env: local / prod
+# =========================
+
+### POST Check
+POST {{baseUrl}}{{apiPrefix}}/sing-box/hy2/tls/check
+Content-Type: {{json}}
+
+{
+  "certificatePath": "/data/sing-box/certs/hy2.crt",
+  "keyPath": "/data/sing-box/certs/hy2.key"
+}
+
+###

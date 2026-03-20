@@ -39,8 +39,7 @@ export function getServerEnv(): ServerEnvSchema {
         AUTH_JWT_SECRET: raw.AUTH_JWT_SECRET ?? "build-placeholder",
         AUTH_DEMO_EMAIL: raw.AUTH_DEMO_EMAIL ?? "build@example.com",
         AUTH_DEMO_PASSWORD: raw.AUTH_DEMO_PASSWORD ?? "build-placeholder",
-        SINGBOX_CONFIG_PATH:
-          raw.SINGBOX_CONFIG_PATH ?? "/data/sing-box/config.json",
+        SINGBOX_CONFIG_PATH: raw.SINGBOX_CONFIG_PATH,
       })
     : serverEnvSchema.parse(raw);
 

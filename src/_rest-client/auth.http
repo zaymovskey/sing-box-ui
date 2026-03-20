@@ -3,7 +3,7 @@
 # Env: local / prod
 # =========================
 
-### Login
+### POST Login
 POST {{baseUrl}}{{apiPrefix}}/auth/login
 Content-Type: {{json}}
 
@@ -14,10 +14,12 @@ Content-Type: {{json}}
 
 ###
 
-### Me (cookie should be sent automatically after Login)
+### GET Me (cookie should be sent automatically after Login)
 GET {{baseUrl}}{{apiPrefix}}/auth/me
 
 ###
 
-### Logout
+### POST Logout
 POST {{baseUrl}}{{apiPrefix}}/auth/logout
+
+#
