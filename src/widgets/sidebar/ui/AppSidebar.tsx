@@ -67,7 +67,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <Separator className="mt-2" />
+                <Separator className="my-2" />
                 <LogoutDialog
                   renderTrigger={({ disabled }) => (
                     <SidebarMenuButton asChild>

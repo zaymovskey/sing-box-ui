@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
@@ -8,6 +8,7 @@ import { clientToast } from "@/shared/ui";
 
 import { useHy2TlsCheckMutation } from "../../../model/commands/hy2/hy2-tls-check.mutation";
 import { useHy2TlsGenerateMutation } from "../../../model/commands/hy2/hy2-tls-generate.mutation";
+import { useInboundFormContext } from "../../../model/inbound-form-ui.context";
 import { Hy2TlsTools, type TlsStatuses } from "./Hy2TlsTools";
 
 const messageByCheckResultMap = {
@@ -45,6 +46,8 @@ const successesStatuses: TlsStatuses = {
 };
 
 export function Hy2TlsToolsSection() {
+  const { mode } = useInboundFormContext();
+
   const { mutateAsync: checkMutateAsync } = useHy2TlsCheckMutation();
   const { mutateAsync: generateMutateAsync } = useHy2TlsGenerateMutation();
   const { control, setValue, clearErrors } =
@@ -78,16 +81,9 @@ export function Hy2TlsToolsSection() {
 
   const [statuses, setStatuses] = useState<TlsStatuses>(idleStatuses);
 
-  useEffect(() => {
-    setStatuses(idleStatuses);
-    setValue("_tlsChecked", false, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-  }, [certificatePath, keyPath, setValue, tlsEnabled]);
+  const [generateError, setGenerateError] = useState<string>("");
 
-  const handleCheck = async () => {
+  const handleCheck = useCallback(async () => {
     if (!tlsEnabled || !certificatePath || !keyPath) {
       return;
     }
@@ -138,11 +134,18 @@ export function Hy2TlsToolsSection() {
     } catch {
       setStatuses(idleStatuses);
 
-      clientToast.error("Не удалось проверить TLS сертификаты");
+      clientToast.error("Не удалось проверить TLS сертификаты", {
+        duration: 2000,
+      });
     }
-  };
-
-  const [generateError, setGenerateError] = useState<string>("");
+  }, [
+    checkMutateAsync,
+    clearErrors,
+    setValue,
+    tlsEnabled,
+    certificatePath,
+    keyPath,
+  ]);
 
   const handleGenerate = async () => {
     if (!tlsEnabled || !certificatePath || !keyPath || !serverName) {
@@ -180,6 +183,34 @@ export function Hy2TlsToolsSection() {
       setGenerateError("Не удалось сгенерировать TLS сертификаты");
     }
   };
+
+  const hasInitializedRef = useRef(false);
+
+  useEffect(() => {
+    // Не сбрасываем статусы при первом рендере
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      return;
+    }
+
+    setStatuses(idleStatuses);
+    setGenerateError("");
+    setValue("_tlsChecked", false, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+  }, [certificatePath, keyPath, tlsEnabled, setValue]);
+
+  useEffect(() => {
+    if (mode !== "edit") return;
+
+    if (!tlsEnabled || !certificatePath || !keyPath) return;
+
+    void handleCheck();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Hy2TlsTools

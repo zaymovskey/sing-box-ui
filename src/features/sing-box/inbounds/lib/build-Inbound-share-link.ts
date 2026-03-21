@@ -1,8 +1,8 @@
-import { type Inbound } from "@/features/sing-box/config-core";
+import { type ConfigInbound } from "@/features/sing-box/config-core";
 import { type PanelMetadata } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
-  inbound: Inbound,
+  inbound: ConfigInbound,
   user: unknown,
   host: string,
   realityPublicKeys: PanelMetadata["realityPublicKeys"],

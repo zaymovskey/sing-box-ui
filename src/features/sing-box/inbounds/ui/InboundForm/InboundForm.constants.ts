@@ -34,7 +34,6 @@ export const defaultsByType = {
     sniff_override_destination: true,
     up_mbps: 100,
     down_mbps: 100,
-    obfs_password: "",
     tls_server_name: "www.cloudflare.com",
     certificate_path: "hy2.crt",
     key_path: "hy2.key",

@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-  type Inbound,
+  type ConfigInbound,
   InboundFormSchema,
   type InboundFormValues,
+  useConfigQuery,
 } from "@/features/sing-box/config-core";
 import {
   Button,
@@ -18,17 +19,20 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
+import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
 import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
+import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
 
 interface EditInboundDialogProps {
-  inbound: Inbound;
+  inbound: ConfigInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -38,8 +42,7 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  // Костыль для сброса формы при переключении между типами (VLESS/Hysteria2)
-  const [resetKey, setResetKey] = useState(0);
+  const { data: singBoxConfig } = useConfigQuery();
 
   const initialValues = useMemo(
     () => mapInboundToFormValues(inbound),
@@ -54,13 +57,37 @@ export function EditInboundDialog({
 
   useEffect(() => {
     form.reset(initialValues);
-    setResetKey(0);
   }, [form, initialValues]);
 
   const { editInbound, isPending } = useEditInbound();
 
+  const tags =
+    singBoxConfig?.inbounds
+      ?.map((i) => i.tag)
+      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
+    form,
+    tags,
+    inbound.tag,
+  );
+
+  const checkBindUniqueAndSetError = useInboundBindUniqueness({
+    form,
+    inbounds: singBoxConfig?.inbounds ?? [],
+    excludeTag: inbound.tag,
+  });
+
   const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
+
+    if (!checkTagUniqueAndSetFormError()) {
+      return;
+    }
+
+    if (!checkBindUniqueAndSetError()) {
+      return;
+    }
+
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
@@ -89,8 +116,13 @@ export function EditInboundDialog({
 
   const handleReset = () => {
     form.clearErrors();
-    form.reset(initialValues);
-    setResetKey((k) => k + 1);
+    form.reset(initialValues, {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
   };
 
   return (
@@ -101,12 +133,9 @@ export function EditInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundForm
-            key={`${inbound.tag}-${resetKey}`}
-            form={form}
-            formId={FORM_ID}
-            onSubmit={handleSubmit}
-          />
+          <InboundFormProvider contextValue={{ mode: "edit" }}>
+            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          </InboundFormProvider>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

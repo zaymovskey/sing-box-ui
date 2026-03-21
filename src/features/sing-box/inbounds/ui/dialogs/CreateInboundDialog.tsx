@@ -7,9 +7,11 @@ import { useForm, useWatch } from "react-hook-form";
 import {
   InboundFormSchema,
   type InboundFormValues,
+  useConfigQuery,
 } from "@/features/sing-box/config-core";
 import {
   Button,
+  clientToast,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -18,16 +20,21 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
+import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
 } from "../../model/commands/inbound-create.command";
+import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
 
 export function CreateInboundDialog() {
+  const { data: singBoxConfig } = useConfigQuery();
+
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
@@ -36,10 +43,35 @@ export function CreateInboundDialog() {
 
   const type = useWatch({ control: form.control, name: "type" });
 
+  const tags =
+    singBoxConfig?.inbounds
+      ?.map((i) => i.tag)
+      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+
+  const checkBindUniqueAndSetError = useInboundBindUniqueness({
+    form,
+    inbounds: singBoxConfig?.inbounds ?? [],
+  });
+
   const { createInbound, isPending } = useCreateInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
+    if (!singBoxConfig || !singBoxConfig.inbounds) {
+      clientToast.error("Конфиг не загружен", { duration: 2000 });
+      return;
+    }
+
     form.clearErrors("root");
+
+    if (!checkTagUniqueAndSetFormError()) {
+      return;
+    }
+
+    if (!checkBindUniqueAndSetError()) {
+      return;
+    }
+
     serverToast.loading("Сохранение...", { id: "save-inbound" });
 
     try {
@@ -85,7 +117,9 @@ export function CreateInboundDialog() {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          <InboundFormProvider contextValue={{ mode: "create" }}>
+            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          </InboundFormProvider>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

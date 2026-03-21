@@ -110,11 +110,6 @@ export function InboundFormHy2Fields() {
           placeholder="100"
         />
       </div>
-      <UncontrolledTextField<InboundFormValues>
-        label="Obfs password (optional)"
-        name="obfs_password"
-        placeholder="obfs_password"
-      />
       <Separator />
       <ControlledSwitchField<InboundFormValues>
         label="TLS - Transport Layer Security"
