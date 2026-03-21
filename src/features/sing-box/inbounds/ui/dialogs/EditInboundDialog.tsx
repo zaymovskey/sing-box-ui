@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-  type Inbound,
+  type ConfigInbound,
   InboundFormSchema,
   type InboundFormValues,
   useConfigQuery,
@@ -31,7 +31,7 @@ import { InboundForm } from "../InboundForm/InboundForm";
 const FORM_ID = "edit-inbound-form";
 
 interface EditInboundDialogProps {
-  inbound: Inbound;
+  inbound: ConfigInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -119,7 +119,13 @@ export function EditInboundDialog({
 
   const handleReset = () => {
     form.clearErrors();
-    form.reset(initialValues);
+    form.reset(initialValues, {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
     setResetKey((k) => k + 1);
   };
 
@@ -137,6 +143,18 @@ export function EditInboundDialog({
             formId={FORM_ID}
             onSubmit={handleSubmit}
           />
+          <pre>
+            {JSON.stringify(
+              {
+                isDirty: form.formState.isDirty,
+                dirtyFields: form.formState.dirtyFields,
+                values: form.getValues(),
+                defaultValues: form.formState.defaultValues,
+              },
+              null,
+              2,
+            )}
+          </pre>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

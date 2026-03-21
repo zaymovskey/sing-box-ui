@@ -4,7 +4,7 @@ export { isUniqueInboundTag } from "./lib/inbounds/validations/is-unique-inbound
 export { useUpdateConfigMutation } from "./model/config-core.mutation";
 export { useConfigQuery } from "./model/config-core.query";
 export {
-  type Inbound,
+  type ConfigInbound,
   type InboundUser,
   type InboundWithUsers,
 } from "./model/config-core.types";

@@ -12,13 +12,12 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   type: z.literal("hysteria2"),
   up_mbps: z.number().int().min(1),
   down_mbps: z.number().int().min(1),
-  obfs_password: z.string().trim().optional(),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
   tls_enabled: z.boolean(),
   tls_server_name: z.string().trim().optional(),
   key_path: z.string().trim().optional(),
   certificate_path: z.string().trim().optional(),
-  _tlsChecked: z.boolean().optional(),
+  _tlsChecked: z.boolean().optional().default(false),
   _tlsOverwrite: z.boolean().default(false),
 }).superRefine((data, ctx) => {
   if (data.tls_enabled) {

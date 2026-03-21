@@ -1,12 +1,12 @@
 import {
-  type Inbound,
+  type ConfigInbound,
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
 import { clientEnv } from "@/shared/lib";
 
 function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,
-): Inbound {
+): ConfigInbound {
   return {
     type: "vless",
     tag: values.tag,
@@ -36,7 +36,7 @@ function mapVlessFormToInbound(
 
 function mapHy2FormToInbound(
   values: Extract<InboundFormValues, { type: "hysteria2" }>,
-): Inbound {
+): ConfigInbound {
   return {
     type: "hysteria2",
     tag: values.tag,
@@ -50,6 +50,7 @@ function mapHy2FormToInbound(
       name: user.name,
       password: user.password,
     })),
+
     tls: {
       enabled: true,
       server_name: values.tls_server_name,
@@ -60,35 +61,37 @@ function mapHy2FormToInbound(
   };
 }
 
-export function mapFormToInbound(values: InboundFormValues): Inbound {
+export function mapFormToInbound(values: InboundFormValues): ConfigInbound {
   if (values.type === "vless") {
     return mapVlessFormToInbound(values);
   }
-
   return mapHy2FormToInbound(values);
 }
 
-export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
+export function mapInboundToFormValues(
+  inbound: ConfigInbound,
+): InboundFormValues {
+  const baseFields = {
+    tag: inbound.tag ?? "",
+    listen: inbound.listen ?? "",
+    listen_port: inbound.listen_port ?? 0,
+    sniff: inbound.sniff ?? false,
+    sniff_override_destination: inbound.sniff_override_destination ?? false,
+  };
+
   if (inbound.type === "vless") {
     return {
+      ...baseFields,
       type: "vless",
-      tag: inbound.tag ?? "",
-      listen: inbound.listen ?? "",
       reality_handshake_server_port:
         inbound.tls?.reality?.handshake?.server_port ?? 443,
       reality_enabled: inbound.tls?.reality?.enabled ?? false,
-      listen_port: inbound.listen_port ?? 0,
       tls_enabled: inbound.tls?.enabled ?? false,
-
-      sniff: inbound.sniff ?? false,
-      sniff_override_destination: inbound.sniff_override_destination ?? false,
-
       users: inbound.users?.map((user) => ({
         name: user.name ?? "",
         uuid: user.uuid ?? "",
         flow: user.flow ?? "",
       })) ?? [{ name: "", uuid: "", flow: "" }],
-
       tls_server_name: inbound.tls?.server_name ?? "",
       reality_private_key: inbound.tls?.reality?.private_key ?? "",
       reality_handshake_server: inbound.tls?.reality?.handshake?.server ?? "",
@@ -97,23 +100,15 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
 
   if (inbound.type === "hysteria2") {
     return {
+      ...baseFields,
       type: "hysteria2",
-      listen: inbound.listen ?? "",
-      tag: inbound.tag ?? "",
-      listen_port: inbound.listen_port ?? 0,
       tls_enabled: inbound.tls?.enabled ?? false,
-
-      sniff: inbound.sniff ?? false,
-      sniff_override_destination: inbound.sniff_override_destination ?? false,
-
       up_mbps: inbound.up_mbps ?? 0,
       down_mbps: inbound.down_mbps ?? 0,
-
       users: inbound.users?.map((user) => ({
         name: user.name ?? "",
         password: user.password ?? "",
       })) ?? [{ name: "", password: "" }],
-
       tls_server_name: inbound.tls?.server_name ?? "",
       certificate_path:
         inbound.tls?.certificate_path?.replace(
@@ -125,6 +120,8 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
           clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR,
           "",
         ) ?? "",
+      _tlsChecked: false,
+      _tlsOverwrite: false,
     };
   }
 
