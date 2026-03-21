@@ -87,6 +87,30 @@ const sharedLayerPatterns = () => [
   blockLayerAlias("shared"),
 ];
 
+const blockFeatureDeepImport = () => [
+  // Разрешаем только:
+  // @/features/<group>/<feature>
+  // @/features/<group>/<feature>/server
+
+  // Всё глубже feature root — запрещаем
+  block(
+    [
+      "@/features/*/*/*",
+      "@/features/*/*/*/**",
+
+      // но разрешаем server public API как точку входа
+      "!@/features/*/*/server",
+    ],
+    "Импортируй feature только через public API: @/features/<group>/<feature> или @/features/<group>/<feature>/server.",
+  ),
+
+  // И отдельно запрещаем deep-import внутрь server
+  block(
+    ["@/features/*/*/server/*", "@/features/*/*/server/*/**"],
+    "Импортируй server-код feature только через public API: @/features/<group>/<feature>/server.",
+  ),
+];
+
 const blockSelfFeatureAlias = (featurePath, featureName) =>
   block(
     [`@/features/${featurePath}`, `@/features/${featurePath}/**`],
@@ -96,8 +120,7 @@ const blockSelfFeatureAlias = (featurePath, featureName) =>
 const featuresLayerPatterns = () => [
   blockNoImportsFrom("app", "features не должны импортить из app"),
 
-  // Между feature-модулями разрешён только public API, deep-import запрещён
-  blockDeepImport("features", "feature"),
+  ...blockFeatureDeepImport(),
 
   // shared — только public API
   ...blockSharedPublicApi(),
@@ -112,8 +135,7 @@ const widgetsLayerPatterns = () => [
   // между виджетами — только public API
   blockDeepImport("widgets", "widget"),
 
-  // features — только public API
-  blockDeepImport("features", "feature"),
+  ...blockFeatureDeepImport(),
 
   // shared — только public API
   ...blockSharedPublicApi(),
@@ -122,8 +144,7 @@ const widgetsLayerPatterns = () => [
 const appLayerPatterns = () => [
   blockAppAlias(),
 
-  // Features: запрещаем deep-import (разрешён только public API)
-  blockDeepImport("features", "feature"),
+  ...blockFeatureDeepImport(),
 
   // Widgets: запрещаем deep-import (разрешён только public API)
   blockDeepImport("widgets", "widget"),
