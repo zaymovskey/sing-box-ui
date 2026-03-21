@@ -4,7 +4,7 @@ type IsUniqueInboundBindParams = {
   inbounds: Array<{
     listen?: string;
     listen_port?: number;
-    tag: string;
+    tag?: string;
   }>;
   excludeTag?: string;
 };
