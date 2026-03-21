@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { hasExtension } from "../../../lib/hy2/hy2-tls-path.utils";
+import { hasExtension } from "../../../lib/inbounds/hy2/hy2-tls-path.utils";
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
 const Hy2UserSchema = z.object({
