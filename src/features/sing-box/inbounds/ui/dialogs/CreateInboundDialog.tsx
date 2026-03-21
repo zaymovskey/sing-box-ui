@@ -26,6 +26,7 @@ import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
 } from "../../model/commands/inbound-create.command";
+import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
@@ -116,7 +117,9 @@ export function CreateInboundDialog() {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          <InboundFormProvider contextValue={{ mode: "create" }}>
+            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          </InboundFormProvider>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

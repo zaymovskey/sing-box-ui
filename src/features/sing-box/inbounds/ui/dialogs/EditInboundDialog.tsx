@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -26,6 +26,7 @@ import {
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
 import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
+import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
@@ -41,9 +42,6 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  // Костыль для сброса формы при переключении между типами (VLESS/Hysteria2)
-  const [resetKey, setResetKey] = useState(0);
-
   const { data: singBoxConfig } = useConfigQuery();
 
   const initialValues = useMemo(
@@ -59,7 +57,6 @@ export function EditInboundDialog({
 
   useEffect(() => {
     form.reset(initialValues);
-    setResetKey(0);
   }, [form, initialValues]);
 
   const { editInbound, isPending } = useEditInbound();
@@ -126,7 +123,6 @@ export function EditInboundDialog({
       keepSubmitCount: false,
       keepIsSubmitted: false,
     });
-    setResetKey((k) => k + 1);
   };
 
   return (
@@ -137,12 +133,9 @@ export function EditInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundForm
-            key={`${inbound.tag}-${resetKey}`}
-            form={form}
-            formId={FORM_ID}
-            onSubmit={handleSubmit}
-          />
+          <InboundFormProvider contextValue={{ mode: "edit" }}>
+            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+          </InboundFormProvider>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
