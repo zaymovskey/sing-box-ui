@@ -19,6 +19,7 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
 import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
@@ -67,12 +68,26 @@ export function EditInboundDialog({
     singBoxConfig?.inbounds
       ?.map((i) => i.tag)
       .filter((tag): tag is string => Boolean(tag)) ?? [];
-  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
+    form,
+    tags,
+    inbound.tag,
+  );
+
+  const checkBindUniqueAndSetError = useInboundBindUniqueness({
+    form,
+    inbounds: singBoxConfig?.inbounds ?? [],
+    excludeTag: inbound.tag,
+  });
 
   const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
 
     if (!checkTagUniqueAndSetFormError()) {
+      return;
+    }
+
+    if (!checkBindUniqueAndSetError()) {
       return;
     }
 

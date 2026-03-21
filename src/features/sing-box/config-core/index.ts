@@ -1,4 +1,5 @@
 export { useConfigQueryToasts } from "./lib/config-core.query-toasts";
+export { isUniqueInboundBind } from "./lib/inbounds/validations/is-unique-inbound-bind.validation";
 export { isUniqueInboundTag } from "./lib/inbounds/validations/is-unique-inbound-tag.validation";
 export { useUpdateConfigMutation } from "./model/config-core.mutation";
 export { useConfigQuery } from "./model/config-core.query";

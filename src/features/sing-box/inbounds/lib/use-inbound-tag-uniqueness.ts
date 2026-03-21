@@ -9,6 +9,7 @@ import {
 export function useInboundTagUniqueness(
   form: UseFormReturn<InboundFormValues>,
   tags: string[],
+  excludeTag?: string,
 ) {
   const currentTag = useWatch({
     control: form.control,
@@ -27,6 +28,7 @@ export function useInboundTagUniqueness(
     const isTagUnique = isUniqueInboundTag({
       tag: currentTag,
       tags,
+      excludeTag,
     });
 
     if (!isTagUnique) {
@@ -49,7 +51,7 @@ export function useInboundTagUniqueness(
     }
 
     return true;
-  }, [currentTag, errors.tag, form, tags]);
+  }, [currentTag, errors.tag, form, tags, excludeTag]);
 
   useEffect(() => {
     if (submitCount === 0) {

@@ -115,8 +115,16 @@ export function mapInboundToFormValues(inbound: Inbound): InboundFormValues {
       })) ?? [{ name: "", password: "" }],
 
       tls_server_name: inbound.tls?.server_name ?? "",
-      certificate_path: inbound.tls?.certificate_path ?? "",
-      key_path: inbound.tls?.key_path ?? "",
+      certificate_path:
+        inbound.tls?.certificate_path?.replace(
+          clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR,
+          "",
+        ) ?? "",
+      key_path:
+        inbound.tls?.key_path?.replace(
+          clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR,
+          "",
+        ) ?? "",
     };
   }
 
