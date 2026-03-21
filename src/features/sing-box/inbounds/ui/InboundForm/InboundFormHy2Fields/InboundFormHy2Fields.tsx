@@ -16,7 +16,7 @@ import {
 import { Hy2TlsToolsSection } from "./Hy2TlsToolsSection";
 
 export function InboundFormHy2Fields() {
-  const { control, clearErrors, setValue } =
+  const { control, clearErrors, setValue, trigger, formState } =
     useFormContext<InboundFormValues>();
 
   const {
@@ -49,6 +49,19 @@ export function InboundFormHy2Fields() {
       ]);
     }
   }, [tlsEnabled, setValue, clearErrors]);
+
+  const watchedUsers = useWatch({
+    control,
+    name: "users",
+  });
+
+  useEffect(() => {
+    if (formState.submitCount === 0) {
+      return;
+    }
+
+    void trigger("users");
+  }, [watchedUsers, formState.submitCount, trigger]);
 
   return (
     <>
