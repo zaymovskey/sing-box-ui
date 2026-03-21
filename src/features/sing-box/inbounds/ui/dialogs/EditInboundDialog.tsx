@@ -8,6 +8,7 @@ import {
   type Inbound,
   InboundFormSchema,
   type InboundFormValues,
+  useConfigQuery,
 } from "@/features/sing-box/config-core";
 import {
   Button,
@@ -18,6 +19,7 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
@@ -41,6 +43,8 @@ export function EditInboundDialog({
   // Костыль для сброса формы при переключении между типами (VLESS/Hysteria2)
   const [resetKey, setResetKey] = useState(0);
 
+  const { data: singBoxConfig } = useConfigQuery();
+
   const initialValues = useMemo(
     () => mapInboundToFormValues(inbound),
     [inbound],
@@ -59,8 +63,19 @@ export function EditInboundDialog({
 
   const { editInbound, isPending } = useEditInbound();
 
+  const tags =
+    singBoxConfig?.inbounds
+      ?.map((i) => i.tag)
+      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+
   const handleSubmit = async (values: InboundFormValues) => {
     form.clearErrors("root");
+
+    if (!checkTagUniqueAndSetFormError()) {
+      return;
+    }
+
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {

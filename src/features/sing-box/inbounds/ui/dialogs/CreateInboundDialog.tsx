@@ -2,13 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
-import { useEffect } from "react";
-import { useForm, type UseFormReturn, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import {
   InboundFormSchema,
   type InboundFormValues,
-  isUniqueInboundTag,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
 import {
@@ -22,6 +20,7 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
@@ -30,26 +29,6 @@ import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
-
-const isFormTagUnique = (
-  tag: string,
-  configTags: string[],
-  form: UseFormReturn<InboundFormValues>,
-) => {
-  const isTagError = isUniqueInboundTag({
-    tag: tag,
-    tags: configTags,
-  });
-
-  if (isTagError) {
-    form.setError("tag", {
-      type: "custom",
-      message: "Тег должен быть уникальным",
-    });
-  }
-
-  return !isTagError;
-};
 
 export function CreateInboundDialog() {
   const { data: singBoxConfig } = useConfigQuery();
@@ -62,6 +41,12 @@ export function CreateInboundDialog() {
 
   const type = useWatch({ control: form.control, name: "type" });
 
+  const tags =
+    singBoxConfig?.inbounds
+      ?.map((i) => i.tag)
+      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+
   const { createInbound, isPending } = useCreateInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
@@ -72,15 +57,7 @@ export function CreateInboundDialog() {
 
     form.clearErrors("root");
 
-    if (
-      !isFormTagUnique(
-        values.tag,
-        singBoxConfig.inbounds
-          .map((i) => i.tag)
-          .filter((tag): tag is string => Boolean(tag)),
-        form,
-      )
-    ) {
+    if (!checkTagUniqueAndSetFormError()) {
       return;
     }
 
@@ -109,46 +86,6 @@ export function CreateInboundDialog() {
       });
     }
   };
-
-  const tag = useWatch({
-    control: form.control,
-    name: "tag",
-  });
-
-  const {
-    formState: { submitCount, errors },
-  } = form;
-
-  useEffect(() => {
-    if (submitCount === 0) {
-      return;
-    }
-
-    if (!tag?.trim()) {
-      return;
-    }
-
-    if (!singBoxConfig?.inbounds) {
-      return;
-    }
-
-    if (
-      !isFormTagUnique(
-        tag,
-        singBoxConfig.inbounds
-          .map((i) => i.tag)
-          .filter((tag): tag is string => Boolean(tag)),
-        form,
-      )
-    ) {
-      return;
-    }
-
-    if (errors.tag?.type === "custom") {
-      form.clearErrors("tag");
-      void form.trigger("tag");
-    }
-  }, [tag, submitCount, errors.tag?.type, form, singBoxConfig]);
 
   const handleReset = () => {
     form.clearErrors();
