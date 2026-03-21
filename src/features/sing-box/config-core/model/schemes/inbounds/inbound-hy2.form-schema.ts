@@ -20,6 +20,14 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   _tlsChecked: z.boolean().optional().default(false),
   _tlsOverwrite: z.boolean().default(false),
 }).superRefine((data, ctx) => {
+  tlsValidate(data, ctx);
+  usersValidate(data, ctx);
+});
+
+const tlsValidate = (
+  data: z.input<typeof Hy2FormSchema>,
+  ctx: z.RefinementCtx,
+) => {
   if (data.tls_enabled) {
     if (!data.tls_server_name) {
       ctx.addIssue({
@@ -69,4 +77,36 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
       });
     }
   }
-});
+};
+
+const usersValidate = (
+  data: z.input<typeof Hy2FormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  const seen = new Map<string, number>();
+  const duplicates = new Set<number>();
+
+  data.users.forEach((user, index) => {
+    const name = user.name.trim().toLowerCase();
+
+    if (!name) return;
+
+    const firstIndex = seen.get(name);
+
+    if (firstIndex !== undefined) {
+      duplicates.add(firstIndex);
+      duplicates.add(index);
+      return;
+    }
+
+    seen.set(name, index);
+  });
+
+  for (const index of duplicates) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["users", index, "name"],
+      message: "Имя пользователя должно быть уникальным",
+    });
+  }
+};
