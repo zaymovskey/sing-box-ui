@@ -143,18 +143,6 @@ export function EditInboundDialog({
             formId={FORM_ID}
             onSubmit={handleSubmit}
           />
-          <pre>
-            {JSON.stringify(
-              {
-                isDirty: form.formState.isDirty,
-                dirtyFields: form.formState.dirtyFields,
-                values: form.getValues(),
-                defaultValues: form.formState.defaultValues,
-              },
-              null,
-              2,
-            )}
-          </pre>
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
