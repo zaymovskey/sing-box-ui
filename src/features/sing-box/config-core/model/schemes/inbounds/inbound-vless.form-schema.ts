@@ -18,6 +18,7 @@ export const VlessFormSchema = BaseInboundFormSchema.extend({
   reality_handshake_server: z.string().trim().optional(),
   reality_handshake_server_port: z.number().int().min(1).max(65535).optional(),
   reality_private_key: z.string().trim().optional(),
+  _reality_public_key: z.string().trim().optional(),
 
   users: z.array(VlessUserSchema).min(1, "Нужен хотя бы один пользователь"),
 }).superRefine((data, ctx) => {
@@ -68,7 +69,15 @@ const tlsValidate = (
       ctx.addIssue({
         code: "custom",
         path: ["reality_private_key"],
-        message: "Нужен private_key",
+        message: "Необходимо сгенерировать пару ключей",
+      });
+    }
+
+    if (!data._reality_public_key) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["_reality_public_key"],
+        message: "Необходимо сгенерировать пару ключей",
       });
     }
   }

@@ -5,7 +5,6 @@ import {
   ShieldX,
   Wand2,
 } from "lucide-react";
-import { useFormContext } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
@@ -36,6 +35,7 @@ interface Hy2TlsToolsProps {
   onGenerate: () => void;
   disabled?: boolean;
   generateError?: string;
+  error?: string;
 }
 
 export function Hy2TlsTools({
@@ -44,16 +44,13 @@ export function Hy2TlsTools({
   onGenerate,
   disabled = false,
   generateError,
+  error,
 }: Hy2TlsToolsProps) {
   const isChecking = [
     statuses.crt.status,
     statuses.key.status,
     statuses.pair.status,
   ].some((item) => item === "loading" || item === "generating");
-
-  const form = useFormContext<InboundFormValues>();
-
-  const error = form.getFieldState("_tlsChecked", form.formState).error;
 
   return (
     <div
@@ -85,7 +82,7 @@ export function Hy2TlsTools({
       {error && (
         <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">
           <p className="text-destructive-foreground text-sm font-medium">
-            {error.message}
+            {error}
           </p>
         </div>
       )}

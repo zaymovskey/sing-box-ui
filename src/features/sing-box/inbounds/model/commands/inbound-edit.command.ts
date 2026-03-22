@@ -24,7 +24,7 @@ export function useEditInbound() {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
-      const nextConfig: Config = {
+      let nextConfig: Config = {
         ...singBoxConfig,
         inbounds: [
           ...inbounds.map((inbound) => {
@@ -35,6 +35,10 @@ export function useEditInbound() {
           }),
         ],
       };
+
+      if (updatedInbound.type === "vless") {
+        nextConfig = applyRealityPublicKeyMetadata(nextConfig, updatedInbound);
+      }
 
       const parsed = ConfigSchema.safeParse(nextConfig);
       if (!parsed.success) {
@@ -49,5 +53,29 @@ export function useEditInbound() {
   return {
     editInbound,
     isPending: updateConfigMutation.isPending,
+  };
+}
+
+function applyRealityPublicKeyMetadata(
+  config: Config,
+  values: Extract<InboundFormValues, { type: "vless" }>,
+): Config {
+  if (!values.reality_enabled) {
+    return config;
+  }
+
+  if (!values.reality_private_key || !values._reality_public_key) {
+    return config;
+  }
+
+  return {
+    ...config,
+    _panel: {
+      ...config._panel,
+      realityPublicKeys: {
+        ...config._panel?.realityPublicKeys,
+        [values.reality_private_key]: values._reality_public_key,
+      },
+    },
   };
 }

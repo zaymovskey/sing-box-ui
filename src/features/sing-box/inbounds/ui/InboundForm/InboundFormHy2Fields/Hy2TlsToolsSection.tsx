@@ -212,9 +212,14 @@ export function Hy2TlsToolsSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const form = useFormContext<InboundFormValues>();
+
+  const error = form.getFieldState("_tlsChecked", form.formState).error;
+
   return (
     <Hy2TlsTools
       disabled={!tlsEnabled}
+      error={error?.message}
       generateError={generateError}
       statuses={statuses}
       onCheck={handleCheck}

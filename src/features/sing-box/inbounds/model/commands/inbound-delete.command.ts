@@ -18,6 +18,20 @@ export function useDeleteInbound() {
         throw new Error("Config not loaded");
       }
 
+      const deletingInbound = singBoxConfig.inbounds?.find(
+        (inb) => inb.tag === tag,
+      );
+      if (!deletingInbound) {
+        throw new Error("Inbound with the specified tag not found");
+      }
+
+      if (deletingInbound.type === "vless" && deletingInbound.tls?.reality) {
+        const realityPrivateKey = deletingInbound.tls.reality.private_key;
+        if (realityPrivateKey) {
+          delete singBoxConfig._panel?.realityPublicKeys[realityPrivateKey];
+        }
+      }
+
       const inbounds = singBoxConfig.inbounds?.filter((inb) => inb.tag !== tag);
       const nextConfig: Config = {
         ...singBoxConfig,

@@ -2,19 +2,21 @@ import { Wand2 } from "lucide-react";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
-import {
-  Button,
-  FormItem,
-  FormLabel,
-  Input,
-  UncontrolledTextField,
-} from "@/shared/ui";
+import { Button, UncontrolledTextField } from "@/shared/ui";
 
 interface VlessTlsToolsProps {
   disabled?: boolean;
+  onGenerate: () => void;
+  loading?: boolean;
+  error?: string;
 }
 
-export function VlessTlsTools({ disabled = false }: VlessTlsToolsProps) {
+export function VlessTlsTools({
+  disabled = false,
+  loading,
+  onGenerate,
+  error,
+}: VlessTlsToolsProps) {
   return (
     <div
       className={cn(
@@ -29,12 +31,27 @@ export function VlessTlsTools({ disabled = false }: VlessTlsToolsProps) {
         name="reality_private_key"
         placeholder="private_key"
       />
-      <FormItem className="gap-2">
-        <FormLabel>Reality public key</FormLabel>
-        <Input disabled placeholder="public_key" />
-      </FormItem>
+      <UncontrolledTextField<InboundFormValues>
+        disabled={true}
+        errorMessage={false}
+        label="Reality public key"
+        name="_reality_public_key"
+        placeholder="public_key"
+      />
+      {error && (
+        <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">
+          <p className="text-destructive-foreground text-sm font-medium">
+            {error}
+          </p>
+        </div>
+      )}
       <div className="flex justify-end">
-        <Button disabled={disabled}>
+        <Button
+          disabled={disabled}
+          loading={loading}
+          type="button"
+          onClick={onGenerate}
+        >
           <Wand2 />
           Сгенерировать
         </Button>

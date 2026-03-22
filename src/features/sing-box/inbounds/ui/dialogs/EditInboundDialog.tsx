@@ -42,11 +42,16 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  const { data: singBoxConfig } = useConfigQuery();
+  const configQuery = useConfigQuery();
+  const singBoxConfig = configQuery.data;
 
+  const realityPublicKeys = useMemo(
+    () => singBoxConfig?._panel?.realityPublicKeys || {},
+    [singBoxConfig?._panel?.realityPublicKeys],
+  );
   const initialValues = useMemo(
-    () => mapInboundToFormValues(inbound),
-    [inbound],
+    () => mapInboundToFormValues(inbound, realityPublicKeys),
+    [inbound, realityPublicKeys],
   );
 
   const form = useForm<InboundFormValues>({
