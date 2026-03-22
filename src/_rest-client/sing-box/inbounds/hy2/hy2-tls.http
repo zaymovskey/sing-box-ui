@@ -4,7 +4,7 @@
 # =========================
 
 ### POST Check
-POST {{baseUrl}}{{apiPrefix}}/sing-box/hy2/tls/check
+POST {{baseUrl}}{{apiPrefix}}/sing-box/inbounds/hy2/tls/check
 Content-Type: {{json}}
 
 {
@@ -15,7 +15,7 @@ Content-Type: {{json}}
 ###
 
 ### POST Generate
-POST {{baseUrl}}{{apiPrefix}}/sing-box/hy2/tls/generate
+POST {{baseUrl}}{{apiPrefix}}/sing-box/inbounds/hy2/tls/generate
 Content-Type: {{json}}
 
 {
