@@ -3,6 +3,7 @@ FROM node:20-alpine AS base
 
 # Для корректной работы некоторых зависимостей
 RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 

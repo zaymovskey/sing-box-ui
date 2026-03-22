@@ -8,8 +8,13 @@ export const apiRoutes = {
     configEditor: "/api/sing-box/config-editor",
     hy2: {
       tls: {
-        check: "/api/sing-box/hy2/tls/check",
-        generate: "/api/sing-box/hy2/tls/generate",
+        check: "/api/sing-box/inbounds/hy2/tls/check",
+        generate: "/api/sing-box/inbounds/hy2/tls/generate",
+      },
+    },
+    vless: {
+      tls: {
+        generate: "/api/sing-box/inbounds/vless/tls/generate",
       },
     },
   },

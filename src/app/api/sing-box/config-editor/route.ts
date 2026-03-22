@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 
 import { z } from "zod";
 
+import { saveConfigRevision } from "@/features/sing-box/config-core/server";
 import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
@@ -70,15 +72,28 @@ export const PUT = withRoute({
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
     const serverEnv = getServerEnv();
-    const path = serverEnv.SINGBOX_CONFIG_PATH;
+    const configPath = serverEnv.SINGBOX_CONFIG_PATH;
+
     const parseResult = ConfigSchema.safeParse(body);
 
     if (!parseResult.success) {
       throwInvalidConfigResponse(parseResult.error);
     }
 
+    const previousContent = await fs.readFile(configPath, "utf-8");
+
+    const historyDirPath = path.join(path.dirname(configPath), "history");
+
+    await saveConfigRevision({
+      historyDirPath,
+      currentConfig: JSON.parse(previousContent),
+      action: "update-config",
+      label: "update-config",
+      maxRevisions: 3,
+    });
+
     const content = JSON.stringify(parseResult.data, null, 2);
-    await fs.writeFile(path, content, "utf-8");
+    await fs.writeFile(configPath, content, "utf-8");
 
     return { ok: true };
   },

@@ -28,8 +28,17 @@ export function buildInboundShareLink(
         params.set("security", "reality");
 
         const privateKey = inbound.tls.reality.private_key;
-        if (privateKey && realityPublicKeys[privateKey]) {
-          params.set("pbk", realityPublicKeys[privateKey]);
+        if (!privateKey) {
+          return null;
+        }
+
+        const publicKey = realityPublicKeys[privateKey];
+        if (!publicKey) {
+          return null;
+        }
+
+        if (privateKey && publicKey) {
+          params.set("pbk", publicKey);
         }
 
         const shortId = inbound.tls.reality.short_id;

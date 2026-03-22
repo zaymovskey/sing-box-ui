@@ -7,6 +7,7 @@ import {
 } from "@/features/sing-box/config-core";
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 
+import { applyRealityPublicKeyMetadata } from "../../lib/apply-reality-public-key-metadata.helper";
 import { mapFormToInbound } from "../inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
@@ -24,7 +25,7 @@ export function useEditInbound() {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
-      const nextConfig: Config = {
+      let nextConfig: Config = {
         ...singBoxConfig,
         inbounds: [
           ...inbounds.map((inbound) => {
@@ -35,6 +36,10 @@ export function useEditInbound() {
           }),
         ],
       };
+
+      if (updatedInbound.type === "vless") {
+        nextConfig = applyRealityPublicKeyMetadata(nextConfig, updatedInbound);
+      }
 
       const parsed = ConfigSchema.safeParse(nextConfig);
       if (!parsed.success) {

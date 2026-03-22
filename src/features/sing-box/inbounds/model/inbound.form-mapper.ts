@@ -2,6 +2,7 @@ import {
   type ConfigInbound,
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
+import { type PanelMetadata } from "@/shared/api/contracts";
 import { clientEnv } from "@/shared/lib";
 
 function mapVlessFormToInbound(
@@ -70,6 +71,7 @@ export function mapFormToInbound(values: InboundFormValues): ConfigInbound {
 
 export function mapInboundToFormValues(
   inbound: ConfigInbound,
+  realityPublicKeys: PanelMetadata["realityPublicKeys"],
 ): InboundFormValues {
   const baseFields = {
     tag: inbound.tag ?? "",
@@ -94,6 +96,8 @@ export function mapInboundToFormValues(
       })) ?? [{ name: "", uuid: "", flow: "" }],
       tls_server_name: inbound.tls?.server_name ?? "",
       reality_private_key: inbound.tls?.reality?.private_key ?? "",
+      _reality_public_key:
+        realityPublicKeys?.[inbound.tls?.reality?.private_key ?? ""] ?? "",
       reality_handshake_server: inbound.tls?.reality?.handshake?.server ?? "",
     };
   }
