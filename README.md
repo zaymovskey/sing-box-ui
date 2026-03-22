@@ -81,7 +81,6 @@
 - TypeScript (strict)
 - Tailwind CSS + shadcn/ui
 - React Query
-- Zustand
 - React Hook Form
 - Zod
 - Docker
