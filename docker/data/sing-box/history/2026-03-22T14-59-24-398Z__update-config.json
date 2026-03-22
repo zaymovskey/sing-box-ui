@@ -1,6 +1,6 @@
 {
-  "id": "2026-03-21T16-50-14-051Z__update-config",
-  "createdAt": "2026-03-21T16:50:14.051Z",
+  "id": "2026-03-22T14-59-24-398Z__update-config",
+  "createdAt": "2026-03-22T14:59:24.398Z",
   "action": "update-config",
   "label": "update-config",
   "config": {
@@ -28,7 +28,7 @@
           "key_path": "/etc/sing-box/certs/hy2.key"
         },
         "listen": "3424",
-        "listen_port": 447,
+        "listen_port": 4478,
         "sniff": true,
         "sniff_override_destination": true
       },

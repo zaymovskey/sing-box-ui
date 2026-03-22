@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import fs, { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type SaveConfigRevisionParams = {
@@ -6,6 +6,7 @@ type SaveConfigRevisionParams = {
   currentConfig: unknown;
   action: string;
   label: string;
+  maxRevisions?: number;
 };
 
 export async function saveConfigRevision({
@@ -13,6 +14,7 @@ export async function saveConfigRevision({
   currentConfig,
   action,
   label,
+  maxRevisions = 20,
 }: SaveConfigRevisionParams): Promise<void> {
   await mkdir(historyDirPath, { recursive: true });
 
@@ -31,4 +33,29 @@ export async function saveConfigRevision({
   };
 
   await writeFile(filePath, JSON.stringify(revisionPayload, null, 2), "utf-8");
+
+  if (maxRevisions <= 0) {
+    return;
+  }
+
+  const entries = await fs.readdir(historyDirPath, { withFileTypes: true });
+
+  const revisionFiles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b));
+
+  const excessCount = revisionFiles.length - maxRevisions;
+
+  if (excessCount <= 0) {
+    return;
+  }
+
+  const filesToDelete = revisionFiles.slice(0, excessCount);
+
+  await Promise.all(
+    filesToDelete.map((filename) =>
+      fs.unlink(path.join(historyDirPath, filename)),
+    ),
+  );
 }

@@ -1,0 +1,68 @@
+{
+  "id": "2026-03-22T14-59-54-077Z__update-config",
+  "createdAt": "2026-03-22T14:59:54.077Z",
+  "action": "update-config",
+  "label": "update-config",
+  "config": {
+    "log": {
+      "disabled": false,
+      "level": "info",
+      "timestamp": true
+    },
+    "inbounds": [
+      {
+        "type": "hysteria2",
+        "tag": "hy2_1",
+        "up_mbps": 100,
+        "down_mbps": 100,
+        "users": [
+          {
+            "name": "userffd",
+            "password": "123456"
+          }
+        ],
+        "tls": {
+          "enabled": true,
+          "server_name": "www.cloudflare.com",
+          "certificate_path": "/etc/sing-box/certs/hy2.crt",
+          "key_path": "/etc/sing-box/certs/hy2.key"
+        },
+        "listen": "3424",
+        "listen_port": 4478,
+        "sniff": true,
+        "sniff_override_destination": true
+      },
+      {
+        "type": "hysteria2",
+        "tag": "hy2_2",
+        "up_mbps": 100,
+        "down_mbps": 100,
+        "users": [
+          {
+            "name": "user",
+            "password": "password"
+          }
+        ],
+        "tls": {
+          "enabled": true,
+          "server_name": "www.cloudflare.com",
+          "certificate_path": "/etc/sing-box/certs/hy2.crt",
+          "key_path": "/etc/sing-box/certs/hy2.key"
+        },
+        "listen": "3424",
+        "listen_port": 443,
+        "sniff": true,
+        "sniff_override_destination": true
+      }
+    ],
+    "outbounds": [
+      {
+        "type": "direct",
+        "tag": "direct"
+      }
+    ],
+    "route": {
+      "final": "direct"
+    }
+  }
+}

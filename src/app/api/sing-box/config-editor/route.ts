@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { isDeepStrictEqual } from "node:util";
 
 import { z } from "zod";
 
@@ -83,13 +82,6 @@ export const PUT = withRoute({
 
     const previousContent = await fs.readFile(configPath, "utf-8");
 
-    const previous = JSON.parse(previousContent);
-    const next = parseResult.data;
-
-    if (isDeepStrictEqual(previous, next)) {
-      return { ok: true };
-    }
-
     const historyDirPath = path.join(path.dirname(configPath), "history");
 
     await saveConfigRevision({
@@ -97,6 +89,7 @@ export const PUT = withRoute({
       currentConfig: JSON.parse(previousContent),
       action: "update-config",
       label: "update-config",
+      maxRevisions: 3,
     });
 
     const content = JSON.stringify(parseResult.data, null, 2);
