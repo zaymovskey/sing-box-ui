@@ -13,7 +13,7 @@ import {
 } from "@/shared/ui";
 
 export function InboundFormVlessFields() {
-  const { control, clearErrors, setValue } =
+  const { control, clearErrors, setValue, trigger, formState } =
     useFormContext<InboundFormValues>();
 
   const {
@@ -54,6 +54,19 @@ export function InboundFormVlessFields() {
       ]);
     }
   }, [tlsEnabled, realityEnabled, clearErrors, setValue]);
+
+  const watchedUsers = useWatch({
+    control,
+    name: "users",
+  });
+
+  useEffect(() => {
+    if (formState.submitCount === 0) {
+      return;
+    }
+
+    void trigger("users");
+  }, [watchedUsers, formState.submitCount, trigger]);
 
   return (
     <>
