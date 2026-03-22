@@ -1,6 +1,6 @@
 {
-  "id": "2026-03-22T14-59-24-398Z__update-config",
-  "createdAt": "2026-03-22T14:59:24.398Z",
+  "id": "2026-03-22T15-25-24-068Z__update-config",
+  "createdAt": "2026-03-22T15:25:24.068Z",
   "action": "update-config",
   "label": "update-config",
   "config": {
@@ -50,6 +50,32 @@
           "key_path": "/etc/sing-box/certs/hy2.key"
         },
         "listen": "3424",
+        "listen_port": 443,
+        "sniff": true,
+        "sniff_override_destination": true
+      },
+      {
+        "type": "vless",
+        "tag": "dsafdsf",
+        "users": [
+          {
+            "name": "sdfa",
+            "uuid": "9098b1d7-d137-4df1-af26-6fe9b16016dd"
+          }
+        ],
+        "tls": {
+          "enabled": false,
+          "server_name": "www.cloudflare.com",
+          "reality": {
+            "enabled": false,
+            "handshake": {
+              "server": "www.cloudflare.com",
+              "server_port": 443
+            },
+            "private_key": ""
+          }
+        },
+        "listen": "::",
         "listen_port": 443,
         "sniff": true,
         "sniff_override_destination": true
