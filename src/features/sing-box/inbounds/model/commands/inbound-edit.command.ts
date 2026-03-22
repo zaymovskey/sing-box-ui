@@ -7,6 +7,7 @@ import {
 } from "@/features/sing-box/config-core";
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 
+import { applyRealityPublicKeyMetadata } from "../../lib/apply-reality-public-key-metadata.helper";
 import { mapFormToInbound } from "../inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
@@ -53,29 +54,5 @@ export function useEditInbound() {
   return {
     editInbound,
     isPending: updateConfigMutation.isPending,
-  };
-}
-
-function applyRealityPublicKeyMetadata(
-  config: Config,
-  values: Extract<InboundFormValues, { type: "vless" }>,
-): Config {
-  if (!values.reality_enabled) {
-    return config;
-  }
-
-  if (!values.reality_private_key || !values._reality_public_key) {
-    return config;
-  }
-
-  return {
-    ...config,
-    _panel: {
-      ...config._panel,
-      realityPublicKeys: {
-        ...config._panel?.realityPublicKeys,
-        [values.reality_private_key]: values._reality_public_key,
-      },
-    },
   };
 }
