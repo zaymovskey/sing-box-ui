@@ -38,10 +38,19 @@
 
 ---
 
+### 📱 Client connections (QR / links)
+
+<p align="center">
+  <img src="./screenshots/connections.png" width="60%" />
+</p>
+
+---
+
 ### ✏️ Create / Edit inbound
 
 <p align="center">
-  <img src="./screenshots/inbound-form.png" width="60%" />
+  <img src="./screenshots/inbound-form.png" width="48%" />
+  <img src="./screenshots/inbound-form2.png" width="48%" />
 </p>
 
 ---
@@ -50,14 +59,6 @@
 
 <p align="center">
   <img src="./screenshots/config-editor.png" width="70%" />
-</p>
-
----
-
-### 📱 Client connections (QR / links)
-
-<p align="center">
-  <img src="./screenshots/connections.png" width="60%" />
 </p>
 
 ---
