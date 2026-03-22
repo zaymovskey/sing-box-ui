@@ -12,6 +12,8 @@ import {
   UncontrolledUuidField,
 } from "@/shared/ui";
 
+import { VlessTlsToolsSection } from "./VlessTlsToolsSection";
+
 export function InboundFormVlessFields() {
   const { control, clearErrors, setValue, trigger, formState } =
     useFormContext<InboundFormValues>();
@@ -154,12 +156,7 @@ export function InboundFormVlessFields() {
           placeholder="443"
         />
       </div>
-      <UncontrolledTextField<InboundFormValues>
-        disabled={!realityEnabled || !tlsEnabled}
-        label="Reality private key"
-        name="reality_private_key"
-        placeholder="private_key"
-      />
+      <VlessTlsToolsSection />
     </>
   );
 }

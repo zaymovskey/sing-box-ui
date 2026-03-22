@@ -22,7 +22,7 @@ import {
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
 import { InboundFormHy2Fields } from "./InboundFormHy2Fields/InboundFormHy2Fields";
-import { InboundFormVlessFields } from "./InboundFormVlessFields";
+import { InboundFormVlessFields } from "./InboundFormVlessFields/InboundFormVlessFields";
 
 type InboundFormProps = {
   formId: string;
