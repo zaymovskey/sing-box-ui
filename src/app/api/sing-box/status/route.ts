@@ -52,8 +52,9 @@ export const GET = withRoute({
   },
 });
 
-// sing-box check -c config.json
-// "service_unreachable"  await fetch("http://sing-box:9090")
+// 1. "service_unreachable"  await fetch("http://sing-box:9090")
+// 2. Применен ли последняя ревизия конфига
+
 type CheckResult = "ok" | "error";
 
 const checkContainerRunning = async (

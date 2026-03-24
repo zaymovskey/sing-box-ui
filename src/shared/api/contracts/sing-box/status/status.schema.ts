@@ -7,6 +7,7 @@ export const SingBoxStatusReasonSchema = z.enum([
   "container_not_running",
   "invalid_config",
   "service_unreachable",
+  "last_revision_not_applied",
 ]);
 
 export const SingBoxStatusResponseSchema = z.object({
@@ -14,4 +15,6 @@ export const SingBoxStatusResponseSchema = z.object({
   reason: SingBoxStatusReasonSchema,
 });
 
+export type SingBoxStatusReason = z.infer<typeof SingBoxStatusReasonSchema>;
+export type SingBoxStatus = z.infer<typeof SingBoxStatusSchema>;
 export type SingBoxStatusResponse = z.infer<typeof SingBoxStatusResponseSchema>;
