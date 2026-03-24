@@ -10,6 +10,7 @@ const serverEnvSchema = z.object({
   AUTH_JWT_SECRET: z.string().min(1),
   AUTH_DEMO_EMAIL: z.email(),
   AUTH_DEMO_PASSWORD: z.string().min(1),
+  SINGBOX_DRAFT_CONFIG_PATH: z.string().min(1),
   SINGBOX_CONFIG_PATH: z.string().min(1),
   CONFIG_METADATA_PATH: z.string().min(1),
   SINGBOX_CERTS_DIR: z.string(),
@@ -29,6 +30,7 @@ export function getServerEnv(): ServerEnvSchema {
     AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET,
     AUTH_DEMO_EMAIL: process.env.AUTH_DEMO_EMAIL,
     AUTH_DEMO_PASSWORD: process.env.AUTH_DEMO_PASSWORD,
+    SINGBOX_DRAFT_CONFIG_PATH: process.env.SINGBOX_DRAFT_CONFIG_PATH,
     SINGBOX_CONFIG_PATH: process.env.SINGBOX_CONFIG_PATH,
     SINGBOX_CERTS_DIR: process.env.SINGBOX_CERTS_DIR,
     SINGBOX_CONTAINER_NAME: process.env.SINGBOX_CONTAINER_NAME,
@@ -44,6 +46,8 @@ export function getServerEnv(): ServerEnvSchema {
           AUTH_JWT_SECRET: raw.AUTH_JWT_SECRET ?? "build-placeholder",
           AUTH_DEMO_EMAIL: raw.AUTH_DEMO_EMAIL ?? "build@example.com",
           AUTH_DEMO_PASSWORD: raw.AUTH_DEMO_PASSWORD ?? "build-placeholder",
+          SINGBOX_DRAFT_CONFIG_PATH:
+            raw.SINGBOX_DRAFT_CONFIG_PATH ?? "/tmp/config.draft.json",
           SINGBOX_CONFIG_PATH: raw.SINGBOX_CONFIG_PATH ?? "/tmp/config.json",
           CONFIG_METADATA_PATH: raw.CONFIG_METADATA_PATH ?? "/tmp/meta.json",
           SINGBOX_CERTS_DIR: raw.SINGBOX_CERTS_DIR ?? "/tmp/certs",
@@ -54,6 +58,7 @@ export function getServerEnv(): ServerEnvSchema {
 
     cached = {
       ...parsed,
+      SINGBOX_DRAFT_CONFIG_PATH: path.resolve(parsed.SINGBOX_DRAFT_CONFIG_PATH),
       SINGBOX_CONFIG_PATH: path.resolve(parsed.SINGBOX_CONFIG_PATH),
     };
 

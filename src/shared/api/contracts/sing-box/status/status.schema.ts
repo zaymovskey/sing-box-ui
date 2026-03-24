@@ -7,7 +7,7 @@ export const SingBoxStatusReasonSchema = z.enum([
   "container_not_running",
   "invalid_config",
   "service_unreachable",
-  "last_revision_not_applied",
+  "draft_not_applied",
 ]);
 
 export const SingBoxStatusResponseSchema = z.object({

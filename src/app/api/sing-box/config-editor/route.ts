@@ -43,10 +43,10 @@ export const GET = withRoute({
   responseSchema: ConfigWithMetadataSchema,
   handler: async () => {
     const serverEnv = getServerEnv();
-    const configPath = serverEnv.SINGBOX_CONFIG_PATH;
+    const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
     const metadataPath = serverEnv.CONFIG_METADATA_PATH;
 
-    const configContent = await fs.readFile(configPath, "utf-8");
+    const configContent = await fs.readFile(draftPath, "utf-8");
     const metadataContent = await fs.readFile(metadataPath, "utf-8");
 
     const parsedConfigContent = JSON.parse(configContent);
@@ -88,12 +88,12 @@ export const PUT = withRoute({
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
     const serverEnv = getServerEnv();
-    const configPath = serverEnv.SINGBOX_CONFIG_PATH;
+    const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
     const metadataPath = serverEnv.CONFIG_METADATA_PATH;
 
-    const previousContent = await fs.readFile(configPath, "utf-8");
+    const previousContent = await fs.readFile(draftPath, "utf-8");
 
-    const historyDirPath = path.join(path.dirname(configPath), "history");
+    const historyDirPath = path.join(path.dirname(draftPath), "history");
 
     await saveConfigRevision({
       historyDirPath,
@@ -104,7 +104,7 @@ export const PUT = withRoute({
     });
 
     const configContent = JSON.stringify(body.config, null, 2);
-    await fs.writeFile(configPath, configContent, "utf-8");
+    await fs.writeFile(draftPath, configContent, "utf-8");
 
     const metadataContent = JSON.stringify(body.metadata, null, 2);
     await fs.writeFile(metadataPath, metadataContent, "utf-8");
