@@ -5,6 +5,7 @@ export const apiRoutes = {
     me: "/api/auth/me",
   },
   singBox: {
+    status: "/api/sing-box/status",
     configEditor: "/api/sing-box/config-editor",
     hy2: {
       tls: {

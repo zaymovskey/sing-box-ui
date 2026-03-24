@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Container,
   FileExclamationPoint,
@@ -12,6 +14,8 @@ import { type SingBoxStatusReason } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
 import { Button } from "@/shared/ui";
 
+import { useSingBoxStatusQuery } from "../model/sing-box-status.query";
+
 type StatusConfig = {
   label: string;
   icon: ReactElement;
@@ -19,13 +23,16 @@ type StatusConfig = {
   dotColor: string;
 };
 
-type SingBoxStatusControlStatus = SingBoxStatusReason | "loading";
+type SingBoxStatusControlStatus =
+  | SingBoxStatusReason
+  | "loading"
+  | "unknown_error";
 
-export function SingBoxStatusControl({
-  status,
-}: {
-  status: SingBoxStatusControlStatus;
-}) {
+export function SingBoxStatusControl() {
+  const { data, isLoading, isError } = useSingBoxStatusQuery();
+
+  console.log(data);
+
   const statuses: Record<SingBoxStatusControlStatus, StatusConfig> = {
     ok: {
       label: "Работает",
@@ -63,9 +70,27 @@ export function SingBoxStatusControl({
       textColor: "text-muted-foreground",
       dotColor: "bg-muted",
     },
+    unknown_error: {
+      label: "Неизвестная ошибка",
+      icon: <FileX className="h-4 w-4" />,
+      textColor: "text-red-600",
+      dotColor: "bg-red-500",
+    },
   };
 
-  const current = statuses[status];
+  const getStatus = (): SingBoxStatusControlStatus => {
+    if (isLoading) {
+      return "loading";
+    }
+
+    if (isError) {
+      return "unknown_error";
+    }
+
+    return data?.reason ?? "unknown_error";
+  };
+
+  const current = statuses[getStatus()];
 
   return (
     <div className="flex items-center gap-1">
