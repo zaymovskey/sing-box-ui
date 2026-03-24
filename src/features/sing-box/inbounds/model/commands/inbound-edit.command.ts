@@ -18,7 +18,7 @@ export function useEditInbound() {
   const updateConfigMutation = useUpdateConfigMutation();
 
   const editInbound = useCallback(
-    (updatedInbound: InboundFormValues) => {
+    (originalTag: string, updatedInbound: InboundFormValues) => {
       if (!singBoxConfig) {
         throw new Error("Config not loaded");
       }
@@ -26,18 +26,18 @@ export function useEditInbound() {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
+
       let nextconfigWithMetadata: ConfigWithMetadata = {
         metadata: configWithMetadata?.metadata,
         config: {
           ...singBoxConfig,
-          inbounds: [
-            ...inbounds.map((inbound) => {
-              if (inbound.tag === updatedInbound.tag) {
-                return parsedEditedInbound;
-              }
-              return inbound;
-            }),
-          ],
+          inbounds: inbounds.map((inbound) => {
+            if (inbound.tag === originalTag) {
+              return parsedEditedInbound;
+            }
+
+            return inbound;
+          }),
         },
       };
 
@@ -49,6 +49,7 @@ export function useEditInbound() {
       }
 
       const parsed = ConfigSchema.safeParse(nextconfigWithMetadata.config);
+
       if (!parsed.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }

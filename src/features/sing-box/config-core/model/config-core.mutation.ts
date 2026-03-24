@@ -13,6 +13,7 @@ export function useUpdateConfigMutation() {
     mutationFn: (config) => updateConfigJson(config),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
+      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
     },
   });
 }

@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import fs from "node:fs/promises";
+import { isDeepStrictEqual, promisify } from "node:util";
 
 import {
   type SingBoxStatusResponse,
@@ -35,15 +36,26 @@ export const GET = withRoute({
         reason: "container_not_running",
       } satisfies SingBoxStatusResponse;
     }
-
-    console.log("checkContainerRunningResult", checkContainerRunningResult);
-
     const checkConfigResult = await checkSingBoxConfig(
       containerName,
       singBoxConfigPath,
     );
 
-    console.log("checkConfigResult", checkConfigResult);
+    if (checkConfigResult === "error") {
+      return {
+        status: "error",
+        reason: "invalid_config",
+      } satisfies SingBoxStatusResponse;
+    }
+
+    const checkDraftAppliedResult = await checkDraftApplied();
+
+    if (checkDraftAppliedResult === "error") {
+      return {
+        status: "error",
+        reason: "draft_not_applied",
+      } satisfies SingBoxStatusResponse;
+    }
 
     return {
       status: "running",
@@ -52,8 +64,6 @@ export const GET = withRoute({
   },
 });
 
-// sing-box check -c config.json
-// "service_unreachable"  await fetch("http://sing-box:9090")
 type CheckResult = "ok" | "error";
 
 const checkContainerRunning = async (
@@ -81,7 +91,7 @@ const checkSingBoxConfig = async (
   configPath: string,
 ): Promise<CheckResult> => {
   try {
-    const { stdout } = await execFileAsync("docker", [
+    await execFileAsync("docker", [
       "exec",
       containerName,
       "sing-box",
@@ -89,16 +99,25 @@ const checkSingBoxConfig = async (
       "-c",
       configPath,
     ]);
-    console.log("stdout", stdout);
-  } catch (error) {
-    console.error("Error checking sing-box config", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new ServerApiError(
-      500,
-      "SINGBOX_CHECK_CONFIG_ERROR",
-      `Ошибка при проверке конфигурации sing-box: ${errorMessage}`,
-    );
-  }
 
-  return "ok";
+    return "ok";
+  } catch {
+    return "error";
+  }
+};
+
+const checkDraftApplied = async (): Promise<CheckResult> => {
+  const draftPath = getServerEnv().SINGBOX_DRAFT_CONFIG_PATH;
+  const configPath = getServerEnv().SINGBOX_CONFIG_PATH;
+
+  try {
+    const draft = JSON.parse(await fs.readFile(draftPath, "utf-8"));
+    const real = JSON.parse(await fs.readFile(configPath, "utf-8"));
+
+    const isSame = isDeepStrictEqual(draft, real);
+
+    return isSame ? "ok" : "error";
+  } catch {
+    return "error";
+  }
 };

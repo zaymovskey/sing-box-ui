@@ -121,7 +121,7 @@ export function Hy2TlsTools({
 }
 
 const StatusRow = ({ status, label }: { status: TlsStatus; label: string }) => {
-  const statusConfig = {
+  const tlsStatuses = {
     idle: {
       label: "Не проверено",
       color: "bg-zinc-400 dark:bg-zinc-500",
@@ -154,13 +154,16 @@ const StatusRow = ({ status, label }: { status: TlsStatus; label: string }) => {
     },
   };
 
-  const current = statusConfig[status.status];
+  const current = tlsStatuses[status.status];
 
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className={cn("h-2.5 w-2.5 rounded-full", current.color)} />
-      <span className={current.text}>
-        {label}: {status.message || "Неизвестно"}
+      <span className={cn(current.text, "flex items-center gap-1")}>
+        <span>
+          {label}: {status.message || "Неизвестно"}
+        </span>
+        {current.icon}
       </span>
     </div>
   );

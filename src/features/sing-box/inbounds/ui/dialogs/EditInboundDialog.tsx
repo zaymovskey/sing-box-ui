@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -46,6 +46,12 @@ export function EditInboundDialog({
   const singBoxConfig = configQuery.data?.config;
   const configMetadata = configQuery.data?.metadata;
 
+  const [currentInboundTag, setCurrentInboundTag] = useState(inbound.tag);
+
+  useEffect(() => {
+    setCurrentInboundTag(inbound.tag);
+  }, [inbound.tag]);
+
   const realityPublicKeys = useMemo(
     () => configMetadata?.realityPublicKeys || {},
     [configMetadata?.realityPublicKeys],
@@ -71,16 +77,17 @@ export function EditInboundDialog({
     singBoxConfig?.inbounds
       ?.map((i) => i.tag)
       .filter((tag): tag is string => Boolean(tag)) ?? [];
+
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
     form,
     tags,
-    inbound.tag,
+    currentInboundTag,
   );
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
     inbounds: singBoxConfig?.inbounds ?? [],
-    excludeTag: inbound.tag,
+    excludeTag: currentInboundTag,
   });
 
   const handleSubmit = async (values: InboundFormValues) => {
@@ -97,11 +104,20 @@ export function EditInboundDialog({
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
-      await editInbound(values);
+      if (!currentInboundTag) {
+        serverToast.error("Инбаунд должен иметь тег для редактирования", {
+          id: "edit-inbound",
+        });
+        return;
+      }
+
+      await editInbound(currentInboundTag, values);
       serverToast.success("Инбаунд успешно обновлен", {
         id: "edit-inbound",
         duration: 2000,
       });
+      setCurrentInboundTag(values.tag);
+      form.clearErrors();
       form.reset(values);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";

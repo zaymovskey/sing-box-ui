@@ -34,6 +34,8 @@ export {
   VlessTlsGenerateResponseSchema,
 } from "./sing-box/inbounds/vless/tls/generate.schema";
 export {
+  type SingBoxStatus,
+  type SingBoxStatusReason,
   type SingBoxStatusResponse,
   SingBoxStatusResponseSchema,
 } from "./sing-box/status/status.schema";
