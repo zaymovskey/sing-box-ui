@@ -104,12 +104,13 @@ export function EditInboundDialog({
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
-      if (!inbound.tag) {
+      if (!currentInboundTag) {
         serverToast.error("Инбаунд должен иметь тег для редактирования", {
           id: "edit-inbound",
         });
         return;
       }
+
       await editInbound(currentInboundTag, values);
       serverToast.success("Инбаунд успешно обновлен", {
         id: "edit-inbound",
