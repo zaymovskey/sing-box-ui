@@ -11,6 +11,7 @@ const serverEnvSchema = z.object({
   AUTH_DEMO_EMAIL: z.email(),
   AUTH_DEMO_PASSWORD: z.string().min(1),
   SINGBOX_CONFIG_PATH: z.string().min(1),
+  CONFIG_METADATA_PATH: z.string().min(1),
   SINGBOX_CERTS_DIR: z.string(),
   SINGBOX_CONTAINER_NAME: z.string().min(1),
 });
@@ -31,6 +32,7 @@ export function getServerEnv(): ServerEnvSchema {
     SINGBOX_CONFIG_PATH: process.env.SINGBOX_CONFIG_PATH,
     SINGBOX_CERTS_DIR: process.env.SINGBOX_CERTS_DIR,
     SINGBOX_CONTAINER_NAME: process.env.SINGBOX_CONTAINER_NAME,
+    CONFIG_METADATA_PATH: process.env.CONFIG_METADATA_PATH,
   };
 
   const isBuild = process.env.NEXT_PHASE === "phase-production-build";
@@ -43,6 +45,8 @@ export function getServerEnv(): ServerEnvSchema {
           AUTH_DEMO_EMAIL: raw.AUTH_DEMO_EMAIL ?? "build@example.com",
           AUTH_DEMO_PASSWORD: raw.AUTH_DEMO_PASSWORD ?? "build-placeholder",
           SINGBOX_CONFIG_PATH: raw.SINGBOX_CONFIG_PATH ?? "/tmp/config.json",
+          CONFIG_METADATA_PATH: raw.CONFIG_METADATA_PATH ?? "/tmp/meta.json",
+          SINGBOX_CERTS_DIR: raw.SINGBOX_CERTS_DIR ?? "/tmp/certs",
           SINGBOX_CONTAINER_NAME:
             raw.SINGBOX_CONTAINER_NAME ?? "build-placeholder",
         })

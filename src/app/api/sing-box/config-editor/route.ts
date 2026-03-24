@@ -4,10 +4,14 @@ import path from "node:path";
 import { z } from "zod";
 
 import { saveConfigRevision } from "@/features/sing-box/config-core/server";
-import { ConfigSchema, OkResponseSchema } from "@/shared/api/contracts";
+import {
+  type ConfigWithMetadata,
+  ConfigWithMetadataSchema,
+  OkResponseSchema,
+} from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
-const throwInvalidConfigResponse = (error: z.ZodError): never => {
+const throwInvalidConfigWithMetadataResponse = (error: z.ZodError): never => {
   const details = error.issues.map((issue) => ({
     code: issue.code,
     message: issue.message,
@@ -17,7 +21,7 @@ const throwInvalidConfigResponse = (error: z.ZodError): never => {
   throw new ServerApiError(
     422,
     "SINGBOX_CONFIG_INVALID",
-    "Некорректный формат конфига sing-box",
+    "Некорректный формат конфига sing-box и/или метаданных",
     details,
   );
 };
@@ -36,20 +40,32 @@ const throwInvalidConfigResponse = (error: z.ZodError): never => {
  */
 export const GET = withRoute({
   auth: true,
-  responseSchema: ConfigSchema,
+  responseSchema: ConfigWithMetadataSchema,
   handler: async () => {
     const serverEnv = getServerEnv();
-    const path = serverEnv.SINGBOX_CONFIG_PATH;
+    const configPath = serverEnv.SINGBOX_CONFIG_PATH;
+    const metadataPath = serverEnv.CONFIG_METADATA_PATH;
 
-    const content = await fs.readFile(path, "utf-8");
-    const parsed = JSON.parse(content);
-    const parseResult = ConfigSchema.safeParse(parsed);
+    const configContent = await fs.readFile(configPath, "utf-8");
+    const metadataContent = await fs.readFile(metadataPath, "utf-8");
+
+    const parsedConfigContent = JSON.parse(configContent);
+    const parsedMetadataContent = JSON.parse(metadataContent);
+
+    const parsedConfigWithMetadata: ConfigWithMetadata = {
+      config: parsedConfigContent,
+      metadata: parsedMetadataContent,
+    };
+
+    const parseResult = ConfigWithMetadataSchema.safeParse(
+      parsedConfigWithMetadata,
+    );
 
     if (!parseResult.success) {
-      throwInvalidConfigResponse(parseResult.error);
+      throwInvalidConfigWithMetadataResponse(parseResult.error);
     }
 
-    return parsed;
+    return parsedConfigWithMetadata;
   },
 });
 
@@ -68,17 +84,12 @@ export const GET = withRoute({
  */
 export const PUT = withRoute({
   auth: true,
-  requestSchema: ConfigSchema,
+  requestSchema: ConfigWithMetadataSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
     const serverEnv = getServerEnv();
     const configPath = serverEnv.SINGBOX_CONFIG_PATH;
-
-    const parseResult = ConfigSchema.safeParse(body);
-
-    if (!parseResult.success) {
-      throwInvalidConfigResponse(parseResult.error);
-    }
+    const metadataPath = serverEnv.CONFIG_METADATA_PATH;
 
     const previousContent = await fs.readFile(configPath, "utf-8");
 
@@ -92,8 +103,11 @@ export const PUT = withRoute({
       maxRevisions: 3,
     });
 
-    const content = JSON.stringify(parseResult.data, null, 2);
-    await fs.writeFile(configPath, content, "utf-8");
+    const configContent = JSON.stringify(body.config, null, 2);
+    await fs.writeFile(configPath, configContent, "utf-8");
+
+    const metadataContent = JSON.stringify(body.metadata, null, 2);
+    await fs.writeFile(metadataPath, metadataContent, "utf-8");
 
     return { ok: true };
   },
