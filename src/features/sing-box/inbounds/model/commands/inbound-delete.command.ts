@@ -4,12 +4,18 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type Config, ConfigSchema } from "@/shared/api/contracts";
+import {
+  type Config,
+  ConfigSchema,
+  type ConfigWithMetadata,
+} from "@/shared/api/contracts";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useDeleteInbound() {
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: configWithMetadata } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
+  const metadata = configWithMetadata?.metadata;
   const updateConfigMutation = useUpdateConfigMutation();
 
   const deleteInbound = useCallback(
@@ -28,7 +34,7 @@ export function useDeleteInbound() {
       if (deletingInbound.type === "vless" && deletingInbound.tls?.reality) {
         const realityPrivateKey = deletingInbound.tls.reality.private_key;
         if (realityPrivateKey) {
-          delete singBoxConfig._panel?.realityPublicKeys[realityPrivateKey];
+          delete metadata?.realityPublicKeys[realityPrivateKey];
         }
       }
 
@@ -43,9 +49,14 @@ export function useDeleteInbound() {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      return updateConfigMutation.mutateAsync(parsed.data);
+      const nextConfigWithMetadata: ConfigWithMetadata = {
+        metadata,
+        config: parsed.data,
+      };
+
+      return updateConfigMutation.mutateAsync(nextConfigWithMetadata);
     },
-    [singBoxConfig, updateConfigMutation],
+    [metadata, singBoxConfig, updateConfigMutation],
   );
 
   return {

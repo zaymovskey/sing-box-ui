@@ -32,8 +32,17 @@ import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
 
-export function CreateInboundDialog() {
-  const { data: singBoxConfig } = useConfigQuery();
+interface CreateInboundDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function CreateInboundDialog({
+  open,
+  onOpenChange,
+}: CreateInboundDialogProps) {
+  const { data: configWithMetadata } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -81,6 +90,8 @@ export function CreateInboundDialog() {
         duration: 2000,
       });
       form.reset(defaultsByType[type]);
+      form.clearErrors();
+      onOpenChange(false);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
@@ -104,7 +115,7 @@ export function CreateInboundDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-fit">
           <PlusCircle />

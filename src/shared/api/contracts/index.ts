@@ -10,7 +10,10 @@ export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
 export {
   type Config,
   ConfigSchema,
+  type ConfigWithMetadata,
+  ConfigWithMetadataSchema,
   type PanelMetadata,
+  PanelMetadataSchema,
 } from "./sing-box/config/config.schema";
 export {
   type Hy2TlsCheckItem,
@@ -18,15 +21,19 @@ export {
   Hy2TlsCheckRequestSchema,
   type Hy2TlsCheckResponse,
   Hy2TlsCheckResponseSchema,
-} from "./sing-box/inbounds/hy2/tls/hy2-tls-check.schema";
+} from "./sing-box/inbounds/hy2/tls/check.schema";
 export {
   type Hy2TlsGenerateRequest,
   Hy2TlsGenerateRequestSchema,
   type Hy2TlsGenerateResponse,
   Hy2TlsGenerateResponseSchema,
   Hy2TlsGenerateResultSchema,
-} from "./sing-box/inbounds/hy2/tls/hy2-tls-generate.schema";
+} from "./sing-box/inbounds/hy2/tls/generate.schema";
 export {
   type VlessTlsGenerateResponse,
   VlessTlsGenerateResponseSchema,
-} from "./sing-box/inbounds/vless/tls/vless-tls.generate.schema";
+} from "./sing-box/inbounds/vless/tls/generate.schema";
+export {
+  type SingBoxStatusResponse,
+  SingBoxStatusResponseSchema,
+} from "./sing-box/status/status.schema";

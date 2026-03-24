@@ -5,7 +5,7 @@ import {
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type Config, ConfigSchema } from "@/shared/api/contracts";
+import { ConfigSchema, type ConfigWithMetadata } from "@/shared/api/contracts";
 
 import { applyRealityPublicKeyMetadata } from "../../lib/apply-reality-public-key-metadata.helper";
 import { mapFormToInbound } from "../inbound.form-mapper";
@@ -13,7 +13,8 @@ import { mapFormToInbound } from "../inbound.form-mapper";
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useCreateInbound() {
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: configWithMetadata } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
   const updateConfigMutation = useUpdateConfigMutation();
 
   const createInbound = useCallback(
@@ -25,23 +26,31 @@ export function useCreateInbound() {
       const parsedNewInbound = mapFormToInbound(newInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
-      let nextConfig: Config = {
-        ...singBoxConfig,
-        inbounds: [...inbounds, parsedNewInbound],
+      let nextConfigWithMetadata: ConfigWithMetadata = {
+        metadata: configWithMetadata?.metadata,
+        config: {
+          ...singBoxConfig,
+          inbounds: [...inbounds, parsedNewInbound],
+        },
       };
 
       if (newInbound.type === "vless") {
-        nextConfig = applyRealityPublicKeyMetadata(nextConfig, newInbound);
+        nextConfigWithMetadata = applyRealityPublicKeyMetadata(
+          nextConfigWithMetadata,
+          newInbound,
+        );
       }
 
-      const parsed = ConfigSchema.safeParse(nextConfig);
-      if (!parsed.success) {
+      const configParsedRes = ConfigSchema.safeParse(
+        nextConfigWithMetadata.config,
+      );
+      if (!configParsedRes.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      return updateConfigMutation.mutateAsync(parsed.data);
+      return updateConfigMutation.mutateAsync(nextConfigWithMetadata);
     },
-    [singBoxConfig, updateConfigMutation],
+    [configWithMetadata?.metadata, singBoxConfig, updateConfigMutation],
   );
 
   return {

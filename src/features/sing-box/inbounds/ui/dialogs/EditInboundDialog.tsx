@@ -43,11 +43,12 @@ export function EditInboundDialog({
   onOpenChange,
 }: EditInboundDialogProps) {
   const configQuery = useConfigQuery();
-  const singBoxConfig = configQuery.data;
+  const singBoxConfig = configQuery.data?.config;
+  const configMetadata = configQuery.data?.metadata;
 
   const realityPublicKeys = useMemo(
-    () => singBoxConfig?._panel?.realityPublicKeys || {},
-    [singBoxConfig?._panel?.realityPublicKeys],
+    () => configMetadata?.realityPublicKeys || {},
+    [configMetadata?.realityPublicKeys],
   );
   const initialValues = useMemo(
     () => mapInboundToFormValues(inbound, realityPublicKeys),

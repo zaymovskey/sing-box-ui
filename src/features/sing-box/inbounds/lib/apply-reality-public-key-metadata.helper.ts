@@ -1,24 +1,24 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type Config } from "@/shared/api/contracts";
+import { type ConfigWithMetadata } from "@/shared/api/contracts";
 
 export function applyRealityPublicKeyMetadata(
-  config: Config,
+  configWithMetadata: ConfigWithMetadata,
   values: Extract<InboundFormValues, { type: "vless" }>,
-): Config {
+): ConfigWithMetadata {
   if (!values.reality_enabled) {
-    return config;
+    return configWithMetadata;
   }
 
   if (!values.reality_private_key || !values._reality_public_key) {
-    return config;
+    return configWithMetadata;
   }
 
   return {
-    ...config,
-    _panel: {
-      ...config._panel,
+    ...configWithMetadata,
+    metadata: {
+      ...configWithMetadata.metadata,
       realityPublicKeys: {
-        ...config._panel?.realityPublicKeys,
+        ...configWithMetadata.metadata?.realityPublicKeys,
         [values.reality_private_key]: values._reality_public_key,
       },
     },

@@ -23,6 +23,7 @@ export const defaultsByType = {
     tls_enabled: false,
     reality_enabled: false,
     reality_handshake_server_port: 443,
+    _reality_public_key: "",
   },
   hysteria2: {
     type: "hysteria2",

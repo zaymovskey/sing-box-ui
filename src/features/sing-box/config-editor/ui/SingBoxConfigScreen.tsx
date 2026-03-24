@@ -23,7 +23,11 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type Config, ConfigSchema } from "@/shared/api/contracts";
+import {
+  type Config,
+  ConfigSchema,
+  type ConfigWithMetadata,
+} from "@/shared/api/contracts";
 import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
 import {
   Button,
@@ -82,10 +86,11 @@ const makeTheme = (invalidKeys: Set<string>): Theme => {
 
 export function SingBoxConfigScreen() {
   const {
-    data: singBoxConfig,
+    data: configWithMetadata,
     isError: isConfigQueryError,
     isFetching: isConfigQueryFetching,
   } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
 
   const [configDraft, setConfigDraft] = useState<Config | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
@@ -116,7 +121,11 @@ export function SingBoxConfigScreen() {
 
     serverToast.loading("Сохранение...", { id: "save-config" });
 
-    updateConfigMutation.mutate(configDraft, {
+    const updatedConfigWithMetadata: ConfigWithMetadata = {
+      config: configDraft,
+      metadata: configWithMetadata?.metadata,
+    };
+    updateConfigMutation.mutate(updatedConfigWithMetadata, {
       onSuccess: () => {
         serverToast.success("Конфигурация успешно сохранена", {
           id: "save-config",
