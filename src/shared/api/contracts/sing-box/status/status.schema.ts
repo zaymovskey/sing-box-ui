@@ -6,7 +6,6 @@ export const SingBoxStatusReasonSchema = z.enum([
   "ok",
   "container_not_running",
   "invalid_config",
-  "service_unreachable",
   "draft_not_applied",
 ]);
 

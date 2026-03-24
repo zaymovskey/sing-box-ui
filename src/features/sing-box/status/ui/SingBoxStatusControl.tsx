@@ -6,7 +6,6 @@ import {
   FileX,
   Loader2,
   RefreshCcw,
-  ShieldX,
 } from "lucide-react";
 import { type ReactElement } from "react";
 
@@ -49,12 +48,6 @@ export function SingBoxStatusControl() {
     invalid_config: {
       label: "Конфигурация не валидна",
       icon: <FileX className="h-4 w-4" />,
-      textColor: "text-red-600",
-      dotColor: "bg-red-500",
-    },
-    service_unreachable: {
-      label: "Сервис недоступен",
-      icon: <ShieldX className="h-4 w-4" />,
       textColor: "text-red-600",
       dotColor: "bg-red-500",
     },

@@ -48,15 +48,6 @@ export const GET = withRoute({
       } satisfies SingBoxStatusResponse;
     }
 
-    const checkStatusResult = await checkSingBoxStatus();
-
-    if (checkStatusResult === "error") {
-      return {
-        status: "error",
-        reason: "service_unreachable",
-      } satisfies SingBoxStatusResponse;
-    }
-
     const checkDraftAppliedResult = await checkDraftApplied();
 
     if (checkDraftAppliedResult === "error") {
@@ -110,18 +101,6 @@ const checkSingBoxConfig = async (
     ]);
 
     return "ok";
-  } catch {
-    return "error";
-  }
-};
-
-const checkSingBoxStatus = async (): Promise<CheckResult> => {
-  try {
-    const response = await fetch("http://sing-box:9090", {
-      signal: AbortSignal.timeout(2000),
-    });
-
-    return response.ok ? "ok" : "error";
   } catch {
     return "error";
   }
