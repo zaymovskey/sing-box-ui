@@ -7,11 +7,12 @@ import {
   Loader2,
   RefreshCcw,
 } from "lucide-react";
-import { type ReactElement } from "react";
+import { type ReactElement, useEffect, useState } from "react";
 
+import { useReloadSingBox } from "@/features/sing-box/reload";
 import { type SingBoxStatusReason } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
-import { Button } from "@/shared/ui";
+import { Button, serverToast } from "@/shared/ui";
 
 import { useSingBoxStatusQuery } from "../model/sing-box-status.query";
 
@@ -28,62 +29,56 @@ type SingBoxStatusControlStatus =
   | "unknown_error";
 
 export function SingBoxStatusControl() {
-  const { data, isLoading, isError } = useSingBoxStatusQuery();
+  const {
+    data: statusData,
+    isLoading: statusIsLoading,
+    isFetching: statusIsFetching,
+    isError: statusIsError,
+  } = useSingBoxStatusQuery();
 
-  console.log(data);
+  const reloadMutation = useReloadSingBox();
 
-  const statuses: Record<SingBoxStatusControlStatus, StatusConfig> = {
-    ok: {
-      label: "Работает",
-      icon: <Container className="h-4 w-4" />,
-      textColor: "text-green-600",
-      dotColor: "bg-green-500",
-    },
-    container_not_running: {
-      label: "Контейнер не запущен",
-      icon: <Container className="h-4 w-4" />,
-      textColor: "text-red-600",
-      dotColor: "bg-red-500",
-    },
-    invalid_config: {
-      label: "Конфигурация не валидна",
-      icon: <FileX className="h-4 w-4" />,
-      textColor: "text-red-600",
-      dotColor: "bg-red-500",
-    },
-    draft_not_applied: {
-      label: "Ревизия не применена",
-      icon: <FileExclamationPoint className="h-4 w-4" />,
-      textColor: "text-yellow-600",
-      dotColor: "bg-yellow-500",
-    },
-    loading: {
-      label: "Загрузка...",
-      icon: <Loader2 className="h-4 w-4 animate-spin" />,
-      textColor: "text-muted-foreground",
-      dotColor: "bg-muted",
-    },
-    unknown_error: {
-      label: "Неизвестная ошибка",
-      icon: <FileX className="h-4 w-4" />,
-      textColor: "text-red-600",
-      dotColor: "bg-red-500",
-    },
-  };
+  const [isApplying, setIsApplying] = useState(false);
+
+  useEffect(() => {
+    if (!isApplying) return;
+    if (statusIsFetching) return;
+    if (!statusData && !statusIsError) return;
+    if (statusIsError) return;
+
+    if (statusData.reason !== "ok") return;
+
+    setIsApplying(false);
+  }, [isApplying, statusIsFetching, statusData, statusIsError]);
 
   const getStatus = (): SingBoxStatusControlStatus => {
-    if (isLoading) {
+    if (statusIsLoading || reloadMutation.isPending || isApplying) {
       return "loading";
     }
 
-    if (isError) {
+    if (statusIsError) {
       return "unknown_error";
     }
 
-    return data?.reason ?? "unknown_error";
+    return statusData?.reason ?? "unknown_error";
   };
 
-  const current = statuses[getStatus()];
+  const currentStatus = getStatus();
+  const current = statuses[currentStatus];
+
+  const handleReload = async () => {
+    setIsApplying(true);
+    try {
+      await reloadMutation.mutateAsync();
+      serverToast.success("sing-box перезагружен", {
+        duration: 3000,
+      });
+    } catch {
+      serverToast.error("Не удалось перезагрузить sing-box", {
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <div className="flex items-center gap-1">
@@ -99,9 +94,54 @@ export function SingBoxStatusControl() {
           {current.label}
         </span>
       </div>
-      <Button className="gap-2" size="sm" variant="outline">
+      <Button
+        className="gap-2"
+        loading={currentStatus === "loading"}
+        size="sm"
+        variant="outline"
+        onClick={handleReload}
+      >
         <RefreshCcw className="h-4 w-4" />
       </Button>
     </div>
   );
 }
+
+const statuses: Record<SingBoxStatusControlStatus, StatusConfig> = {
+  ok: {
+    label: "Работает",
+    icon: <Container className="h-4 w-4" />,
+    textColor: "text-green-600",
+    dotColor: "bg-green-500",
+  },
+  container_not_running: {
+    label: "Контейнер не запущен",
+    icon: <Container className="h-4 w-4" />,
+    textColor: "text-red-600",
+    dotColor: "bg-red-500",
+  },
+  invalid_config: {
+    label: "Конфигурация не валидна",
+    icon: <FileX className="h-4 w-4" />,
+    textColor: "text-red-600",
+    dotColor: "bg-red-500",
+  },
+  draft_not_applied: {
+    label: "Перезагрузите для применения изменений",
+    icon: <FileExclamationPoint className="h-4 w-4" />,
+    textColor: "text-yellow-600",
+    dotColor: "bg-yellow-500",
+  },
+  loading: {
+    label: "Загрузка...",
+    icon: <Loader2 className="h-4 w-4 animate-spin" />,
+    textColor: "text-muted-foreground",
+    dotColor: "bg-muted",
+  },
+  unknown_error: {
+    label: "Неизвестная ошибка",
+    icon: <FileX className="h-4 w-4" />,
+    textColor: "text-red-600",
+    dotColor: "bg-red-500",
+  },
+};
