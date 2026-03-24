@@ -1,7 +1,7 @@
 "use client";
 
 import { RefreshCcw, X } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import {
   useConfigQuery,
@@ -31,6 +31,8 @@ export function InboundsTableScreen() {
 
   const { data: configWithMetadata, error } = useConfigQuery();
   const singBoxConfig = configWithMetadata?.config;
+
+  const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
   useConfigQueryToasts(error);
 
@@ -77,7 +79,10 @@ export function InboundsTableScreen() {
   return (
     <>
       <Card className="mb-4 gap-5 p-4">
-        <CreateInboundDialog />
+        <CreateInboundDialog
+          open={createInboundDialogOpen}
+          onOpenChange={setCreateInboundDialogOpen}
+        />
         <Separator />
         <div className="flex items-center justify-between">
           <div className="relative flex items-center justify-between gap-1">
