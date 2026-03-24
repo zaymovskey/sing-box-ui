@@ -18,7 +18,8 @@ export function InboundUserRow({
   inbound: ConfigInbound;
   user: unknown;
 }) {
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: configWithMetadata } = useConfigQuery();
+  const configMetadata = configWithMetadata?.metadata;
 
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
 
@@ -30,7 +31,7 @@ export function InboundUserRow({
       ? user.name
       : "Без имени";
 
-  const realityPublicKeys = singBoxConfig?._panel?.realityPublicKeys || {};
+  const realityPublicKeys = configMetadata?.realityPublicKeys || {};
   const link = buildInboundShareLink(
     inbound,
     user,

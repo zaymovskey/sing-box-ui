@@ -5,7 +5,7 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type Config, ConfigSchema } from "@/shared/api/contracts";
+import { ConfigSchema, type ConfigWithMetadata } from "@/shared/api/contracts";
 
 import { applyRealityPublicKeyMetadata } from "../../lib/apply-reality-public-key-metadata.helper";
 import { mapFormToInbound } from "../inbound.form-mapper";
@@ -13,7 +13,8 @@ import { mapFormToInbound } from "../inbound.form-mapper";
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useEditInbound() {
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: configWithMetadata } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
   const updateConfigMutation = useUpdateConfigMutation();
 
   const editInbound = useCallback(
@@ -25,30 +26,36 @@ export function useEditInbound() {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inbounds = singBoxConfig.inbounds ?? [];
-      let nextConfig: Config = {
-        ...singBoxConfig,
-        inbounds: [
-          ...inbounds.map((inbound) => {
-            if (inbound.tag === updatedInbound.tag) {
-              return parsedEditedInbound;
-            }
-            return inbound;
-          }),
-        ],
+      let nextconfigWithMetadata: ConfigWithMetadata = {
+        metadata: configWithMetadata?.metadata,
+        config: {
+          ...singBoxConfig,
+          inbounds: [
+            ...inbounds.map((inbound) => {
+              if (inbound.tag === updatedInbound.tag) {
+                return parsedEditedInbound;
+              }
+              return inbound;
+            }),
+          ],
+        },
       };
 
       if (updatedInbound.type === "vless") {
-        nextConfig = applyRealityPublicKeyMetadata(nextConfig, updatedInbound);
+        nextconfigWithMetadata = applyRealityPublicKeyMetadata(
+          nextconfigWithMetadata,
+          updatedInbound,
+        );
       }
 
-      const parsed = ConfigSchema.safeParse(nextConfig);
+      const parsed = ConfigSchema.safeParse(nextconfigWithMetadata.config);
       if (!parsed.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      return updateConfigMutation.mutateAsync(parsed.data);
+      return updateConfigMutation.mutateAsync(nextconfigWithMetadata);
     },
-    [singBoxConfig, updateConfigMutation],
+    [configWithMetadata?.metadata, singBoxConfig, updateConfigMutation],
   );
 
   return {

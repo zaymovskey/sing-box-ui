@@ -7,7 +7,7 @@ export const PanelMetadataSchema = z.object({
 
 export const ConfigWithMetadataSchema = z.object({
   config: Configuration,
-  metadata: PanelMetadataSchema,
+  metadata: PanelMetadataSchema.optional(),
 });
 
 export const ConfigSchema = Configuration;

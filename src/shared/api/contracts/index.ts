@@ -8,6 +8,7 @@ export {
 } from "./common/api-error.schema";
 export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
 export {
+  type Config,
   ConfigSchema,
   type ConfigWithMetadata,
   ConfigWithMetadataSchema,

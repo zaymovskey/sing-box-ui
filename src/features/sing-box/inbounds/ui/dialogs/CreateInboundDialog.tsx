@@ -33,7 +33,8 @@ import { defaultsByType } from "../InboundForm/InboundForm.constants";
 const FORM_ID = "create-inbound-form";
 
 export function CreateInboundDialog() {
-  const { data: singBoxConfig } = useConfigQuery();
+  const { data: configWithMetadata } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),

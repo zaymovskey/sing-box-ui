@@ -29,7 +29,9 @@ const inboundTypeOptions = [
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
-  const { data: singBoxConfig, error } = useConfigQuery();
+  const { data: configWithMetadata, error } = useConfigQuery();
+  const singBoxConfig = configWithMetadata?.config;
+
   useConfigQueryToasts(error);
 
   const {
