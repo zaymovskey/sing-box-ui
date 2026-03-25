@@ -22,7 +22,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/data
+      - ./data/sing-box:/etc/sing-box
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "3000:3000"
