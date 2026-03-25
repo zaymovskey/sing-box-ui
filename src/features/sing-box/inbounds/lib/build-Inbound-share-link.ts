@@ -14,7 +14,6 @@ export function buildInboundShareLink(
     };
 
     const port = inbound.listen_port;
-
     const params = new URLSearchParams();
 
     if (inbound.tls?.enabled) {
@@ -37,9 +36,7 @@ export function buildInboundShareLink(
           return null;
         }
 
-        if (privateKey && publicKey) {
-          params.set("pbk", publicKey);
-        }
+        params.set("pbk", publicKey);
 
         const shortId = inbound.tls.reality.short_id;
 
@@ -70,19 +67,20 @@ export function buildInboundShareLink(
     };
 
     const port = inbound.listen_port;
-
     const params = new URLSearchParams();
 
     if (inbound.tls?.server_name) {
       params.set("sni", inbound.tls.server_name);
     }
 
+    params.set("insecure", "1");
+
     if (inbound.obfs?.password) {
       params.set("obfs", "salamander");
       params.set("obfs-password", inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}?${params.toString()}#${inbound.tag}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${inbound.tag}`;
   }
 
   return null;
