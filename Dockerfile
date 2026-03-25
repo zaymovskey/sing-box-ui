@@ -1,4 +1,4 @@
-FROM ghcr.io/sagernet/sing-box:v1.13.3 AS singbox
+FROM ghcr.io/sagernet/sing-box:v1.12.21 AS singbox
 
 # ---------- 1 Base image ----------
 FROM node:20-alpine AS base
