@@ -20,6 +20,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=--max-old-space-size=2048
+
+ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
+ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 RUN npm run build
 

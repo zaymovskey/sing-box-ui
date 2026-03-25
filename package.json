@@ -25,7 +25,8 @@
     "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix --config stylelint.config.mjs",
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
-    "openapi:gen": "npx next-openapi-gen generate"
+    "openapi:gen": "npx next-openapi-gen generate",
+    "type-check": "tsc --noEmit"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs,cjs}": [
