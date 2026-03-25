@@ -15,6 +15,7 @@ const serverEnvSchema = z.object({
   CONFIG_METADATA_PATH: z.string().min(1),
   SINGBOX_CERTS_DIR: z.string(),
   SINGBOX_CONTAINER_NAME: z.string().min(1),
+  USE_HTTPS: z.enum(["true", "false"]).default("false"),
 });
 
 type ServerEnvSchema = z.infer<typeof serverEnvSchema>;
@@ -35,6 +36,7 @@ export function getServerEnv(): ServerEnvSchema {
     SINGBOX_CERTS_DIR: process.env.SINGBOX_CERTS_DIR,
     SINGBOX_CONTAINER_NAME: process.env.SINGBOX_CONTAINER_NAME,
     CONFIG_METADATA_PATH: process.env.CONFIG_METADATA_PATH,
+    USE_HTTPS: process.env.USE_HTTPS,
   };
 
   const isBuild = process.env.NEXT_PHASE === "phase-production-build";
@@ -53,6 +55,7 @@ export function getServerEnv(): ServerEnvSchema {
           SINGBOX_CERTS_DIR: raw.SINGBOX_CERTS_DIR ?? "/tmp/certs",
           SINGBOX_CONTAINER_NAME:
             raw.SINGBOX_CONTAINER_NAME ?? "build-placeholder",
+          USE_HTTPS: raw.USE_HTTPS ?? "false",
         })
       : serverEnvSchema.parse(raw);
 
