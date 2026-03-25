@@ -40,13 +40,6 @@ export function InboundUserRow({
   );
 
   const handleCopy = async () => {
-    const link = buildInboundShareLink(
-      inbound,
-      user,
-      clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
-      realityPublicKeys,
-    );
-
     if (!link) {
       clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
         duration: 2000,
