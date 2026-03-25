@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import { type z } from "zod";
 
 import { type ApiIssue } from "@/shared/api/contracts";
+import { type IssueLike } from "@/shared/lib";
 import { numWord } from "@/shared/lib/universal";
 import { clientToast, serverToast, sonnerErrorCloseButton } from "@/shared/ui";
 
@@ -31,7 +31,7 @@ export function useConfigEditorToasts() {
     );
   };
 
-  const showClientToasts = (issues: z.core.$ZodIssue[]) => {
+  const showClientToasts = (issues: IssueLike[]) => {
     clientErrorsToastIdsRef.current = issues.map((issue) => {
       return clientToast.error(
         `Некорректное значение в ${issue.path.join(".")}`,
