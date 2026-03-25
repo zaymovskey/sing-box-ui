@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_SINGBOX_CERTS_DIR: ${NEXT_PUBLIC_SINGBOX_CERTS_DIR}
+        NEXT_PUBLIC_HOST_IP: ${NEXT_PUBLIC_HOST_IP}
     container_name: sing-box-ui
     restart: unless-stopped
     env_file:
