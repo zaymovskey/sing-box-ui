@@ -1,88 +1,22 @@
 "use client";
 
-import { JsonEditor, type Theme } from "json-edit-react";
-import {
-  Ban,
-  Check,
-  CirclePlus,
-  Copy,
-  FilePenLine,
-  PencilOff,
-  Save,
-  Trash,
-} from "lucide-react";
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { JsonEditor } from "json-edit-react";
+import { PencilOff, Save } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  configValidation,
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import {
-  type Config,
-  ConfigSchema,
-  type ConfigWithMetadata,
-} from "@/shared/api/contracts";
-import { isObjectsContentEqual, numWord } from "@/shared/lib/universal";
-import {
-  Button,
-  Card,
-  clientToast,
-  serverToast,
-  sonnerErrorCloseButton,
-} from "@/shared/ui";
+import { type Config, type ConfigWithMetadata } from "@/shared/api/contracts";
+import { isObjectsContentEqual } from "@/shared/lib/universal";
+import { Button, Card, serverToast } from "@/shared/ui";
 
-const buildAllInvalidKeys = (invalidKeys: Set<string>) => {
-  const allInvalidKeys: Set<string> = new Set();
-
-  invalidKeys.forEach((invalidKey) => {
-    let currentKeyFamilyMember = "";
-    const parts = invalidKey.split(".");
-    parts.forEach((invalidKeyPart, index) => {
-      currentKeyFamilyMember += (index === 0 ? "" : ".") + invalidKeyPart;
-      allInvalidKeys.add(currentKeyFamilyMember);
-    });
-  });
-
-  return new Set(allInvalidKeys);
-};
-
-const makeTheme = (invalidKeys: Set<string>): Theme => {
-  const isInvalid = (path: (string | number)[]) => {
-    const pathString = path.join(".");
-    return invalidKeys.has(pathString);
-  };
-
-  const invalidBox: CSSProperties = {
-    borderRadius: 2,
-    padding: "2px 4px",
-    background:
-      "color-mix(in srgb, var(--destructive-foreground) 12%, transparent)",
-  } as const;
-
-  const checkInvalidBox = (path: (string | number)[]) => {
-    if (isInvalid(path)) {
-      return invalidBox;
-    }
-    return null;
-  };
-
-  return {
-    styles: {
-      property: ({ path }) => checkInvalidBox(path),
-      input: ({ path }) => checkInvalidBox(path),
-      string: ({ path }) => checkInvalidBox(path),
-      number: ({ path }) => checkInvalidBox(path),
-      boolean: ({ path }) => checkInvalidBox(path),
-      null: ({ path }) => checkInvalidBox(path),
-    },
-  };
-};
+import { buildInvalidConfigEditorKeys } from "../lib/build-invalid-config-editor-keys.helper";
+import { configEditorIcons } from "../lib/config-editor-icons.constant";
+import { makeConfigEditorTheme } from "../lib/make-config-editor-theme.helper";
+import { useConfigEditorToasts } from "../lib/use-config-editor-toasts.hook";
 
 export function SingBoxConfigScreen() {
   const {
@@ -101,8 +35,6 @@ export function SingBoxConfigScreen() {
   const draftIsDifferent =
     isDraftReady && !isObjectsContentEqual(configDraft, singBoxConfig);
 
-  const mutationServerErrorsToastIdRef = useRef<string | number | null>(null);
-
   useEffect(() => {
     if (isConfigQueryError) {
       serverToast.error("Не удалось загрузить конфигурацию sing-box", {
@@ -113,7 +45,7 @@ export function SingBoxConfigScreen() {
     }
   }, [isConfigQueryError]);
 
-  const saveConfigChanges = async () => {
+  const saveConfigChanges = () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
 
     dismissServerErrorsToasts();
@@ -142,68 +74,44 @@ export function SingBoxConfigScreen() {
           return;
         }
 
-        mutationServerErrorsToastIdRef.current = serverToast.error(
-          `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
-          {
-            ...sonnerErrorCloseButton,
-            duration: 4000,
-          },
-        );
+        showServerToast(issues);
 
         const newinvalidKeys = issues
           .map((i) => i.path ?? null)
           .filter((x): x is string => x !== null);
 
-        setInvalidKeys(buildAllInvalidKeys(new Set(newinvalidKeys)));
+        setInvalidKeys(buildInvalidConfigEditorKeys(new Set(newinvalidKeys)));
       },
     });
   };
 
-  const clientErrorsToastIdsRef = useRef<(string | number)[]>([]);
+  const {
+    dismissClientErrorsToasts,
+    dismissServerErrorsToasts,
+    showServerToast,
+    showClientToasts,
+  } = useConfigEditorToasts();
 
-  const dismissClientErrorsToasts = () => {
-    clientErrorsToastIdsRef.current.forEach(clientToast.dismiss);
-    clientErrorsToastIdsRef.current = [];
-  };
-
-  const dismissServerErrorsToasts = () => {
-    if (mutationServerErrorsToastIdRef.current) {
-      serverToast.dismiss(mutationServerErrorsToastIdRef.current);
-      mutationServerErrorsToastIdRef.current = null;
-    }
-  };
-
-  const onSetChange = (newData: Config) => {
+  const onSetChange = (updatedConfigDraft: Config) => {
     dismissClientErrorsToasts();
 
-    setConfigDraft(newData);
-    const resOfParse = ConfigSchema.safeParse(newData);
+    setConfigDraft(updatedConfigDraft);
+    const [invalidKeys, issues] = configValidation(updatedConfigDraft);
 
-    if (!resOfParse.success) {
-      const keys = new Set(
-        resOfParse.error.issues.map((issue) => {
-          return issue.path.join(".");
-        }),
-      );
+    if (invalidKeys.size > 0) {
+      showClientToasts(issues);
 
-      clientErrorsToastIdsRef.current = resOfParse.error.issues.map((issue) => {
-        return clientToast.error(
-          `Некорректное значение в ${issue.path.join(".")}`,
-          {
-            description: issue.message,
-            ...sonnerErrorCloseButton,
-          },
-        );
-      });
-
-      setInvalidKeys(buildAllInvalidKeys(keys));
+      setInvalidKeys(buildInvalidConfigEditorKeys(invalidKeys));
       return;
     }
 
     setInvalidKeys(new Set());
   };
 
-  const theme = useMemo(() => makeTheme(invalidKeys), [invalidKeys]);
+  const theme = useMemo(
+    () => makeConfigEditorTheme(invalidKeys),
+    [invalidKeys],
+  );
 
   const resetConfigChanges = () => {
     dismissServerErrorsToasts();
@@ -224,54 +132,12 @@ export function SingBoxConfigScreen() {
     isConfigInitializedRef.current = true;
   }, [singBoxConfig]);
 
-  const icons = useMemo(
-    () => ({
-      add: (
-        <CirclePlus
-          className="text-chart-2 hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-      delete: (
-        <Trash
-          className="text-chart-1 hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-      edit: (
-        <FilePenLine
-          className="text-muted-foreground hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-      copy: (
-        <Copy
-          className="text-muted-foreground hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-      ok: (
-        <Check
-          className="text-chart-2 hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-      cancel: (
-        <Ban
-          className="text-chart-1 hover:text-primary transition-colors"
-          size={20}
-        />
-      ),
-    }),
-    [],
-  );
-
   return (
     <Card className="sb-config-editor mb-4 flex-row gap-3 p-4">
       <JsonEditor
         className="border-border border"
         data={configDraft}
-        icons={icons}
+        icons={configEditorIcons}
         setData={(next) => onSetChange(next as Config)}
         theme={theme}
       />

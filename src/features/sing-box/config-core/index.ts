@@ -1,5 +1,6 @@
 export { singBoxQueryKeys } from "./lib/config-core.query-keys";
 export { useConfigQueryToasts } from "./lib/config-core.query-toasts";
+export { configValidation } from "./lib/inbounds/validations/config.validation";
 export { isUniqueInboundBind } from "./lib/inbounds/validations/is-unique-inbound-bind.validation";
 export { isUniqueInboundTag } from "./lib/inbounds/validations/is-unique-inbound-tag.validation";
 export { useUpdateConfigMutation } from "./model/config-core.mutation";
