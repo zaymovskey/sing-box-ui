@@ -5,7 +5,7 @@ import {
   type ConfigInbound,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
-import { clientEnv } from "@/shared/lib";
+import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
 
 import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
@@ -40,24 +40,32 @@ export function InboundUserRow({
   );
 
   const handleCopy = async () => {
-    try {
-      if (link) {
-        await navigator.clipboard.writeText(link);
-        clientToast.success("Ссылка скопирована в буфер обмена", {
-          duration: 2000,
-        });
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 1000);
-      } else {
-        clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
-          duration: 2000,
-        });
-      }
-    } catch {
+    const link = buildInboundShareLink(
+      inbound,
+      user,
+      clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
+      realityPublicKeys,
+    );
+
+    if (!link) {
       clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
         duration: 2000,
       });
+      return;
     }
+
+    const copied = await copyText(link);
+
+    if (copied) {
+      clientToast.success("Ссылка скопирована в буфер обмена", {
+        duration: 2000,
+      });
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1000);
+      return;
+    }
+
+    window.prompt("Скопируй ссылку вручную:", link);
   };
 
   const [isCopied, setIsCopied] = useState(false);
