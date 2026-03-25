@@ -1,3 +1,4 @@
+export { copyText } from "./client/browser/fallback-copy-text-to-clipboard";
 export { cn } from "./client/cn";
 export { clientEnv } from "./client/env-client";
 export { ApiError } from "./client/http/api-error.class";
