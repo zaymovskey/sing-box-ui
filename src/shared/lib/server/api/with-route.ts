@@ -13,7 +13,7 @@ type Handler<
 > = (ctx: {
   request: Request;
   session: Auth extends true ? SessionPayload : undefined;
-  body: SReq extends z.ZodTypeAny ? z.output<SReq> : undefined;
+  body: SReq extends z.ZodTypeAny ? z.output<SReq> : unknown;
 }) => Promise<z.output<SRes>>;
 
 type RouteOptions<
@@ -35,8 +35,14 @@ export function withRoute<
   return async (request: Request) => {
     let body: unknown = undefined;
 
-    if (opts.requestSchema) {
+    const method = request.method.toUpperCase();
+    const shouldParseBody = method !== "GET" && method !== "HEAD";
+
+    if (shouldParseBody) {
       body = await request.json().catch(() => null);
+    }
+
+    if (opts.requestSchema) {
       const parsedReq = opts.requestSchema.safeParse(body);
 
       if (!parsedReq.success) {
@@ -79,7 +85,7 @@ export function withRoute<
       const data = await opts.handler({
         request,
         session: session as Auth extends true ? SessionPayload : undefined,
-        body: body as SReq extends z.ZodTypeAny ? z.output<SReq> : undefined,
+        body: body as SReq extends z.ZodTypeAny ? z.output<SReq> : unknown,
       });
 
       const parsed = opts.responseSchema.parse(data);

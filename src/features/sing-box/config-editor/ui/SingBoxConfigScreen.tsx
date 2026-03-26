@@ -74,6 +74,8 @@ export function SingBoxConfigScreen() {
           return;
         }
 
+        resetConfigChanges();
+
         showServerToast(issues);
 
         const newinvalidKeys = issues

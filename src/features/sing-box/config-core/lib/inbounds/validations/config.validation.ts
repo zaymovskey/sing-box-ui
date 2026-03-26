@@ -1,24 +1,26 @@
 import { type Config, ConfigSchema } from "@/shared/api/contracts";
 import { type IssueLike } from "@/shared/lib";
 
-export function configValidation(config: Config): [Set<string>, IssueLike[]] {
+export function configValidation(
+  rawConfig: unknown,
+): [Set<string>, IssueLike[]] {
   const schemaIssues: IssueLike[] = [];
-  const tagsIssues = uniqueInboundTagsValidation(config);
-  const vlessUsersUuidIssues = uniqueVlessUsersUuidValidation(config);
-  const hy2UsersNameIssues = uniqueHy2UsersNameValidation(config);
 
-  const resOfParse = ConfigSchema.safeParse(config);
+  const parseResult = ConfigSchema.safeParse(rawConfig);
 
-  if (!resOfParse.success) {
-    schemaIssues.push(...resOfParse.error.issues);
+  if (!parseResult.success) {
+    schemaIssues.push(...parseResult.error.issues);
   }
 
-  const allIssues = [
-    ...schemaIssues,
-    ...tagsIssues,
-    ...vlessUsersUuidIssues,
-    ...hy2UsersNameIssues,
-  ];
+  const businessIssues: IssueLike[] = parseResult.success
+    ? [
+        ...uniqueInboundTagsValidation(parseResult.data),
+        ...uniqueVlessUsersUuidValidation(parseResult.data),
+        ...uniqueHy2UsersNameValidation(parseResult.data),
+      ]
+    : [];
+
+  const allIssues = [...schemaIssues, ...businessIssues];
 
   const invalidKeys = getInvalidKeysFromIssues(allIssues);
 
