@@ -17,14 +17,13 @@ export function useCreateInbound() {
 
   const createInbound = useCallback(
     async (newInbound: InboundFormValues) => {
-      console.log(rawDraftConfig, "rawDraftConfig in createInbound");
       const parseResult = DraftConfigSchema.safeParse(rawDraftConfig);
 
       if (!parseResult.success) {
         throw new Error("Draft config is invalid");
       }
 
-      const draftConfig: DraftConfig = parseResult.data;
+      const draftConfig = parseResult.data;
 
       const parsedNewInbound = mapFormToInbound(newInbound);
 

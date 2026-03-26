@@ -70,5 +70,5 @@ export function mapInboundToFormValues(
     };
   }
 
-  throw new Error(`Unsupported inbound type: ${inbound.type}`);
+  throw new Error(`Unsupported inbound type`);
 }

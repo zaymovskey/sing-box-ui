@@ -1,4 +1,4 @@
-import type { Config } from "@/shared/api/contracts";
+import type { DraftConfig } from "@/shared/api/contracts";
 
 import { type InboundRow } from "./inbound-row.type";
 
@@ -9,7 +9,7 @@ function getUsersCount(
   return Array.isArray(maybeUsers) ? maybeUsers.length : 0;
 }
 
-export function mapInboundsToRows(config: Config): InboundRow[] {
+export function mapInboundsToRows(config: DraftConfig): InboundRow[] {
   const inbounds = config.inbounds ?? [];
 
   return inbounds.map((inb) => {

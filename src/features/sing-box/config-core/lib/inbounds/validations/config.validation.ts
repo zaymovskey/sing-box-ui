@@ -1,4 +1,4 @@
-import { type Config, ConfigSchema } from "@/shared/api/contracts";
+import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
 import { type IssueLike } from "@/shared/lib";
 
 export function configValidation(
@@ -6,7 +6,7 @@ export function configValidation(
 ): [Set<string>, IssueLike[]] {
   const schemaIssues: IssueLike[] = [];
 
-  const parseResult = ConfigSchema.safeParse(rawConfig);
+  const parseResult = DraftConfigSchema.safeParse(rawConfig);
 
   if (!parseResult.success) {
     schemaIssues.push(...parseResult.error.issues);
@@ -39,7 +39,7 @@ const getInvalidKeysFromIssues = (issues: IssueLike[]) => {
   return invalidKeys;
 };
 
-const uniqueInboundTagsValidation = (config: Config): IssueLike[] => {
+const uniqueInboundTagsValidation = (config: DraftConfig): IssueLike[] => {
   const inbounds = config.inbounds;
   if (!inbounds) return [];
 
@@ -72,7 +72,7 @@ const uniqueInboundTagsValidation = (config: Config): IssueLike[] => {
   return issues;
 };
 
-const uniqueVlessUsersUuidValidation = (config: Config): IssueLike[] => {
+const uniqueVlessUsersUuidValidation = (config: DraftConfig): IssueLike[] => {
   const inbounds = config.inbounds;
   if (!inbounds) return [];
 
@@ -106,7 +106,7 @@ const uniqueVlessUsersUuidValidation = (config: Config): IssueLike[] => {
   return issues;
 };
 
-const uniqueHy2UsersNameValidation = (config: Config): IssueLike[] => {
+const uniqueHy2UsersNameValidation = (config: DraftConfig): IssueLike[] => {
   const inbounds = config.inbounds;
   if (!inbounds) return [];
 
