@@ -11,6 +11,7 @@ export {
   type DraftConfig,
   DraftConfigSchema,
   type DraftInbound,
+  DraftInboundSchema,
 } from "./sing-box/core";
 export {
   type Hy2TlsCheckItem,

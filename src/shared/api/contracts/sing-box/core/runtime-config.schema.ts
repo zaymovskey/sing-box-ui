@@ -3,17 +3,27 @@ import { z } from "zod";
 import { RuntimeInboundSchema } from "./inbounds.schema";
 import { RuntimeOutboundSchema } from "./outbounds.schema";
 
+const LogLevelSchema = z.enum([
+  "trace",
+  "debug",
+  "info",
+  "warn",
+  "error",
+  "fatal",
+  "panic",
+]);
+
 export const LogSchema = z
   .object({
     disabled: z.boolean().optional(),
-    level: z.string().optional(),
+    level: LogLevelSchema.optional(),
     timestamp: z.boolean().optional(),
   })
   .optional();
 
 export const RouteSchema = z
   .object({
-    final: z.string().optional(),
+    final: z.string().min(1).optional(),
   })
   .optional();
 

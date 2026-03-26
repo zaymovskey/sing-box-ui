@@ -9,7 +9,7 @@ import {
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
-import { DraftConfigSchema, type DraftInbound } from "@/shared/api/contracts";
+import { type DraftInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -37,6 +37,16 @@ interface EditInboundDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
+  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
+    return [];
+  }
+
+  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
+
+  return Array.isArray(maybeInbounds) ? (maybeInbounds as DraftInbound[]) : [];
+}
+
 export function EditInboundDialog({
   inbound,
   open,
@@ -44,11 +54,10 @@ export function EditInboundDialog({
 }: EditInboundDialogProps) {
   const { data: rawDraftConfig } = useConfigQuery();
 
-  const parsedDraftResult = useMemo(() => {
-    return DraftConfigSchema.safeParse(rawDraftConfig);
-  }, [rawDraftConfig]);
-
-  const draftConfig = parsedDraftResult.success ? parsedDraftResult.data : null;
+  const rawInbounds = useMemo(
+    () => getRawInbounds(rawDraftConfig),
+    [rawDraftConfig],
+  );
 
   const [currentInboundTag, setCurrentInboundTag] = useState(inbound.tag);
 
@@ -72,10 +81,9 @@ export function EditInboundDialog({
 
   const { editInbound, isPending } = useEditInbound();
 
-  const tags =
-    draftConfig?.inbounds
-      ?.map((i) => i.tag)
-      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const tags = rawInbounds
+    .map((item) => item.tag)
+    .filter((tag): tag is string => Boolean(tag));
 
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
     form,
@@ -85,14 +93,15 @@ export function EditInboundDialog({
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: draftConfig?.inbounds ?? [],
+    inbounds: rawInbounds,
     excludeTag: currentInboundTag,
   });
 
   const handleSubmit = async (values: InboundFormValues) => {
-    if (!draftConfig) {
-      serverToast.error("Конфиг не загружен или повреждён", {
+    if (rawDraftConfig === undefined) {
+      serverToast.error("Конфиг не загружен", {
         id: "edit-inbound",
+        duration: 2000,
       });
       return;
     }
@@ -113,6 +122,7 @@ export function EditInboundDialog({
       if (!currentInboundTag) {
         serverToast.error("Инбаунд должен иметь тег для редактирования", {
           id: "edit-inbound",
+          duration: 2000,
         });
         return;
       }
@@ -131,11 +141,13 @@ export function EditInboundDialog({
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "edit-inbound",
+          duration: 2000,
         });
         return;
       }
 
       serverToast.error("Не удалось обновить инбаунд", {
+        description: `Message: ${msg}`,
         id: "edit-inbound",
         duration: 2000,
       });

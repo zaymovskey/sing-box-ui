@@ -7,7 +7,6 @@ import {
   useConfigQuery,
   useConfigQueryToasts,
 } from "@/features/sing-box/config-core";
-import { DraftConfigSchema } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
 import { Button, Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
@@ -27,16 +26,20 @@ const inboundTypeOptions = [
   { label: "Hysteria2", value: "hysteria2" },
 ];
 
+function getRawInbounds(rawDraftConfig: unknown): unknown[] {
+  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
+    return [];
+  }
+
+  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
+
+  return Array.isArray(maybeInbounds) ? maybeInbounds : [];
+}
+
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
   const { data: rawDraftConfig, error } = useConfigQuery();
-
-  const parsedDraftResult = useMemo(() => {
-    return DraftConfigSchema.safeParse(rawDraftConfig);
-  }, [rawDraftConfig]);
-
-  const draftConfig = parsedDraftResult.success ? parsedDraftResult.data : null;
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
@@ -51,9 +54,14 @@ export function InboundsTableScreen() {
     setGetParam,
   } = useInboundsListState();
 
+  const rawInbounds = useMemo(
+    () => getRawInbounds(rawDraftConfig),
+    [rawDraftConfig],
+  );
+
   const tableRows = useMemo(
     () =>
-      mapInboundsToRows(draftConfig ?? { inbounds: [] }).filter((row) => {
+      mapInboundsToRows({ inbounds: rawInbounds as never[] }).filter((row) => {
         const query = debouncedSearchQuery.toLowerCase();
 
         const queryFilter =
@@ -66,7 +74,7 @@ export function InboundsTableScreen() {
 
         return queryFilter && typeFilter;
       }),
-    [draftConfig, debouncedSearchQuery, selectedTypes],
+    [rawInbounds, debouncedSearchQuery, selectedTypes],
   );
 
   const paginatedRows = useMemo(() => {

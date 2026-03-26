@@ -62,7 +62,7 @@ const throwInvalidDraftResponse = (error: z.ZodError): never => {
   throw new ServerApiError(
     422,
     "SINGBOX_CONFIG_INVALID",
-    "Некорректный формат конфига sing-box и/или метаданных",
+    "Некорректный формат конфига sing-box",
     details,
   );
 };

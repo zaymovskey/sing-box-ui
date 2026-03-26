@@ -16,3 +16,5 @@ docker/data/sing-box/certs/hy2.key
 docker/data/sing-box/config.json
 docker/data/sing-box/config.draft.json
 docker/data/sing-box/history/*
+
+tsconfig.tsbuildinfo

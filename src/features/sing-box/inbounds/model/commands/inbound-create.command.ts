@@ -1,15 +1,33 @@
 import { useCallback } from "react";
 
 import {
+  type InboundFormValues,
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
+import {
+  type DraftConfig,
+  type DraftInbound,
+  DraftInboundSchema,
+} from "@/shared/api/contracts";
 
 import { mapFormToInbound } from "../mappers/inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
+
+function isDraftConfigLike(value: unknown): value is DraftConfig {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
+  if (!isDraftConfigLike(rawDraftConfig)) {
+    return [];
+  }
+
+  return Array.isArray(rawDraftConfig.inbounds)
+    ? (rawDraftConfig.inbounds as DraftInbound[])
+    : [];
+}
 
 export function useCreateInbound() {
   const { data: rawDraftConfig } = useConfigQuery();
@@ -17,30 +35,26 @@ export function useCreateInbound() {
 
   const createInbound = useCallback(
     async (newInbound: InboundFormValues) => {
-      const parseResult = DraftConfigSchema.safeParse(rawDraftConfig);
-
-      if (!parseResult.success) {
+      if (!isDraftConfigLike(rawDraftConfig)) {
         throw new Error("Draft config is invalid");
       }
 
-      const draftConfig = parseResult.data;
-
       const parsedNewInbound = mapFormToInbound(newInbound);
 
-      const inbounds = draftConfig.inbounds ?? [];
+      const inboundParseResult = DraftInboundSchema.safeParse(parsedNewInbound);
 
-      const nextDraftConfig: DraftConfig = {
-        ...draftConfig,
-        inbounds: [...inbounds, parsedNewInbound],
-      };
-
-      const draftParsedRes = DraftConfigSchema.safeParse(nextDraftConfig);
-
-      if (!draftParsedRes.success) {
+      if (!inboundParseResult.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      return updateConfigMutation.mutateAsync(draftParsedRes.data);
+      const inbounds = getRawInbounds(rawDraftConfig);
+
+      const nextDraftConfig: DraftConfig = {
+        ...rawDraftConfig,
+        inbounds: [...inbounds, parsedNewInbound],
+      };
+
+      return updateConfigMutation.mutateAsync(nextDraftConfig);
     },
     [rawDraftConfig, updateConfigMutation],
   );

@@ -9,7 +9,7 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
+import { DraftConfigSchema } from "@/shared/api/contracts";
 import { isObjectsContentEqual } from "@/shared/lib/universal";
 import { Button, Card, serverToast } from "@/shared/ui";
 
@@ -25,22 +25,27 @@ export function SingBoxConfigScreen() {
     isFetching: isConfigQueryFetching,
   } = useConfigQuery();
 
-  const parsedDraftResult = useMemo(() => {
-    return DraftConfigSchema.safeParse(rawDraftConfig);
-  }, [rawDraftConfig]);
-
-  const singBoxConfig = parsedDraftResult.success
-    ? parsedDraftResult.data
-    : null;
-
-  const [configDraft, setConfigDraft] = useState<DraftConfig | null>(null);
+  const [configDraft, setConfigDraft] = useState<unknown>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
 
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const isDraftReady = configDraft !== null && singBoxConfig !== null;
+  const {
+    dismissClientErrorsToasts,
+    dismissServerErrorsToasts,
+    showServerToast,
+    showClientToasts,
+  } = useConfigEditorToasts();
+
+  const draftValidationResult = useMemo(() => {
+    return DraftConfigSchema.safeParse(configDraft);
+  }, [configDraft]);
+
+  const hasValidationErrors = invalidKeys.size > 0;
+
   const draftIsDifferent =
-    isDraftReady && !isObjectsContentEqual(configDraft, singBoxConfig);
+    rawDraftConfig !== undefined &&
+    !isObjectsContentEqual(configDraft, rawDraftConfig);
 
   useEffect(() => {
     if (isConfigQueryError) {
@@ -50,30 +55,89 @@ export function SingBoxConfigScreen() {
       return;
     }
 
-    if (rawDraftConfig !== undefined && !parsedDraftResult.success) {
-      serverToast.error("Черновик конфигурации имеет некорректный формат", {
-        id: "load-config",
-      });
+    serverToast.dismiss("load-config");
+  }, [isConfigQueryError]);
+
+  const resetConfigChanges = () => {
+    dismissServerErrorsToasts();
+    dismissClientErrorsToasts();
+
+    setConfigDraft(structuredClone(rawDraftConfig ?? null));
+    setInvalidKeys(new Set());
+  };
+
+  const onSetChange = (updatedConfigDraft: unknown) => {
+    dismissClientErrorsToasts();
+    setConfigDraft(updatedConfigDraft);
+
+    const parseResult = DraftConfigSchema.safeParse(updatedConfigDraft);
+
+    if (!parseResult.success) {
+      const issuePaths = parseResult.error.issues
+        .map((issue) => issue.path.join("."))
+        .filter(Boolean);
+
+      showClientToasts(parseResult.error.issues);
+      setInvalidKeys(buildInvalidConfigEditorKeys(new Set(issuePaths)));
       return;
     }
 
-    serverToast.dismiss("load-config");
-  }, [isConfigQueryError, rawDraftConfig, parsedDraftResult.success]);
+    const [newInvalidKeys, issues] = configValidation(parseResult.data);
 
-  const {
-    dismissClientErrorsToasts,
-    dismissServerErrorsToasts,
-    showServerToast,
-    showClientToasts,
-  } = useConfigEditorToasts();
+    if (newInvalidKeys.size > 0) {
+      showClientToasts(issues);
+      setInvalidKeys(buildInvalidConfigEditorKeys(newInvalidKeys));
+      return;
+    }
+
+    setInvalidKeys(new Set());
+  };
 
   const saveConfigChanges = () => {
-    if (invalidKeys.size > 0 || configDraft === null) return;
+    if (configDraft === null) {
+      return;
+    }
 
     dismissServerErrorsToasts();
     dismissClientErrorsToasts();
 
+    const parseResult = DraftConfigSchema.safeParse(configDraft);
+
+    if (!parseResult.success) {
+      const issuePaths = parseResult.error.issues
+        .map((issue) => issue.path.join("."))
+        .filter(Boolean);
+
+      showClientToasts(parseResult.error.issues);
+      setInvalidKeys(buildInvalidConfigEditorKeys(new Set(issuePaths)));
+
+      serverToast.error("Исправь ошибки перед сохранением", {
+        id: "save-config",
+      });
+      return;
+    }
+
+    const [newInvalidKeys, issues] = configValidation(parseResult.data);
+
+    if (newInvalidKeys.size > 0) {
+      showClientToasts(issues);
+      setInvalidKeys(buildInvalidConfigEditorKeys(newInvalidKeys));
+
+      serverToast.error("Исправь ошибки перед сохранением", {
+        id: "save-config",
+      });
+      return;
+    }
+
     serverToast.loading("Сохранение...", { id: "save-config" });
+
+    if (!configDraft) {
+      serverToast.error("Нет данных для сохранения", {
+        id: "save-config",
+        duration: 2000,
+      });
+      return;
+    }
 
     updateConfigMutation.mutate(configDraft, {
       onSuccess: () => {
@@ -92,8 +156,6 @@ export function SingBoxConfigScreen() {
           return;
         }
 
-        resetConfigChanges();
-
         showServerToast(issues);
 
         const newInvalidKeys = issues
@@ -105,47 +167,35 @@ export function SingBoxConfigScreen() {
     });
   };
 
-  const onSetChange = (updatedConfigDraft: DraftConfig) => {
-    dismissClientErrorsToasts();
-
-    setConfigDraft(updatedConfigDraft);
-    const [invalidKeys, issues] = configValidation(updatedConfigDraft);
-
-    if (invalidKeys.size > 0) {
-      showClientToasts(issues);
-
-      setInvalidKeys(buildInvalidConfigEditorKeys(invalidKeys));
-      return;
-    }
-
-    setInvalidKeys(new Set());
-  };
-
   const theme = useMemo(
     () => makeConfigEditorTheme(invalidKeys),
     [invalidKeys],
   );
 
-  const resetConfigChanges = () => {
-    if (!singBoxConfig) return;
-
-    dismissServerErrorsToasts();
-    dismissClientErrorsToasts();
-
-    const singBoxConfigCopy = structuredClone(singBoxConfig);
-    setConfigDraft(singBoxConfigCopy);
-    setInvalidKeys(new Set());
-  };
-
   const isConfigInitializedRef = useRef(false);
 
   useEffect(() => {
-    if (!singBoxConfig) return;
-    if (isConfigInitializedRef.current) return;
+    if (rawDraftConfig === undefined) {
+      return;
+    }
 
-    setConfigDraft(structuredClone(singBoxConfig));
+    if (isConfigInitializedRef.current) {
+      return;
+    }
+
+    setConfigDraft(structuredClone(rawDraftConfig));
     isConfigInitializedRef.current = true;
-  }, [singBoxConfig]);
+  }, [rawDraftConfig]);
+
+  useEffect(() => {
+    if (configDraft === null) {
+      return;
+    }
+
+    if (draftValidationResult.success) {
+      return;
+    }
+  }, [configDraft, draftValidationResult]);
 
   return (
     <Card className="sb-config-editor mb-4 flex-row gap-3 p-4">
@@ -153,14 +203,14 @@ export function SingBoxConfigScreen() {
         className="border-border border"
         data={configDraft}
         icons={configEditorIcons}
-        setData={(next) => onSetChange(next as DraftConfig)}
+        setData={onSetChange}
         theme={theme}
       />
       <div>
         <div className="fixed flex flex-col gap-1">
           <Button
             disabled={
-              invalidKeys.size > 0 || !draftIsDifferent || isConfigQueryFetching
+              hasValidationErrors || !draftIsDifferent || isConfigQueryFetching
             }
             loading={updateConfigMutation.isPending}
             onClick={saveConfigChanges}
