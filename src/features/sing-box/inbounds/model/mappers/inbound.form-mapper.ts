@@ -67,6 +67,7 @@ export function mapInboundToFormValues(
         ) ?? "",
       _tlsChecked: false,
       _tlsOverwrite: false,
+      _is_selfsigned_cert: inbound.tls?._is_selfsigned_cert ?? false,
     };
   }
 

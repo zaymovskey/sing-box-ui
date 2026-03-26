@@ -34,8 +34,11 @@ export function DeleteInboundDialog({
         duration: 2000,
       });
       onOpenChange(false);
-    } catch {
+    } catch (e) {
+      const errorMessage =
+        e instanceof Error ? e.message : "Неизвестная ошибка";
       serverToast.error("Не удалось удалить инбаунд", {
+        description: errorMessage,
         id: "delete-inbound",
         duration: 2000,
       });

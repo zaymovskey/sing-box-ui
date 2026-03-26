@@ -7,7 +7,7 @@ import { apiFetch, apiRoutes } from "@/shared/lib";
 export async function generateHy2Tls(
   body: Hy2TlsGenerateRequest,
 ): Promise<Hy2TlsGenerateResponse> {
-  return apiFetch(apiRoutes.singBox.hy2.tls.generate, {
+  return apiFetch(apiRoutes.singBox.inbounds.hy2.tls.generate, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
