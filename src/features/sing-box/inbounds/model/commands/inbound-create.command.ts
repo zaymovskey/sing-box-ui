@@ -7,7 +7,6 @@ import {
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
 
-import { applyRealityPublicKey } from "../../lib/apply-reality-public-key.helper";
 import { mapFormToInbound } from "../mappers/inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
@@ -18,6 +17,7 @@ export function useCreateInbound() {
 
   const createInbound = useCallback(
     async (newInbound: InboundFormValues) => {
+      console.log(rawDraftConfig, "rawDraftConfig in createInbound");
       const parseResult = DraftConfigSchema.safeParse(rawDraftConfig);
 
       if (!parseResult.success) {
@@ -30,14 +30,10 @@ export function useCreateInbound() {
 
       const inbounds = draftConfig.inbounds ?? [];
 
-      let nextDraftConfig: DraftConfig = {
+      const nextDraftConfig: DraftConfig = {
         ...draftConfig,
         inbounds: [...inbounds, parsedNewInbound],
       };
-
-      if (newInbound.type === "vless") {
-        nextDraftConfig = applyRealityPublicKey(nextDraftConfig, newInbound);
-      }
 
       const draftParsedRes = DraftConfigSchema.safeParse(nextDraftConfig);
 

@@ -2,7 +2,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { type ConfigInbound } from "@/features/sing-box/config-core";
+import { type DraftInbound } from "@/shared/api/contracts";
 import { Badge, Button } from "@/shared/ui";
 
 import { type InboundRow } from "../model/inbound-row.type";
@@ -22,10 +22,10 @@ export function useInboundsColumns() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const [editingInbound, setEditingInbound] = useState<ConfigInbound | null>(
+  const [editingInbound, setEditingInbound] = useState<DraftInbound | null>(
     null,
   );
-  const [deletingInbound, setDeletingInbound] = useState<ConfigInbound | null>(
+  const [deletingInbound, setDeletingInbound] = useState<DraftInbound | null>(
     null,
   );
 

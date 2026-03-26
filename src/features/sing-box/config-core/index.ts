@@ -5,10 +5,5 @@ export { isUniqueInboundBind } from "./lib/inbounds/validations/is-unique-inboun
 export { isUniqueInboundTag } from "./lib/inbounds/validations/is-unique-inbound-tag.validation";
 export { useUpdateConfigMutation } from "./model/config-core.mutation";
 export { useConfigQuery } from "./model/config-core.query";
-export {
-  type ConfigInbound,
-  type InboundUser,
-  type InboundWithUsers,
-} from "./model/config-core.types";
 export type { InboundFormValues } from "./model/schemes/inbounds/config-core.inbounds-schema";
 export { InboundFormSchema } from "./model/schemes/inbounds/config-core.inbounds-schema";

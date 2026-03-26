@@ -1,11 +1,8 @@
 import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
-import {
-  type ConfigInbound,
-  useConfigQuery,
-} from "@/features/sing-box/config-core";
-import { DraftConfigSchema } from "@/shared/api/contracts";
+import { useConfigQuery } from "@/features/sing-box/config-core";
+import { DraftConfigSchema, type DraftInbound } from "@/shared/api/contracts";
 import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
 
@@ -16,7 +13,7 @@ export function InboundUserRow({
   inbound,
   user,
 }: {
-  inbound: ConfigInbound;
+  inbound: DraftInbound;
   user: unknown;
 }) {
   const { data: rawDraftConfig } = useConfigQuery();

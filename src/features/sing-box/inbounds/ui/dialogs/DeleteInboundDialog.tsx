@@ -1,4 +1,4 @@
-import { type ConfigInbound } from "@/features/sing-box/config-core";
+import { type DraftInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -12,7 +12,7 @@ import {
 import { useDeleteInbound } from "../../model/commands/inbound-delete.command";
 
 interface DeleteInboundDialogProps {
-  inbound: ConfigInbound;
+  inbound: DraftInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

@@ -5,12 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-  type ConfigInbound,
   InboundFormSchema,
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
-import { DraftConfigSchema } from "@/shared/api/contracts";
+import { DraftConfigSchema, type DraftInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -33,7 +32,7 @@ import { InboundForm } from "../InboundForm/InboundForm";
 const FORM_ID = "edit-inbound-form";
 
 interface EditInboundDialogProps {
-  inbound: ConfigInbound;
+  inbound: DraftInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

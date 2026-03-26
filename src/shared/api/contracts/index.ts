@@ -8,11 +8,11 @@ export {
 } from "./common/api-error.schema";
 export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
 export { type Config, ConfigSchema } from "./sing-box/config/config.schema";
+export { DraftConfigSchema } from "./sing-box/config/draft/schema";
 export {
   type DraftConfig,
-  DraftConfigSchema,
   type DraftInbound,
-} from "./sing-box/config/draft.schema";
+} from "./sing-box/config/draft/types";
 export {
   type Hy2TlsCheckItem,
   type Hy2TlsCheckRequest,

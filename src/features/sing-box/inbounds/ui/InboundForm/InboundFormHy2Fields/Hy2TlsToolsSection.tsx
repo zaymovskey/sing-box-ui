@@ -178,6 +178,11 @@ export function Hy2TlsToolsSection() {
 
       setGenerateError("");
       setStatuses(successesStatuses);
+      setValue("_is_selfsigned_cert", true, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
       await handleCheck();
     } catch {
       setGenerateError("Не удалось сгенерировать TLS сертификаты");

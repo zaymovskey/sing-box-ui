@@ -7,7 +7,6 @@ import {
 } from "@/features/sing-box/config-core";
 import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
 
-import { applyRealityPublicKey } from "../../lib/apply-reality-public-key.helper";
 import { mapFormToInbound } from "../mappers/inbound.form-mapper";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
@@ -30,7 +29,7 @@ export function useEditInbound() {
 
       const inbounds = draftConfig.inbounds ?? [];
 
-      let nextDraftConfig: DraftConfig = {
+      const nextDraftConfig: DraftConfig = {
         ...draftConfig,
         inbounds: inbounds.map((inbound) => {
           if (inbound.tag === originalTag) {
@@ -40,13 +39,6 @@ export function useEditInbound() {
           return inbound;
         }),
       };
-
-      if (updatedInbound.type === "vless") {
-        nextDraftConfig = applyRealityPublicKey(
-          nextDraftConfig,
-          updatedInbound,
-        );
-      }
 
       const parsed = DraftConfigSchema.safeParse(nextDraftConfig);
 

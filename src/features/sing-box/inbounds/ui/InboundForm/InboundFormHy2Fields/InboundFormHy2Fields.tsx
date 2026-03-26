@@ -152,6 +152,11 @@ export function InboundFormHy2Fields() {
         placeholder="hy2.key"
       />
       <Hy2TlsToolsSection />
+      <ControlledSwitchField<InboundFormValues>
+        disabled={!tlsEnabled}
+        label="Разрешить самоподписанный сертификат"
+        name="_is_selfsigned_cert"
+      />
     </>
   );
 }
