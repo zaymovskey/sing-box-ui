@@ -9,7 +9,7 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import { type Config, type ConfigWithMetadata } from "@/shared/api/contracts";
+import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
 import { isObjectsContentEqual } from "@/shared/lib/universal";
 import { Button, Card, serverToast } from "@/shared/ui";
 
@@ -20,18 +20,25 @@ import { useConfigEditorToasts } from "../lib/use-config-editor-toasts.hook";
 
 export function SingBoxConfigScreen() {
   const {
-    data: configWithMetadata,
+    data: rawDraftConfig,
     isError: isConfigQueryError,
     isFetching: isConfigQueryFetching,
   } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
 
-  const [configDraft, setConfigDraft] = useState<Config | null>(null);
+  const parsedDraftResult = useMemo(() => {
+    return DraftConfigSchema.safeParse(rawDraftConfig);
+  }, [rawDraftConfig]);
+
+  const singBoxConfig = parsedDraftResult.success
+    ? parsedDraftResult.data
+    : null;
+
+  const [configDraft, setConfigDraft] = useState<DraftConfig | null>(null);
   const [invalidKeys, setInvalidKeys] = useState<Set<string>>(new Set());
 
   const updateConfigMutation = useUpdateConfigMutation();
 
-  const isDraftReady = configDraft !== null && singBoxConfig !== undefined;
+  const isDraftReady = configDraft !== null && singBoxConfig !== null;
   const draftIsDifferent =
     isDraftReady && !isObjectsContentEqual(configDraft, singBoxConfig);
 
@@ -40,10 +47,25 @@ export function SingBoxConfigScreen() {
       serverToast.error("Не удалось загрузить конфигурацию sing-box", {
         id: "load-config",
       });
-    } else {
-      serverToast.dismiss("load-config");
+      return;
     }
-  }, [isConfigQueryError]);
+
+    if (rawDraftConfig !== undefined && !parsedDraftResult.success) {
+      serverToast.error("Черновик конфигурации имеет некорректный формат", {
+        id: "load-config",
+      });
+      return;
+    }
+
+    serverToast.dismiss("load-config");
+  }, [isConfigQueryError, rawDraftConfig, parsedDraftResult.success]);
+
+  const {
+    dismissClientErrorsToasts,
+    dismissServerErrorsToasts,
+    showServerToast,
+    showClientToasts,
+  } = useConfigEditorToasts();
 
   const saveConfigChanges = () => {
     if (invalidKeys.size > 0 || configDraft === null) return;
@@ -53,11 +75,7 @@ export function SingBoxConfigScreen() {
 
     serverToast.loading("Сохранение...", { id: "save-config" });
 
-    const updatedConfigWithMetadata: ConfigWithMetadata = {
-      config: configDraft,
-      metadata: configWithMetadata?.metadata,
-    };
-    updateConfigMutation.mutate(updatedConfigWithMetadata, {
+    updateConfigMutation.mutate(configDraft, {
       onSuccess: () => {
         serverToast.success("Конфигурация успешно сохранена", {
           id: "save-config",
@@ -78,23 +96,16 @@ export function SingBoxConfigScreen() {
 
         showServerToast(issues);
 
-        const newinvalidKeys = issues
-          .map((i) => i.path ?? null)
-          .filter((x): x is string => x !== null);
+        const newInvalidKeys = issues
+          .map((issue) => issue.path ?? null)
+          .filter((path): path is string => path !== null);
 
-        setInvalidKeys(buildInvalidConfigEditorKeys(new Set(newinvalidKeys)));
+        setInvalidKeys(buildInvalidConfigEditorKeys(new Set(newInvalidKeys)));
       },
     });
   };
 
-  const {
-    dismissClientErrorsToasts,
-    dismissServerErrorsToasts,
-    showServerToast,
-    showClientToasts,
-  } = useConfigEditorToasts();
-
-  const onSetChange = (updatedConfigDraft: Config) => {
+  const onSetChange = (updatedConfigDraft: DraftConfig) => {
     dismissClientErrorsToasts();
 
     setConfigDraft(updatedConfigDraft);
@@ -116,10 +127,12 @@ export function SingBoxConfigScreen() {
   );
 
   const resetConfigChanges = () => {
+    if (!singBoxConfig) return;
+
     dismissServerErrorsToasts();
     dismissClientErrorsToasts();
 
-    const singBoxConfigCopy = structuredClone(singBoxConfig) as Config;
+    const singBoxConfigCopy = structuredClone(singBoxConfig);
     setConfigDraft(singBoxConfigCopy);
     setInvalidKeys(new Set());
   };
@@ -140,7 +153,7 @@ export function SingBoxConfigScreen() {
         className="border-border border"
         data={configDraft}
         icons={configEditorIcons}
-        setData={(next) => onSetChange(next as Config)}
+        setData={(next) => onSetChange(next as DraftConfig)}
         theme={theme}
       />
       <div>

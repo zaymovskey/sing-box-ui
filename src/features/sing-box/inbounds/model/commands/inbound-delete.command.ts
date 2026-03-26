@@ -4,59 +4,48 @@ import {
   useConfigQuery,
   useUpdateConfigMutation,
 } from "@/features/sing-box/config-core";
-import {
-  type Config,
-  ConfigSchema,
-  type ConfigWithMetadata,
-} from "@/shared/api/contracts";
+import { type DraftConfig, DraftConfigSchema } from "@/shared/api/contracts";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useDeleteInbound() {
-  const { data: configWithMetadata } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
-  const metadata = configWithMetadata?.metadata;
+  const { data: rawDraftConfig } = useConfigQuery();
   const updateConfigMutation = useUpdateConfigMutation();
 
   const deleteInbound = useCallback(
-    (tag: string) => {
-      if (!singBoxConfig) {
-        throw new Error("Config not loaded");
+    async (tag: string) => {
+      const parseResult = DraftConfigSchema.safeParse(rawDraftConfig);
+
+      if (!parseResult.success) {
+        throw new Error("Draft config is invalid");
       }
 
-      const deletingInbound = singBoxConfig.inbounds?.find(
+      const draftConfig: DraftConfig = parseResult.data;
+
+      const deletingInbound = draftConfig.inbounds?.find(
         (inb) => inb.tag === tag,
       );
+
       if (!deletingInbound) {
         throw new Error("Inbound with the specified tag not found");
       }
 
-      if (deletingInbound.type === "vless" && deletingInbound.tls?.reality) {
-        const realityPrivateKey = deletingInbound.tls.reality.private_key;
-        if (realityPrivateKey) {
-          delete metadata?.realityPublicKeys[realityPrivateKey];
-        }
-      }
+      const inbounds = draftConfig.inbounds?.filter((inb) => inb.tag !== tag);
 
-      const inbounds = singBoxConfig.inbounds?.filter((inb) => inb.tag !== tag);
-      const nextConfig: Config = {
-        ...singBoxConfig,
+      const nextDraftConfig: DraftConfig = {
+        ...draftConfig,
         inbounds,
       };
 
-      const parsed = ConfigSchema.safeParse(nextConfig);
+      const parsed = DraftConfigSchema.safeParse(nextDraftConfig);
+
       if (!parsed.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      const nextConfigWithMetadata: ConfigWithMetadata = {
-        metadata,
-        config: parsed.data,
-      };
-
-      return updateConfigMutation.mutateAsync(nextConfigWithMetadata);
+      return updateConfigMutation.mutateAsync(parsed.data);
     },
-    [metadata, singBoxConfig, updateConfigMutation],
+    [rawDraftConfig, updateConfigMutation],
   );
 
   return {

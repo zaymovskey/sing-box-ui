@@ -12,7 +12,6 @@ const serverEnvSchema = z.object({
   AUTH_DEMO_PASSWORD: z.string().min(1),
   SINGBOX_DRAFT_CONFIG_PATH: z.string().min(1),
   SINGBOX_CONFIG_PATH: z.string().min(1),
-  CONFIG_METADATA_PATH: z.string().min(1),
   SINGBOX_CERTS_DIR: z.string(),
   SINGBOX_CONTAINER_NAME: z.string().min(1),
   USE_HTTPS: z.enum(["true", "false"]).default("false"),
@@ -35,7 +34,6 @@ export function getServerEnv(): ServerEnvSchema {
     SINGBOX_CONFIG_PATH: process.env.SINGBOX_CONFIG_PATH,
     SINGBOX_CERTS_DIR: process.env.SINGBOX_CERTS_DIR,
     SINGBOX_CONTAINER_NAME: process.env.SINGBOX_CONTAINER_NAME,
-    CONFIG_METADATA_PATH: process.env.CONFIG_METADATA_PATH,
     USE_HTTPS: process.env.USE_HTTPS,
   };
 
@@ -51,7 +49,6 @@ export function getServerEnv(): ServerEnvSchema {
           SINGBOX_DRAFT_CONFIG_PATH:
             raw.SINGBOX_DRAFT_CONFIG_PATH ?? "/tmp/config.draft.json",
           SINGBOX_CONFIG_PATH: raw.SINGBOX_CONFIG_PATH ?? "/tmp/config.json",
-          CONFIG_METADATA_PATH: raw.CONFIG_METADATA_PATH ?? "/tmp/meta.json",
           SINGBOX_CERTS_DIR: raw.SINGBOX_CERTS_DIR ?? "/tmp/certs",
           SINGBOX_CONTAINER_NAME:
             raw.SINGBOX_CONTAINER_NAME ?? "build-placeholder",

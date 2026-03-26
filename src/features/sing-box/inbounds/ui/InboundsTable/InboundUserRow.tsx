@@ -5,6 +5,7 @@ import {
   type ConfigInbound,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
+import { DraftConfigSchema } from "@/shared/api/contracts";
 import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
 
@@ -18,10 +19,13 @@ export function InboundUserRow({
   inbound: ConfigInbound;
   user: unknown;
 }) {
-  const { data: configWithMetadata } = useConfigQuery();
-  const configMetadata = configWithMetadata?.metadata;
+  const { data: rawDraftConfig } = useConfigQuery();
+
+  const parsedDraft = DraftConfigSchema.safeParse(rawDraftConfig);
+  const draftConfig = parsedDraft.success ? parsedDraft.data : null;
 
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const name =
     typeof user === "object" &&
@@ -31,12 +35,10 @@ export function InboundUserRow({
       ? user.name
       : "Без имени";
 
-  const realityPublicKeys = configMetadata?.realityPublicKeys || {};
   const link = buildInboundShareLink(
     inbound,
     user,
     clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
-    realityPublicKeys,
   );
 
   const handleCopy = async () => {
@@ -61,7 +63,9 @@ export function InboundUserRow({
     window.prompt("Скопируй ссылку вручную:", link);
   };
 
-  const [isCopied, setIsCopied] = useState(false);
+  if (!draftConfig) {
+    return null;
+  }
 
   return (
     <>
@@ -89,6 +93,7 @@ export function InboundUserRow({
           </div>
         </div>
       </div>
+
       {link && (
         <InboundShareQrDialog
           link={link}

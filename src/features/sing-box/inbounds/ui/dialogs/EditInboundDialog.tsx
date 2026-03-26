@@ -10,6 +10,7 @@ import {
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
+import { DraftConfigSchema } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -25,8 +26,8 @@ import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
-import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
+import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
@@ -42,9 +43,13 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  const configQuery = useConfigQuery();
-  const singBoxConfig = configQuery.data?.config;
-  const configMetadata = configQuery.data?.metadata;
+  const { data: rawDraftConfig } = useConfigQuery();
+
+  const parsedDraftResult = useMemo(() => {
+    return DraftConfigSchema.safeParse(rawDraftConfig);
+  }, [rawDraftConfig]);
+
+  const draftConfig = parsedDraftResult.success ? parsedDraftResult.data : null;
 
   const [currentInboundTag, setCurrentInboundTag] = useState(inbound.tag);
 
@@ -52,14 +57,9 @@ export function EditInboundDialog({
     setCurrentInboundTag(inbound.tag);
   }, [inbound.tag]);
 
-  const realityPublicKeys = useMemo(
-    () => configMetadata?.realityPublicKeys || {},
-    [configMetadata?.realityPublicKeys],
-  );
-  const initialValues = useMemo(
-    () => mapInboundToFormValues(inbound, realityPublicKeys),
-    [inbound, realityPublicKeys],
-  );
+  const initialValues = useMemo(() => {
+    return mapInboundToFormValues(inbound);
+  }, [inbound]);
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -74,7 +74,7 @@ export function EditInboundDialog({
   const { editInbound, isPending } = useEditInbound();
 
   const tags =
-    singBoxConfig?.inbounds
+    draftConfig?.inbounds
       ?.map((i) => i.tag)
       .filter((tag): tag is string => Boolean(tag)) ?? [];
 
@@ -86,11 +86,18 @@ export function EditInboundDialog({
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: singBoxConfig?.inbounds ?? [],
+    inbounds: draftConfig?.inbounds ?? [],
     excludeTag: currentInboundTag,
   });
 
   const handleSubmit = async (values: InboundFormValues) => {
+    if (!draftConfig) {
+      serverToast.error("Конфиг не загружен или повреждён", {
+        id: "edit-inbound",
+      });
+      return;
+    }
+
     form.clearErrors("root");
 
     if (!checkTagUniqueAndSetFormError()) {

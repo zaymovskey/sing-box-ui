@@ -1,11 +1,9 @@
 import { type ConfigInbound } from "@/features/sing-box/config-core";
-import { type PanelMetadata } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
   inbound: ConfigInbound,
   user: unknown,
   host: string,
-  realityPublicKeys: PanelMetadata["realityPublicKeys"],
 ): string | null {
   if (inbound.type === "vless") {
     const vlessUser = user as {
@@ -26,12 +24,7 @@ export function buildInboundShareLink(
       if (inbound.tls.reality?.enabled) {
         params.set("security", "reality");
 
-        const privateKey = inbound.tls.reality.private_key;
-        if (!privateKey) {
-          return null;
-        }
-
-        const publicKey = realityPublicKeys[privateKey];
+        const publicKey = inbound.tls.reality.public_key;
         if (!publicKey) {
           return null;
         }

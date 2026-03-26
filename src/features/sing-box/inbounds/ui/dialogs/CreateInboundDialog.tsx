@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
+import { useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
@@ -9,6 +10,7 @@ import {
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
+import { DraftConfigSchema } from "@/shared/api/contracts";
 import {
   Button,
   clientToast,
@@ -41,8 +43,13 @@ export function CreateInboundDialog({
   open,
   onOpenChange,
 }: CreateInboundDialogProps) {
-  const { data: configWithMetadata } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
+  const { data: rawDraftConfig } = useConfigQuery();
+
+  const parsedDraftResult = useMemo(() => {
+    return DraftConfigSchema.safeParse(rawDraftConfig);
+  }, [rawDraftConfig]);
+
+  const draftConfig = parsedDraftResult.success ? parsedDraftResult.data : null;
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -53,21 +60,24 @@ export function CreateInboundDialog({
   const type = useWatch({ control: form.control, name: "type" });
 
   const tags =
-    singBoxConfig?.inbounds
+    draftConfig?.inbounds
       ?.map((i) => i.tag)
       .filter((tag): tag is string => Boolean(tag)) ?? [];
+
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: singBoxConfig?.inbounds ?? [],
+    inbounds: draftConfig?.inbounds ?? [],
   });
 
   const { createInbound, isPending } = useCreateInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
-    if (!singBoxConfig || !singBoxConfig.inbounds) {
-      clientToast.error("Конфиг не загружен", { duration: 2000 });
+    if (!draftConfig) {
+      clientToast.error("Конфиг не загружен или повреждён", {
+        duration: 2000,
+      });
       return;
     }
 

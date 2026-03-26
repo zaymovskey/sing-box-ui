@@ -7,6 +7,7 @@ import {
   useConfigQuery,
   useConfigQueryToasts,
 } from "@/features/sing-box/config-core";
+import { DraftConfigSchema } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
 import { Button, Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
@@ -29,8 +30,13 @@ const inboundTypeOptions = [
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
-  const { data: configWithMetadata, error } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
+  const { data: rawDraftConfig, error } = useConfigQuery();
+
+  const parsedDraftResult = useMemo(() => {
+    return DraftConfigSchema.safeParse(rawDraftConfig);
+  }, [rawDraftConfig]);
+
+  const draftConfig = parsedDraftResult.success ? parsedDraftResult.data : null;
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
@@ -47,7 +53,7 @@ export function InboundsTableScreen() {
 
   const tableRows = useMemo(
     () =>
-      mapInboundsToRows(singBoxConfig ?? { inbounds: [] }).filter((row) => {
+      mapInboundsToRows(draftConfig ?? { inbounds: [] }).filter((row) => {
         const query = debouncedSearchQuery.toLowerCase();
 
         const queryFilter =
@@ -60,7 +66,7 @@ export function InboundsTableScreen() {
 
         return queryFilter && typeFilter;
       }),
-    [singBoxConfig, debouncedSearchQuery, selectedTypes],
+    [draftConfig, debouncedSearchQuery, selectedTypes],
   );
 
   const paginatedRows = useMemo(() => {
@@ -138,6 +144,7 @@ export function InboundsTableScreen() {
           onPageChange={(page) => setGetParam({ page: page.toString() })}
         />
       </Card>
+
       {inboundColumns.actions.edit.inbound && (
         <EditInboundDialog
           inbound={inboundColumns.actions.edit.inbound}
@@ -145,6 +152,7 @@ export function InboundsTableScreen() {
           onOpenChange={inboundColumns.actions.edit.setIsOpen}
         />
       )}
+
       {inboundColumns.actions.delete.inbound && (
         <DeleteInboundDialog
           inbound={inboundColumns.actions.delete.inbound}

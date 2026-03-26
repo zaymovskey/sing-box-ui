@@ -7,16 +7,12 @@ export {
   ApiIssueSchema,
 } from "./common/api-error.schema";
 export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
+export { type Config, ConfigSchema } from "./sing-box/config/config.schema";
 export {
-  type Config,
-  ConfigSchema,
-  type ConfigWithMetadata,
-  ConfigWithMetadataSchema,
-  type PanelMetadata,
-  PanelMetadataSchema,
-  type RawConfigWithMetadata,
-  RawConfigWithMetadataSchema,
-} from "./sing-box/config/config.schema";
+  type DraftConfig,
+  DraftConfigSchema,
+  type DraftInbound,
+} from "./sing-box/config/draft.schema";
 export {
   type Hy2TlsCheckItem,
   type Hy2TlsCheckRequest,
