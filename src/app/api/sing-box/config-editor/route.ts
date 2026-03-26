@@ -8,6 +8,8 @@ import {
   type ConfigWithMetadata,
   ConfigWithMetadataSchema,
   OkResponseSchema,
+  type RawConfigWithMetadata,
+  RawConfigWithMetadataSchema,
 } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
@@ -40,7 +42,7 @@ const throwInvalidConfigWithMetadataResponse = (error: z.ZodError): never => {
  */
 export const GET = withRoute({
   auth: true,
-  responseSchema: ConfigWithMetadataSchema,
+  responseSchema: RawConfigWithMetadataSchema,
   handler: async () => {
     const serverEnv = getServerEnv();
     const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
@@ -49,21 +51,13 @@ export const GET = withRoute({
     const configContent = await fs.readFile(draftPath, "utf-8");
     const metadataContent = await fs.readFile(metadataPath, "utf-8");
 
-    const parsedConfigContent = JSON.parse(configContent);
-    const parsedMetadataContent = JSON.parse(metadataContent);
+    const rawConfigContent = JSON.parse(configContent);
+    const rawMetadataContent = JSON.parse(metadataContent);
 
-    const parsedConfigWithMetadata: ConfigWithMetadata = {
-      config: parsedConfigContent,
-      metadata: parsedMetadataContent,
+    const parsedConfigWithMetadata: RawConfigWithMetadata = {
+      config: rawConfigContent,
+      metadata: rawMetadataContent,
     };
-
-    const parseResult = ConfigWithMetadataSchema.safeParse(
-      parsedConfigWithMetadata,
-    );
-
-    if (!parseResult.success) {
-      throwInvalidConfigWithMetadataResponse(parseResult.error);
-    }
 
     return parsedConfigWithMetadata;
   },
@@ -84,7 +78,6 @@ export const GET = withRoute({
  */
 export const PUT = withRoute({
   auth: true,
-  requestSchema: ConfigWithMetadataSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
     const serverEnv = getServerEnv();
@@ -103,10 +96,18 @@ export const PUT = withRoute({
       maxRevisions: 3,
     });
 
-    const configContent = JSON.stringify(body.config, null, 2);
+    const parseResult = ConfigWithMetadataSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      throwInvalidConfigWithMetadataResponse(parseResult.error);
+    }
+
+    const rawBody = body as ConfigWithMetadata;
+
+    const configContent = JSON.stringify(rawBody.config, null, 2);
     await fs.writeFile(draftPath, configContent, "utf-8");
 
-    const metadataContent = JSON.stringify(body.metadata, null, 2);
+    const metadataContent = JSON.stringify(rawBody.metadata, null, 2);
     await fs.writeFile(metadataPath, metadataContent, "utf-8");
 
     return { ok: true };

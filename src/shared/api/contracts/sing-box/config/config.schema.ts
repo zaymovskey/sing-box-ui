@@ -10,8 +10,14 @@ export const ConfigWithMetadataSchema = z.object({
   metadata: PanelMetadataSchema.optional(),
 });
 
+export const RawConfigWithMetadataSchema = z.object({
+  config: z.unknown(),
+  metadata: z.unknown(),
+});
+
 export const ConfigSchema = Configuration;
 
+export type RawConfigWithMetadata = z.infer<typeof RawConfigWithMetadataSchema>;
 export type Config = z.infer<typeof ConfigSchema>;
 export type ConfigWithMetadata = z.infer<typeof ConfigWithMetadataSchema>;
 export type PanelMetadata = z.infer<typeof PanelMetadataSchema>;

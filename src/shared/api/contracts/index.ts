@@ -14,6 +14,8 @@ export {
   ConfigWithMetadataSchema,
   type PanelMetadata,
   PanelMetadataSchema,
+  type RawConfigWithMetadata,
+  RawConfigWithMetadataSchema,
 } from "./sing-box/config/config.schema";
 export {
   type Hy2TlsCheckItem,
