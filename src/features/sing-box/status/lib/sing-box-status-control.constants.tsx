@@ -8,7 +8,7 @@ import {
 import { type ReactElement } from "react";
 
 import {
-  type SingBoxStatusCheck,
+  type SingBoxStatusCheckCode,
   type SingBoxStatusSummary,
 } from "@/shared/api/contracts";
 
@@ -21,7 +21,7 @@ type StatusConfig = {
 
 export type MainStatuses = SingBoxStatusSummary | "loading" | "unknown_error";
 
-export const checkStatuses: Record<SingBoxStatusCheck, StatusConfig> = {
+export const checkStatuses: Record<SingBoxStatusCheckCode, StatusConfig> = {
   container_not_running: {
     label: "Контейнер не запущен",
     icon: <Ban className="h-4 w-4" />,
@@ -50,7 +50,7 @@ export const mainStatuses: Record<MainStatuses, StatusConfig> = {
     dotColor: "bg-green-500",
   },
   error: {
-    label: "Работает",
+    label: "Ошибка",
     icon: <Ban className="h-4 w-4" />,
     textColor: "text-red-600",
     dotColor: "bg-red-500",

@@ -12,6 +12,8 @@ export {
   DraftConfigSchema,
   type DraftInbound,
   DraftInboundSchema,
+  RuntimeConfigSchema,
+  stripDraftFields,
 } from "./sing-box/core";
 export {
   type Hy2TlsCheckItem,
@@ -33,6 +35,7 @@ export {
 } from "./sing-box/inbounds/vless/tls/generate.schema";
 export {
   type SingBoxStatusCheck,
+  type SingBoxStatusCheckCode,
   type SingBoxStatusResponse,
   SingBoxStatusResponseSchema,
   type SingBoxStatusSummary,

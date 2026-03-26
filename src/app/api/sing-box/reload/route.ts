@@ -2,8 +2,12 @@ import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import { promisify } from "node:util";
 
-import { OkResponseSchema } from "@/shared/api/contracts";
-import { getServerEnv, withRoute } from "@/shared/lib/server";
+import {
+  OkResponseSchema,
+  RuntimeConfigSchema,
+  stripDraftFields,
+} from "@/shared/api/contracts";
+import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
 const execFileAsync = promisify(execFile);
 
@@ -16,7 +20,31 @@ export const POST = withRoute({
     const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
     const containerName = serverEnv.SINGBOX_CONTAINER_NAME;
 
-    await fs.copyFile(draftPath, configPath);
+    const draftContent = await fs.readFile(draftPath, "utf-8");
+    const rawDraftConfig = JSON.parse(draftContent) as Record<string, unknown>;
+
+    const runtimeConfig = stripDraftFields(rawDraftConfig);
+
+    const parseResult = RuntimeConfigSchema.safeParse(runtimeConfig);
+
+    if (!parseResult.success) {
+      throw new ServerApiError(
+        422,
+        "SINGBOX_CONFIG_INVALID",
+        "Черновик нельзя применить: итоговый конфиг невалиден",
+        parseResult.error.issues.map((issue) => ({
+          code: issue.code,
+          message: issue.message,
+          path: issue.path.join("."),
+        })),
+      );
+    }
+
+    await fs.writeFile(
+      configPath,
+      JSON.stringify(parseResult.data, null, 2),
+      "utf-8",
+    );
 
     await execFileAsync("docker", ["restart", containerName]);
 

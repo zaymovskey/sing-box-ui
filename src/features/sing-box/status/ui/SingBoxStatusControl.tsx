@@ -52,6 +52,7 @@ export function SingBoxStatusControl() {
 
       await reloadMutateAsync();
       await refetchStatus();
+
       serverToast.success("sing-box перезагружен", {
         duration: 2000,
       });
@@ -66,6 +67,9 @@ export function SingBoxStatusControl() {
 
   const currentMainStatus = getMainStatus();
   const currentMainStatusConfig = mainStatuses[currentMainStatus];
+
+  const shouldShowChecks =
+    !statusIsPending && !statusIsError && (statusData?.checks?.length ?? 0) > 0;
 
   return (
     <div className="flex items-center gap-1">
@@ -88,15 +92,19 @@ export function SingBoxStatusControl() {
             </span>
           </Button>
         </PopoverTrigger>
-        {statusData?.checks &&
-          statusData?.checks?.length > 0 &&
-          !statusIsPending && (
-            <PopoverContent className="w-fit p-0">
-              {statusData?.checks.map((check, index) => (
-                <StatusListItem key={index} status={check} />
+
+        {shouldShowChecks && (
+          <PopoverContent className="w-[420px] p-0">
+            <div className="divide-y">
+              {statusData!.checks.map((check) => (
+                <StatusListItem
+                  key={`${check.code}-${check.message}`}
+                  status={check}
+                />
               ))}
-            </PopoverContent>
-          )}
+            </div>
+          </PopoverContent>
+        )}
       </Popover>
 
       <Button
@@ -113,13 +121,20 @@ export function SingBoxStatusControl() {
 }
 
 export function StatusListItem({ status }: { status: SingBoxStatusCheck }) {
-  const config = checkStatuses[status];
+  const config = checkStatuses[status.code];
 
   return (
-    <div className="flex items-start gap-3 border-b px-3 py-2">
-      <div className={`mt-0.5 h-5 w-1 rounded-full ${config.dotColor}`} />
-      <div className={`text-sm font-semibold ${config.textColor}`}>
-        {config.label}
+    <div className="flex items-stretch gap-3 px-3 py-3">
+      <div
+        className={cn("mt-0.5 w-1 shrink-0 rounded-full", config.dotColor)}
+      />
+      <div className="min-w-0 space-y-1">
+        <div className={cn("text-sm font-semibold", config.textColor)}>
+          {config.label}
+        </div>
+        <div className="text-muted-foreground text-sm wrap-break-word">
+          {status.message}
+        </div>
       </div>
     </div>
   );
