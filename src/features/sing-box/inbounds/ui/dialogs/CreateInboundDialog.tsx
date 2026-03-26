@@ -37,12 +37,23 @@ interface CreateInboundDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function getRawInbounds(
+  rawDraftConfig: unknown,
+): InboundFormValues[] | never[] {
+  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
+    return [];
+  }
+
+  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
+
+  return Array.isArray(maybeInbounds) ? (maybeInbounds as never[]) : [];
+}
+
 export function CreateInboundDialog({
   open,
   onOpenChange,
 }: CreateInboundDialogProps) {
-  const { data: configWithMetadata } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
+  const { data: rawDraftConfig } = useConfigQuery();
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -52,22 +63,30 @@ export function CreateInboundDialog({
 
   const type = useWatch({ control: form.control, name: "type" });
 
-  const tags =
-    singBoxConfig?.inbounds
-      ?.map((i) => i.tag)
-      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const rawInbounds = getRawInbounds(rawDraftConfig);
+
+  const tags = rawInbounds
+    .map((inbound) =>
+      inbound && typeof inbound === "object" && "tag" in inbound
+        ? inbound.tag
+        : undefined,
+    )
+    .filter((tag): tag is string => typeof tag === "string" && tag.length > 0);
+
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: singBoxConfig?.inbounds ?? [],
+    inbounds: rawInbounds as never[],
   });
 
   const { createInbound, isPending } = useCreateInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
-    if (!singBoxConfig || !singBoxConfig.inbounds) {
-      clientToast.error("Конфиг не загружен", { duration: 2000 });
+    if (rawDraftConfig === undefined) {
+      clientToast.error("Конфиг не загружен", {
+        duration: 2000,
+      });
       return;
     }
 
@@ -98,6 +117,7 @@ export function CreateInboundDialog({
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "save-inbound",
+          duration: 2000,
         });
         return;
       }

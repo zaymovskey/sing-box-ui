@@ -1,44 +1,39 @@
-import { type ConfigInbound } from "@/features/sing-box/config-core";
-import { type PanelMetadata } from "@/shared/api/contracts";
+import { type DraftInbound } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
-  inbound: ConfigInbound,
+  inbound: DraftInbound,
   user: unknown,
   host: string,
-  realityPublicKeys: PanelMetadata["realityPublicKeys"],
 ): string | null {
   if (inbound.type === "vless") {
+    const vlessInbound = inbound as Extract<DraftInbound, { type: "vless" }>;
     const vlessUser = user as {
       uuid: string;
       flow?: string;
     };
 
-    const port = inbound.listen_port;
+    const port = vlessInbound.listen_port;
     const params = new URLSearchParams();
 
-    if (inbound.tls?.enabled) {
+    if (vlessInbound.tls?.enabled) {
       params.set("security", "tls");
 
-      if (inbound.tls.server_name) {
-        params.set("sni", inbound.tls.server_name);
+      if (vlessInbound.tls.server_name) {
+        params.set("sni", vlessInbound.tls.server_name);
       }
 
-      if (inbound.tls.reality?.enabled) {
+      if (vlessInbound.tls.reality?.enabled) {
         params.set("security", "reality");
 
-        const privateKey = inbound.tls.reality.private_key;
-        if (!privateKey) {
-          return null;
-        }
+        const publicKey = vlessInbound.tls.reality._reality_public_key;
 
-        const publicKey = realityPublicKeys[privateKey];
         if (!publicKey) {
           return null;
         }
 
         params.set("pbk", publicKey);
 
-        const shortId = inbound.tls.reality.short_id;
+        const shortId = vlessInbound.tls.reality.short_id;
 
         if (Array.isArray(shortId)) {
           if (shortId[0]) {
@@ -58,29 +53,32 @@ export function buildInboundShareLink(
 
     params.set("type", "tcp");
 
-    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${inbound.tag}`;
+    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${vlessInbound.tag}`;
   }
 
   if (inbound.type === "hysteria2") {
+    const hy2Inbound = inbound as Extract<DraftInbound, { type: "hysteria2" }>;
     const hyUser = user as {
       password: string;
     };
 
-    const port = inbound.listen_port;
+    const port = hy2Inbound.listen_port;
     const params = new URLSearchParams();
 
-    if (inbound.tls?.server_name) {
-      params.set("sni", inbound.tls.server_name);
+    if (hy2Inbound.tls?.server_name) {
+      params.set("sni", hy2Inbound.tls.server_name);
     }
 
-    params.set("insecure", "1");
+    if (hy2Inbound.tls?._is_selfsigned_cert) {
+      params.set("insecure", "1");
+    }
 
-    if (inbound.obfs?.password) {
+    if (hy2Inbound.obfs?.password) {
       params.set("obfs", "salamander");
-      params.set("obfs-password", inbound.obfs.password);
+      params.set("obfs-password", hy2Inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${inbound.tag}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${hy2Inbound.tag}`;
   }
 
   return null;

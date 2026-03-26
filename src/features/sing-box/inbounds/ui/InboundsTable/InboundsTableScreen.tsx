@@ -26,11 +26,20 @@ const inboundTypeOptions = [
   { label: "Hysteria2", value: "hysteria2" },
 ];
 
+function getRawInbounds(rawDraftConfig: unknown): unknown[] {
+  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
+    return [];
+  }
+
+  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
+
+  return Array.isArray(maybeInbounds) ? maybeInbounds : [];
+}
+
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
-  const { data: configWithMetadata, error } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
+  const { data: rawDraftConfig, error } = useConfigQuery();
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
@@ -45,9 +54,14 @@ export function InboundsTableScreen() {
     setGetParam,
   } = useInboundsListState();
 
+  const rawInbounds = useMemo(
+    () => getRawInbounds(rawDraftConfig),
+    [rawDraftConfig],
+  );
+
   const tableRows = useMemo(
     () =>
-      mapInboundsToRows(singBoxConfig ?? { inbounds: [] }).filter((row) => {
+      mapInboundsToRows({ inbounds: rawInbounds as never[] }).filter((row) => {
         const query = debouncedSearchQuery.toLowerCase();
 
         const queryFilter =
@@ -60,7 +74,7 @@ export function InboundsTableScreen() {
 
         return queryFilter && typeFilter;
       }),
-    [singBoxConfig, debouncedSearchQuery, selectedTypes],
+    [rawInbounds, debouncedSearchQuery, selectedTypes],
   );
 
   const paginatedRows = useMemo(() => {
@@ -138,6 +152,7 @@ export function InboundsTableScreen() {
           onPageChange={(page) => setGetParam({ page: page.toString() })}
         />
       </Card>
+
       {inboundColumns.actions.edit.inbound && (
         <EditInboundDialog
           inbound={inboundColumns.actions.edit.inbound}
@@ -145,6 +160,7 @@ export function InboundsTableScreen() {
           onOpenChange={inboundColumns.actions.edit.setIsOpen}
         />
       )}
+
       {inboundColumns.actions.delete.inbound && (
         <DeleteInboundDialog
           inbound={inboundColumns.actions.delete.inbound}

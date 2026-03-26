@@ -7,7 +7,7 @@ import { apiFetch, apiRoutes } from "@/shared/lib";
 export async function checkHy2Tls(
   body: Hy2TlsCheckRequest,
 ): Promise<Hy2TlsCheckResponse> {
-  return apiFetch(apiRoutes.singBox.hy2.tls.check, {
+  return apiFetch(apiRoutes.singBox.inbounds.hy2.tls.check, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

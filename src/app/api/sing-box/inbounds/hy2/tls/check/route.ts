@@ -77,19 +77,6 @@ async function validatePair(
   }
 }
 
-/**
- * Проверка TLS-сертификата и ключа Hysteria2
- * @description Валидирует TLS-файлы Hysteria2, хранящиеся в управляемой директории сертификатов sing-box.
- * Проверяет, что сертификат и ключ существуют, доступны для чтения, являются корректными PEM-файлами и соответствуют друг другу.
- * @tag SingBox
- *
- * @body Hy2TlsCheckRequestSchema
- * @response 200:Hy2TlsCheckResponseSchema
- * @add 401:ApiErrorPayloadSchema
- * @add 503:ApiErrorPayloadSchema
- *
- * @openapi
- */
 export const POST = withRoute({
   auth: true,
   requestSchema: Hy2TlsCheckRequestSchema,

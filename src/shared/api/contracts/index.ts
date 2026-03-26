@@ -8,13 +8,13 @@ export {
 } from "./common/api-error.schema";
 export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
 export {
-  type Config,
-  ConfigSchema,
-  type ConfigWithMetadata,
-  ConfigWithMetadataSchema,
-  type PanelMetadata,
-  PanelMetadataSchema,
-} from "./sing-box/config/config.schema";
+  type DraftConfig,
+  DraftConfigSchema,
+  type DraftInbound,
+  DraftInboundSchema,
+  RuntimeConfigSchema,
+  stripDraftFields,
+} from "./sing-box/core";
 export {
   type Hy2TlsCheckItem,
   type Hy2TlsCheckRequest,
@@ -34,8 +34,9 @@ export {
   VlessTlsGenerateResponseSchema,
 } from "./sing-box/inbounds/vless/tls/generate.schema";
 export {
-  type SingBoxStatus,
-  type SingBoxStatusReason,
+  type SingBoxStatusCheck,
+  type SingBoxStatusCheckCode,
   type SingBoxStatusResponse,
   SingBoxStatusResponseSchema,
+  type SingBoxStatusSummary,
 } from "./sing-box/status/status.schema";

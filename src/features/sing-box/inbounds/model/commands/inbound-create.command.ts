@@ -1,60 +1,33 @@
 import { useCallback } from "react";
 
-import {
-  useConfigQuery,
-  useUpdateConfigMutation,
-} from "@/features/sing-box/config-core";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { ConfigSchema, type ConfigWithMetadata } from "@/shared/api/contracts";
+import { DraftInboundSchema } from "@/shared/api/contracts";
 
-import { applyRealityPublicKeyMetadata } from "../../lib/apply-reality-public-key-metadata.helper";
-import { mapFormToInbound } from "../inbound.form-mapper";
+import { mapFormToInbound } from "../mappers/inbound.form-mapper";
+import { useCreateInboundMutation } from "../mutations/create-inbound.mutation";
 
 export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
 
 export function useCreateInbound() {
-  const { data: configWithMetadata } = useConfigQuery();
-  const singBoxConfig = configWithMetadata?.config;
-  const updateConfigMutation = useUpdateConfigMutation();
+  const createInboundMutation = useCreateInboundMutation();
 
   const createInbound = useCallback(
-    (newInbound: InboundFormValues) => {
-      if (!singBoxConfig) {
-        throw new Error("Config not loaded");
-      }
-
+    async (newInbound: InboundFormValues) => {
       const parsedNewInbound = mapFormToInbound(newInbound);
 
-      const inbounds = singBoxConfig.inbounds ?? [];
-      let nextConfigWithMetadata: ConfigWithMetadata = {
-        metadata: configWithMetadata?.metadata,
-        config: {
-          ...singBoxConfig,
-          inbounds: [...inbounds, parsedNewInbound],
-        },
-      };
+      const inboundParseResult = DraftInboundSchema.safeParse(parsedNewInbound);
 
-      if (newInbound.type === "vless") {
-        nextConfigWithMetadata = applyRealityPublicKeyMetadata(
-          nextConfigWithMetadata,
-          newInbound,
-        );
-      }
-
-      const configParsedRes = ConfigSchema.safeParse(
-        nextConfigWithMetadata.config,
-      );
-      if (!configParsedRes.success) {
+      if (!inboundParseResult.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);
       }
 
-      return updateConfigMutation.mutateAsync(nextConfigWithMetadata);
+      return createInboundMutation.mutateAsync(inboundParseResult.data);
     },
-    [configWithMetadata?.metadata, singBoxConfig, updateConfigMutation],
+    [createInboundMutation],
   );
 
   return {
     createInbound,
-    isPending: updateConfigMutation.isPending,
+    isPending: createInboundMutation.isPending,
   };
 }

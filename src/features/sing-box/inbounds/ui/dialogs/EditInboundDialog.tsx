@@ -5,11 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-  type ConfigInbound,
   InboundFormSchema,
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
+import { type DraftInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -25,16 +25,26 @@ import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
-import { mapInboundToFormValues } from "../../model/inbound.form-mapper";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
+import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
 
 interface EditInboundDialogProps {
-  inbound: ConfigInbound;
+  inbound: DraftInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
+  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
+    return [];
+  }
+
+  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
+
+  return Array.isArray(maybeInbounds) ? (maybeInbounds as DraftInbound[]) : [];
 }
 
 export function EditInboundDialog({
@@ -42,9 +52,12 @@ export function EditInboundDialog({
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  const configQuery = useConfigQuery();
-  const singBoxConfig = configQuery.data?.config;
-  const configMetadata = configQuery.data?.metadata;
+  const { data: rawDraftConfig } = useConfigQuery();
+
+  const rawInbounds = useMemo(
+    () => getRawInbounds(rawDraftConfig),
+    [rawDraftConfig],
+  );
 
   const [currentInboundTag, setCurrentInboundTag] = useState(inbound.tag);
 
@@ -52,14 +65,9 @@ export function EditInboundDialog({
     setCurrentInboundTag(inbound.tag);
   }, [inbound.tag]);
 
-  const realityPublicKeys = useMemo(
-    () => configMetadata?.realityPublicKeys || {},
-    [configMetadata?.realityPublicKeys],
-  );
-  const initialValues = useMemo(
-    () => mapInboundToFormValues(inbound, realityPublicKeys),
-    [inbound, realityPublicKeys],
-  );
+  const initialValues = useMemo(() => {
+    return mapInboundToFormValues(inbound);
+  }, [inbound]);
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -73,10 +81,9 @@ export function EditInboundDialog({
 
   const { editInbound, isPending } = useEditInbound();
 
-  const tags =
-    singBoxConfig?.inbounds
-      ?.map((i) => i.tag)
-      .filter((tag): tag is string => Boolean(tag)) ?? [];
+  const tags = rawInbounds
+    .map((item) => item.tag)
+    .filter((tag): tag is string => Boolean(tag));
 
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
     form,
@@ -86,11 +93,19 @@ export function EditInboundDialog({
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: singBoxConfig?.inbounds ?? [],
+    inbounds: rawInbounds,
     excludeTag: currentInboundTag,
   });
 
   const handleSubmit = async (values: InboundFormValues) => {
+    if (rawDraftConfig === undefined) {
+      serverToast.error("Конфиг не загружен", {
+        id: "edit-inbound",
+        duration: 2000,
+      });
+      return;
+    }
+
     form.clearErrors("root");
 
     if (!checkTagUniqueAndSetFormError()) {
@@ -107,6 +122,7 @@ export function EditInboundDialog({
       if (!currentInboundTag) {
         serverToast.error("Инбаунд должен иметь тег для редактирования", {
           id: "edit-inbound",
+          duration: 2000,
         });
         return;
       }
@@ -125,11 +141,13 @@ export function EditInboundDialog({
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "edit-inbound",
+          duration: 2000,
         });
         return;
       }
 
       serverToast.error("Не удалось обновить инбаунд", {
+        description: `Message: ${msg}`,
         id: "edit-inbound",
         duration: 2000,
       });

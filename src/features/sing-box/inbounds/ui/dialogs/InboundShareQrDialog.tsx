@@ -1,6 +1,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 
+import { copyText } from "@/shared/lib";
 import {
   Badge,
   clientToast,
@@ -26,21 +27,25 @@ export function InboundShareQrDialog({
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyQr = async () => {
-    try {
-      await navigator.clipboard.writeText(link);
-      setIsCopied(true);
-      clientToast.success("Ссылка скопирована", {
-        duration: 1500,
+    if (!link) {
+      clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
+        duration: 2000,
       });
-
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 1000);
-    } catch {
-      clientToast.error("Не удалось скопировать ссылку", {
-        duration: 1500,
-      });
+      return;
     }
+
+    const copied = await copyText(link);
+
+    if (copied) {
+      clientToast.success("Ссылка скопирована в буфер обмена", {
+        duration: 2000,
+      });
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1000);
+      return;
+    }
+
+    window.prompt("Скопируй ссылку вручную:", link);
   };
 
   return (

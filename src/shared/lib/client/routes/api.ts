@@ -8,15 +8,20 @@ export const apiRoutes = {
     status: "/api/sing-box/status",
     reload: "/api/sing-box/reload",
     configEditor: "/api/sing-box/config-editor",
-    hy2: {
-      tls: {
-        check: "/api/sing-box/inbounds/hy2/tls/check",
-        generate: "/api/sing-box/inbounds/hy2/tls/generate",
+    inbounds: {
+      create: "/api/sing-box/inbounds",
+      edit: (originalTag: string) => `/api/sing-box/inbounds/${originalTag}`,
+      delete: (tag: string) => `/api/sing-box/inbounds/${tag}`,
+      hy2: {
+        tls: {
+          check: "/api/sing-box/inbounds/hy2/tls/check",
+          generate: "/api/sing-box/inbounds/hy2/tls/generate",
+        },
       },
-    },
-    vless: {
-      tls: {
-        generate: "/api/sing-box/inbounds/vless/tls/generate",
+      vless: {
+        tls: {
+          generate: "/api/sing-box/inbounds/vless/tls/generate",
+        },
       },
     },
   },

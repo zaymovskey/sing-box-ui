@@ -19,6 +19,7 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   certificate_path: z.string().trim().optional(),
   _tlsChecked: z.boolean().optional().default(false),
   _tlsOverwrite: z.boolean().default(false),
+  _is_selfsigned_cert: z.boolean().optional(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
   usersValidate(data, ctx);

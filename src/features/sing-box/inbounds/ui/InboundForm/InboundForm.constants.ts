@@ -41,5 +41,6 @@ export const defaultsByType = {
     tls_enabled: false,
     _tlsChecked: false,
     _tlsOverwrite: false,
+    _is_selfsigned_cert: true,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;
