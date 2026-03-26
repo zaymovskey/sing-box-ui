@@ -4,17 +4,6 @@ import { promisify } from "node:util";
 import { VlessTlsGenerateResponseSchema } from "@/shared/api/contracts";
 import { ServerApiError, withRoute } from "@/shared/lib/server";
 
-/**
- * Генерация пары Reality-ключей для VLESS
- * @description Генерирует private/public key для Reality через sing-box. Требуется аутентификация.
- * @tag SingBox
- *
- * @response 200:VlessRealityGenerateKeypairResponseSchema
- * @add 401:ApiErrorPayloadSchema
- * @add 503:ApiErrorPayloadSchema
- *
- * @openapi
- */
 export const POST = withRoute({
   auth: true,
   responseSchema: VlessTlsGenerateResponseSchema,

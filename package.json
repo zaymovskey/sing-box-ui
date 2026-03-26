@@ -25,7 +25,6 @@
     "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix --config stylelint.config.mjs",
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
-    "openapi:gen": "npx next-openapi-gen generate",
     "type-check": "tsc --noEmit"
   },
   "lint-staged": {
@@ -93,7 +92,6 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "husky": "^8.0.0",
     "lint-staged": "^16.2.7",
-    "next-openapi-gen": "^0.10.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.2",

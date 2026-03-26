@@ -15,19 +15,6 @@ import {
 
 export const runtime = "nodejs";
 
-/**
- * Генерация TLS-сертификата и ключа Hysteria2
- * @description Генерирует TLS-сертификат и приватный ключ для Hysteria2 в управляемой директории сертификатов sing-box.
- * Проверяет корректность путей, наличие существующих файлов и, при необходимости, перезаписывает их.
- * @tag SingBox
- *
- * @body Hy2TlsGenerateRequestSchema
- * @response 200:Hy2TlsGenerateResponseSchema
- * @add 401:ApiErrorPayloadSchema
- * @add 503:ApiErrorPayloadSchema
- *
- * @openapi
- */
 export const POST = withRoute({
   auth: true,
   requestSchema: Hy2TlsGenerateRequestSchema,
