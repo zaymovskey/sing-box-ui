@@ -3,12 +3,30 @@ import fs from "node:fs/promises";
 import { isDeepStrictEqual, promisify } from "node:util";
 
 import {
+  type SingBoxStatusCheck,
   type SingBoxStatusResponse,
   SingBoxStatusResponseSchema,
 } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
 
 const execFileAsync = promisify(execFile);
+
+function deriveSingBoxStatusSummary(
+  checks: SingBoxStatusCheck[],
+): SingBoxStatusResponse["summary"] {
+  if (
+    checks.includes("container_not_running") ||
+    checks.includes("invalid_config")
+  ) {
+    return "error";
+  }
+
+  if (checks.includes("draft_not_applied")) {
+    return "warning";
+  }
+
+  return "ok";
+}
 
 export const GET = withRoute({
   auth: true,
@@ -27,39 +45,32 @@ export const GET = withRoute({
       );
     }
 
-    const checkContainerRunningResult =
-      await checkContainerRunning(containerName);
+    const checks: SingBoxStatusCheck[] = [];
 
-    if (checkContainerRunningResult === "error") {
-      return {
-        status: "error",
-        reason: "container_not_running",
-      } satisfies SingBoxStatusResponse;
-    }
-    const checkConfigResult = await checkSingBoxConfig(
-      containerName,
-      singBoxConfigPath,
-    );
+    const containerStatus = await checkContainerRunning(containerName);
 
-    if (checkConfigResult === "error") {
-      return {
-        status: "error",
-        reason: "invalid_config",
-      } satisfies SingBoxStatusResponse;
+    if (containerStatus === "error") {
+      checks.push("container_not_running");
+    } else {
+      const configStatus = await checkSingBoxConfig(
+        containerName,
+        singBoxConfigPath,
+      );
+
+      if (configStatus === "error") {
+        checks.push("invalid_config");
+      }
     }
 
-    const checkDraftAppliedResult = await checkDraftApplied();
+    const draftStatus = await checkDraftApplied();
 
-    if (checkDraftAppliedResult === "error") {
-      return {
-        status: "error",
-        reason: "draft_not_applied",
-      } satisfies SingBoxStatusResponse;
+    if (draftStatus === "error") {
+      checks.push("draft_not_applied");
     }
 
     return {
-      status: "running",
-      reason: "ok",
+      summary: deriveSingBoxStatusSummary(checks),
+      checks,
     } satisfies SingBoxStatusResponse;
   },
 });

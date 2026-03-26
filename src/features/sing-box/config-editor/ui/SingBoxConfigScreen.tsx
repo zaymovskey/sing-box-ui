@@ -149,12 +149,17 @@ export function SingBoxConfigScreen() {
             disabled={
               invalidKeys.size > 0 || !draftIsDifferent || isConfigQueryFetching
             }
+            loading={updateConfigMutation.isPending}
             onClick={saveConfigChanges}
           >
             <Save /> Сохранить
           </Button>
           <Button
-            disabled={!draftIsDifferent || isConfigQueryFetching}
+            disabled={
+              !draftIsDifferent ||
+              isConfigQueryFetching ||
+              updateConfigMutation.isPending
+            }
             variant="outline"
             onClick={resetConfigChanges}
           >

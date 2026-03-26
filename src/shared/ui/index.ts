@@ -59,6 +59,14 @@ export {
 } from "./pagination";
 export { PasswordInput } from "./password-input";
 export {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "./popover";
+export {
   Select,
   SelectContent,
   SelectGroup,

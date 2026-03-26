@@ -1,58 +1,41 @@
 "use client";
 
-import {
-  Container,
-  FileExclamationPoint,
-  FileX,
-  Loader2,
-  RefreshCcw,
-} from "lucide-react";
-import { type ReactElement, useEffect, useState } from "react";
+import { RefreshCcw } from "lucide-react";
+import { useState } from "react";
 
-import { useReloadSingBox } from "@/features/sing-box/reload";
-import { type SingBoxStatusReason } from "@/shared/api/contracts";
+import { useReloadSingBoxMutation } from "@/features/sing-box/reload";
+import { type SingBoxStatusCheck } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
-import { Button, serverToast } from "@/shared/ui";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  serverToast,
+} from "@/shared/ui";
 
+import {
+  checkStatuses,
+  type MainStatuses,
+  mainStatuses,
+} from "../lib/sing-box-status-control.constants";
 import { useSingBoxStatusQuery } from "../model/sing-box-status.query";
-
-type StatusConfig = {
-  label: string;
-  icon: ReactElement;
-  textColor: string;
-  dotColor: string;
-};
-
-type SingBoxStatusControlStatus =
-  | SingBoxStatusReason
-  | "loading"
-  | "unknown_error";
 
 export function SingBoxStatusControl() {
   const {
     data: statusData,
-    isLoading: statusIsLoading,
-    isFetching: statusIsFetching,
+    isPending: statusIsPending,
     isError: statusIsError,
+    refetch: refetchStatus,
   } = useSingBoxStatusQuery();
 
-  const reloadMutation = useReloadSingBox();
+  const { isPending: reloadIsPending, mutateAsync: reloadMutateAsync } =
+    useReloadSingBoxMutation();
 
-  const [isApplying, setIsApplying] = useState(false);
+  const [isApplyFlowActive, setIsApplyFlowActive] = useState(false);
 
-  useEffect(() => {
-    if (!isApplying) return;
-    if (statusIsFetching) return;
-    if (!statusData && !statusIsError) return;
-    if (statusIsError) return;
-
-    if (statusData.reason !== "ok") return;
-
-    setIsApplying(false);
-  }, [isApplying, statusIsFetching, statusData, statusIsError]);
-
-  const getStatus = (): SingBoxStatusControlStatus => {
-    if (statusIsLoading || reloadMutation.isPending || isApplying) {
+  const getMainStatus = (): MainStatuses => {
+    if (reloadIsPending || statusIsPending || isApplyFlowActive) {
       return "loading";
     }
 
@@ -60,16 +43,15 @@ export function SingBoxStatusControl() {
       return "unknown_error";
     }
 
-    return statusData?.reason ?? "unknown_error";
+    return statusData?.summary ?? "unknown_error";
   };
 
-  const currentStatus = getStatus();
-  const current = statuses[currentStatus];
-
-  const handleReload = async () => {
-    setIsApplying(true);
+  const handleApply = async () => {
     try {
-      await reloadMutation.mutateAsync();
+      setIsApplyFlowActive(true);
+
+      await reloadMutateAsync();
+      await refetchStatus();
       serverToast.success("sing-box перезагружен", {
         duration: 3000,
       });
@@ -77,29 +59,52 @@ export function SingBoxStatusControl() {
       serverToast.error("Не удалось перезагрузить sing-box", {
         duration: 3000,
       });
+    } finally {
+      setIsApplyFlowActive(false);
     }
   };
 
+  const currentMainStatus = getMainStatus();
+  const currentMainStatusConfig = mainStatuses[currentMainStatus];
+
   return (
     <div className="flex items-center gap-1">
-      <div
-        className={cn(
-          "flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm",
-          "bg-card dark:bg-input/30 dark:border-input border shadow-xs",
-        )}
-      >
-        <span className={cn("h-2 w-2 rounded-full", current.dotColor)} />
-        <span className={cn(current.textColor)}>{current.icon}</span>
-        <span className={cn("font-medium", current.textColor)}>
-          {current.label}
-        </span>
-      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <span
+              className={cn(
+                "h-2 w-2 rounded-full",
+                currentMainStatusConfig.dotColor,
+              )}
+            />
+            <span className={cn(currentMainStatusConfig.textColor)}>
+              {currentMainStatusConfig.icon}
+            </span>
+            <span
+              className={cn("font-medium", currentMainStatusConfig.textColor)}
+            >
+              {currentMainStatusConfig.label}
+            </span>
+          </Button>
+        </PopoverTrigger>
+        {statusData?.checks &&
+          statusData?.checks?.length > 0 &&
+          !statusIsPending && (
+            <PopoverContent className="w-fit p-0">
+              {statusData?.checks.map((check, index) => (
+                <StatusListItem key={index} status={check} />
+              ))}
+            </PopoverContent>
+          )}
+      </Popover>
+
       <Button
         className="gap-2"
-        loading={currentStatus === "loading"}
+        loading={currentMainStatus === "loading"}
         size="sm"
         variant="outline"
-        onClick={handleReload}
+        onClick={handleApply}
       >
         <RefreshCcw className="h-4 w-4" />
       </Button>
@@ -107,41 +112,15 @@ export function SingBoxStatusControl() {
   );
 }
 
-const statuses: Record<SingBoxStatusControlStatus, StatusConfig> = {
-  ok: {
-    label: "Работает",
-    icon: <Container className="h-4 w-4" />,
-    textColor: "text-green-600",
-    dotColor: "bg-green-500",
-  },
-  container_not_running: {
-    label: "Контейнер не запущен",
-    icon: <Container className="h-4 w-4" />,
-    textColor: "text-red-600",
-    dotColor: "bg-red-500",
-  },
-  invalid_config: {
-    label: "Конфигурация не валидна",
-    icon: <FileX className="h-4 w-4" />,
-    textColor: "text-red-600",
-    dotColor: "bg-red-500",
-  },
-  draft_not_applied: {
-    label: "Перезагрузите для применения изменений",
-    icon: <FileExclamationPoint className="h-4 w-4" />,
-    textColor: "text-yellow-600",
-    dotColor: "bg-yellow-500",
-  },
-  loading: {
-    label: "Загрузка...",
-    icon: <Loader2 className="h-4 w-4 animate-spin" />,
-    textColor: "text-muted-foreground",
-    dotColor: "bg-muted",
-  },
-  unknown_error: {
-    label: "Неизвестная ошибка",
-    icon: <FileX className="h-4 w-4" />,
-    textColor: "text-red-600",
-    dotColor: "bg-red-500",
-  },
-};
+export function StatusListItem({ status }: { status: SingBoxStatusCheck }) {
+  const config = checkStatuses[status];
+
+  return (
+    <div className="flex items-start gap-3 border-b px-3 py-2">
+      <div className={`mt-0.5 h-5 w-1 rounded-full ${config.dotColor}`} />
+      <div className={`text-sm font-semibold ${config.textColor}`}>
+        {config.label}
+      </div>
+    </div>
+  );
+}

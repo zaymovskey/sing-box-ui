@@ -1,1 +1,1 @@
-export { useReloadSingBox } from "./model/reload.mutation";
+export { useReloadSingBoxMutation } from "./model/reload.mutation";

@@ -5,7 +5,7 @@ import { type ApiError } from "@/shared/lib";
 
 import { reloadSingBox } from "../api/reload.api";
 
-export function useReloadSingBox() {
+export function useReloadSingBoxMutation() {
   return useMutation<OkResponse, ApiError, void>({
     mutationFn: () => reloadSingBox(),
   });
