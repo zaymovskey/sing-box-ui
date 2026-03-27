@@ -12,6 +12,7 @@ export function useDeleteInboundMutation() {
   return useMutation<OkResponse, ApiError, string>({
     mutationFn: (tag) => deleteInbound(tag),
     onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
     },

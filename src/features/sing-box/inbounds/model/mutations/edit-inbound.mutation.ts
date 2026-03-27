@@ -17,6 +17,7 @@ export function useEditInboundMutation() {
   return useMutation<OkResponse, ApiError, EditInboundVariables>({
     mutationFn: ({ originalTag, inbound }) => editInbound(originalTag, inbound),
     onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
     },
