@@ -74,6 +74,13 @@ export const GET = withRoute({
       checks.push(draftStatus.check);
     }
 
+    if (checks.length === 0) {
+      checks.push({
+        code: "all_ok",
+        message: "Работает без проблем",
+      });
+    }
+
     return {
       summary: deriveSingBoxStatusSummary(checks),
       checks,

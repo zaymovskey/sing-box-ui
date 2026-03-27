@@ -40,6 +40,12 @@ export const checkStatuses: Record<SingBoxStatusCheckCode, StatusConfig> = {
     textColor: "text-yellow-600",
     dotColor: "bg-yellow-500",
   },
+  all_ok: {
+    label: "Все проверки пройдены успешно",
+    icon: <Container className="h-4 w-4" />,
+    textColor: "text-green-600",
+    dotColor: "bg-green-500",
+  },
 };
 
 export const mainStatuses: Record<MainStatuses, StatusConfig> = {
