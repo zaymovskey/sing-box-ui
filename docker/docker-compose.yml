@@ -12,12 +12,7 @@ services:
       - "8443:8443/udp"
 
   ui:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_SINGBOX_CERTS_DIR: ${NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-        NEXT_PUBLIC_HOST_IP: ${NEXT_PUBLIC_HOST_IP}
+    image: ghcr.io/zaymovskey/sing-box-ui:latest
     container_name: sing-box-ui
     restart: unless-stopped
     env_file:
