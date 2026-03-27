@@ -70,7 +70,7 @@ export function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange
       enableSystem
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
     >
       <QueryClientProvider client={queryClient}>
         {children}
