@@ -59,11 +59,15 @@ export function EditInboundDialog({
     [rawDraftConfig],
   );
 
-  const [currentInboundTag, setCurrentInboundTag] = useState(inbound.tag);
+  const [currentInboundTag, setCurrentInboundTag] = useState<
+    string | undefined
+  >(undefined);
 
   useEffect(() => {
+    if (!open) return;
+
     setCurrentInboundTag(inbound.tag);
-  }, [inbound.tag]);
+  }, [open, inbound.tag]);
 
   const initialValues = useMemo(() => {
     return mapInboundToFormValues(inbound);
@@ -76,8 +80,11 @@ export function EditInboundDialog({
   });
 
   useEffect(() => {
-    form.reset(initialValues);
-  }, [form, initialValues]);
+    if (!open) return;
+
+    setCurrentInboundTag(inbound.tag);
+    form.reset(mapInboundToFormValues(inbound));
+  }, [open, inbound, form]);
 
   const { editInbound, isPending } = useEditInbound();
 

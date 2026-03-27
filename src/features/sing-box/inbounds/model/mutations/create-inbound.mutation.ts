@@ -4,7 +4,7 @@ import { singBoxQueryKeys } from "@/features/sing-box/config-core";
 import { type DraftInbound, type OkResponse } from "@/shared/api/contracts";
 import { type ApiError } from "@/shared/lib";
 
-import { createInbound } from "../../api/createInbound";
+import { createInbound } from "../../api/create-inbound.api";
 
 export function useCreateInboundMutation() {
   const qc = useQueryClient();
@@ -12,6 +12,7 @@ export function useCreateInboundMutation() {
   return useMutation<OkResponse, ApiError, DraftInbound>({
     mutationFn: (config) => createInbound(config),
     onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
       await qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
     },

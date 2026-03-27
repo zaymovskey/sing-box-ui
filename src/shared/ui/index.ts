@@ -42,6 +42,7 @@ export {
 } from "./form/form";
 export { RootErrorMessage } from "./form/RootErrorMessage";
 export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberField";
+export { UncontrolledPasswordField } from "./form/uncontrolled/UncontrolledPasswordField";
 export { UncontrolledPathField } from "./form/uncontrolled/UncontrolledPathField";
 export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField";
 export { UncontrolledUuidField } from "./form/uncontrolled/UncontrolledUuidField";

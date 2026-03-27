@@ -35,7 +35,7 @@ export const checkStatuses: Record<SingBoxStatusCheckCode, StatusConfig> = {
     dotColor: "bg-red-500",
   },
   draft_not_applied: {
-    label: "Перезагрузите sing-box для применения изменений",
+    label: "Перезагрузите sing-box",
     icon: <Ban className="h-4 w-4" />,
     textColor: "text-yellow-600",
     dotColor: "bg-yellow-500",

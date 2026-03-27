@@ -175,14 +175,14 @@ const checkDraftApplied = async (): Promise<CheckResult> => {
 
     const strippedDraft = stripDraftFields(rawDraft);
     const isSame = isDeepStrictEqual(strippedDraft, real);
-    console.log("isSaame", isSame);
 
     if (!isSame) {
       return {
         ok: false,
         check: {
           code: "draft_not_applied",
-          message: "Перезагрузите sing-box",
+          message:
+            "Перезагрузите sing-box для применения изменений (черновик не совпадает с применённым конфигом)",
         },
       };
     }
