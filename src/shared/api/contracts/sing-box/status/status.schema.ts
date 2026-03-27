@@ -6,6 +6,7 @@ const SingBoxStatusCheckCodeSchema = z.enum([
   "container_not_running",
   "invalid_config",
   "draft_not_applied",
+  "all_ok",
 ]);
 
 const SingBoxStatusCheckSchema = z.object({
