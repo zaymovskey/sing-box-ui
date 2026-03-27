@@ -30,6 +30,10 @@ export {
   Hy2TlsGenerateResultSchema,
 } from "./sing-box/inbounds/hy2/tls/generate.schema";
 export {
+  type InboundsListResponse,
+  InboundsListResponseSchema,
+} from "./sing-box/inbounds/list.schema";
+export {
   type VlessTlsGenerateResponse,
   VlessTlsGenerateResponseSchema,
 } from "./sing-box/inbounds/vless/tls/generate.schema";

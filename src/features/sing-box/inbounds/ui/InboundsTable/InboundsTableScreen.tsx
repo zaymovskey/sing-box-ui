@@ -3,16 +3,13 @@
 import { RefreshCcw, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import {
-  useConfigQuery,
-  useConfigQueryToasts,
-} from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button, Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
+import { mapInboundsListToRows } from "../../lib/map-inbounds-list-to-rows.mapper";
 import { useInboundsColumns } from "../../lib/use-inbounds-columns";
 import { useInboundsListState } from "../../lib/use-inbounds-list-state";
-import { mapInboundsToRows } from "../../model/inbound-row.mapper";
+import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
@@ -26,24 +23,12 @@ const inboundTypeOptions = [
   { label: "Hysteria2", value: "hysteria2" },
 ];
 
-function getRawInbounds(rawDraftConfig: unknown): unknown[] {
-  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
-    return [];
-  }
-
-  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
-
-  return Array.isArray(maybeInbounds) ? maybeInbounds : [];
-}
-
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
-  const { data: rawDraftConfig, error } = useConfigQuery();
+  const { data: inboundsListResponse } = useInboundsListQuery();
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
-
-  useConfigQueryToasts(error);
 
   const {
     selectedTypes,
@@ -54,28 +39,23 @@ export function InboundsTableScreen() {
     setGetParam,
   } = useInboundsListState();
 
-  const rawInbounds = useMemo(
-    () => getRawInbounds(rawDraftConfig),
-    [rawDraftConfig],
-  );
+  const tableRows = useMemo(() => {
+    const rows = mapInboundsListToRows(inboundsListResponse?.list ?? []);
+    const query = debouncedSearchQuery.trim().toLowerCase();
 
-  const tableRows = useMemo(
-    () =>
-      mapInboundsToRows({ inbounds: rawInbounds as never[] }).filter((row) => {
-        const query = debouncedSearchQuery.toLowerCase();
+    return rows.filter((row) => {
+      const queryFilter =
+        query.length === 0 ||
+        row.tag?.toLowerCase().includes(query) ||
+        row.type?.toLowerCase().includes(query) ||
+        row.listen_port?.toString().includes(query);
 
-        const queryFilter =
-          row.tag?.toLowerCase().includes(query) ||
-          row.type?.toLowerCase().includes(query) ||
-          row.listen_port?.toString().includes(query);
+      const typeFilter =
+        selectedTypes.length === 0 || selectedTypes.includes(row.type ?? "");
 
-        const typeFilter =
-          selectedTypes.length === 0 || selectedTypes.includes(row.type ?? "");
-
-        return queryFilter && typeFilter;
-      }),
-    [rawInbounds, debouncedSearchQuery, selectedTypes],
-  );
+      return queryFilter && typeFilter;
+    });
+  }, [inboundsListResponse, debouncedSearchQuery, selectedTypes]);
 
   const paginatedRows = useMemo(() => {
     const startIndex = (activePage - 1) * PER_PAGE;
@@ -97,7 +77,9 @@ export function InboundsTableScreen() {
           open={createInboundDialogOpen}
           onOpenChange={setCreateInboundDialogOpen}
         />
+
         <Separator />
+
         <div className="flex items-center justify-between">
           <div className="relative flex items-center justify-between gap-1">
             <Input
@@ -132,6 +114,7 @@ export function InboundsTableScreen() {
                 })
               }
             />
+
             <Button variant="outline" onClick={handleReset}>
               <RefreshCcw />
               Сброс
