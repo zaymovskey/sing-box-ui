@@ -18,12 +18,15 @@ export function UncontrolledNumberField<T extends FieldValues>({
   label,
   ...inputProps
 }: NumberFieldProps<T>) {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<T>();
+  const { register } = useFormContext<T>();
 
-  const message: string = errors[name]?.message?.toString() ?? "";
+  const form = useFormContext<T>();
+  const error = form.getFieldState(name, form.formState).error;
+  const message = error?.message?.toString() ?? "";
+
+  const safeName = String(name).replace(/[^a-zA-Z0-9_-]/g, "_");
+  const inputId = `field_${safeName}`;
+  const messageId = `${inputId}_message`;
 
   return (
     <FormItem className="gap-2">
@@ -32,6 +35,9 @@ export function UncontrolledNumberField<T extends FieldValues>({
         {...inputProps}
         type="number"
         {...register(name, { valueAsNumber: true })}
+        aria-describedby={message ? messageId : undefined}
+        aria-invalid={!!error}
+        id={inputId}
       />
       <div className="text-destructive min-h-5 text-sm">{message ?? ""}</div>
     </FormItem>
