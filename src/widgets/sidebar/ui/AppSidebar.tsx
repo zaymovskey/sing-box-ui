@@ -1,9 +1,12 @@
 "use client";
+
 import { DoorOpen, FileCog, PanelLeft, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { LogoutDialog } from "@/features/auth";
+import { usePageTransitionAnimations } from "@/shared/hooks";
 import { appRoutes } from "@/shared/lib";
 import {
   Button,
@@ -34,8 +37,17 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { onClickLink } = usePageTransitionAnimations();
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
+
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingPath(null);
+  }, [pathname]);
+
+  const activePath = pendingPath ?? pathname;
 
   return (
     <Sidebar collapsible="icon">
@@ -53,12 +65,24 @@ export function AppSidebar() {
               </Button>
               <ThemeToggle />
             </div>
+
             <Separator className="my-2" />
 
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={activePath === item.url}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (item.url === pathname) {
+                        return;
+                      }
+                      setPendingPath(item.url);
+                      onClickLink(item.url);
+                    }}
+                  >
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -66,8 +90,10 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+
               <SidebarMenuItem>
                 <Separator className="my-2" />
+
                 <LogoutDialog
                   renderTrigger={({ disabled }) => (
                     <SidebarMenuButton asChild>
