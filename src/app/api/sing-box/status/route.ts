@@ -175,7 +175,6 @@ const checkDraftApplied = async (): Promise<CheckResult> => {
 
     const strippedDraft = stripDraftFields(rawDraft);
     const isSame = isDeepStrictEqual(strippedDraft, real);
-    console.log("isSaame", isSame);
 
     if (!isSame) {
       return {
