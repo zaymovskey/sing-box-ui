@@ -8,23 +8,65 @@
 
 Веб-интерфейс для управления VPN-конфигурациями sing-box.
 
-Позволяет удобно управлять настройками, редактировать конфигурацию с валидацией
-и генерировать подключения для клиентов.
+Позволяет:
+
+- удобно управлять inbound'ами
+- редактировать конфигурацию с валидацией
+- генерировать подключения для клиентов (ссылки + QR)
+
+Проект ориентирован на production-подход:
+UI управляет реальным running sing-box контейнером через Docker.
+
+---
+
+## 🚀 Highlights
+
+- Full-stack UI для управления sing-box конфигурацией
+- Генерация клиентских конфигов (links + QR)
+- Schema-based валидация через Zod
+- Production-ready CI/CD (GitHub Actions → GHCR → VPS)
+- Docker-based deployment (UI + sing-box)
+- Интеграция с runtime (управление живым контейнером)
 
 ---
 
 ## ✨ Features
 
-- CRUD для inbound'ов
-- Динамические формы (React Hook Form + Zod)
-- Валидация конфигурации sing-box (schema-based)
+### 🧩 Config Management
+
+- CRUD для sing-box inbound'ов
+- Редактирование raw JSON-конфига
+- Schema-based валидация (Zod)
 - JSON editor с подсветкой ошибок
-- Генерация QR-кодов и ссылок для клиентов
-- JWT авторизация
-- Переключение темы (light/dark)
-- Feature-based архитектура
-- Генерация самоподписанных tls ключей и сертификатов
-- Механизм применения конфигурации с отслеживанием статуса и ручным reload
+- Синхронизация UI и реального конфига
+
+### 🔐 Auth & Security
+
+- JWT auth с HttpOnly cookie
+
+### ⚙️ Runtime Integration
+
+- Применение конфигурации с ручным reload
+- Отслеживание статуса применения
+- Парсинг и отображение ошибок sing-box
+- Интеграция с Docker API через docker.sock
+
+### 📡 Client Access
+
+- Генерация клиентских ссылок (Hysteria2, VLESS и др.)
+- Генерация QR-кодов
+
+### 🎨 UI/UX
+
+- Динамические формы (React Hook Form + Zod)
+- Light / Dark тема
+- Анимированные переходы (`next-view-transitions`)
+
+### 🚀 Infrastructure
+
+- Контейнеризация UI и sing-box через Docker Compose
+- CI/CD пайплайн через GitHub Actions + GHCR + SSH-деплой
+- Pull-based deployment (сервер не билдит, только запускает)
 
 ---
 
@@ -61,7 +103,8 @@
 - разделение по доменам (auth, inbound, config)
 - строгий public API между фичами
 - изоляция бизнес-логики
-- переиспользуемые shared-компоненты
+- shared-слой для UI, утилит и хуков
+- минимизация связности между модулями
 
 ---
 
@@ -69,7 +112,7 @@
 
 - Next.js (App Router)
 - React 18
-- TypeScript (strict)
+- TypeScript (strict mode)
 - Tailwind CSS + shadcn/ui
 - React Query
 - React Hook Form
@@ -87,14 +130,20 @@
 - sing-box (отдельный контейнер)
 - volume для хранения конфигурации
 
-Архитектура приближена к production setup.
+### Подход:
+
+- билд происходит в CI (GitHub Actions)
+- образы публикуются в GHCR
+- сервер делает только `pull + run`
+
+Это устраняет нагрузку на сервер и делает деплой предсказуемым.
 
 ---
 
 ## 🧩 Code Quality
 
-- ESLint с кастомными правилами для соблюдения feature-based архитектуры
-- Prettier + EditorConfig для консистентного форматирования
+- ESLint с архитектурными правилами (feature-based)
+- Prettier + EditorConfig
 - Husky + lint-staged (pre-commit проверки)
 
 ---
@@ -104,21 +153,3 @@
 ```bash
 docker compose up --build
 ```
-
----
-
-## 📌 Notes
-
-Проект реализован как практическое приложение с упором на:
-
-- архитектуру
-- работу с конфигурациями
-- продакшн-подход к разработке
-
----
-
-## 📎 Related
-
-- sing-box: https://github.com/SagerNet/sing-box
-
----
