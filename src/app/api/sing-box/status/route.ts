@@ -182,7 +182,8 @@ const checkDraftApplied = async (): Promise<CheckResult> => {
         ok: false,
         check: {
           code: "draft_not_applied",
-          message: "Перезагрузите sing-box",
+          message:
+            "Перезагрузите sing-box для применения изменений (черновик не совпадает с применённым конфигом)",
         },
       };
     }
