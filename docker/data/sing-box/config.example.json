@@ -1,4 +1,15 @@
 {
+  "experimental": {
+    "v2ray_api": {
+      "listen": "127.0.0.1:8080",
+      "stats": {
+        "enabled": true,
+        "inbounds": ["hy2_123451"],
+        "outbounds": ["direct"],
+        "users": ["авфаыв555а"]
+      }
+    }
+  },
   "log": {
     "disabled": false,
     "level": "info",

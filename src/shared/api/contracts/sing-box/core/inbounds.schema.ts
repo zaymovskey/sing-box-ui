@@ -7,7 +7,7 @@ const ListenPortSchema = z.number().int().min(0).max(65535);
 const SniffSchema = z.boolean().optional();
 const SniffOverrideDestinationSchema = z.boolean().optional();
 
-const BaseInboundSchema = z.object({
+export const BaseInboundSchema = z.object({
   tag: NonEmptyStringSchema.optional(),
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
@@ -107,6 +107,16 @@ export const DraftInboundSchema = z.discriminatedUnion("type", [
   DraftVlessInboundSchema,
   DraftHysteria2InboundSchema,
 ]);
+
+export const DraftInboundUserSchema = z.union([
+  VlessUserSchema,
+  Hysteria2UserSchema,
+]);
+
+export type Hysteria2User = z.infer<typeof Hysteria2UserSchema>;
+export type VlessUser = z.infer<typeof VlessUserSchema>;
+
+export type DraftInboundUser = z.infer<typeof DraftInboundUserSchema>;
 
 export type RuntimeVlessInbound = z.infer<typeof RuntimeVlessInboundSchema>;
 export type DraftVlessInbound = z.infer<typeof DraftVlessInboundSchema>;

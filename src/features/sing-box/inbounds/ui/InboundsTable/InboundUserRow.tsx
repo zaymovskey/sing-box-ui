@@ -2,11 +2,16 @@ import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
 import { useConfigQuery } from "@/features/sing-box/config-core";
-import { DraftConfigSchema, type DraftInbound } from "@/shared/api/contracts";
+import {
+  DraftConfigSchema,
+  type DraftInbound,
+  type DraftInboundUser,
+} from "@/shared/api/contracts";
 import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
 
 import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
+import { getInboundUserName } from "../../lib/get-inbound-user-name.hepler";
 import { InboundShareQrDialog } from "../dialogs/InboundShareQrDialog";
 
 export function InboundUserRow({
@@ -14,7 +19,7 @@ export function InboundUserRow({
   user,
 }: {
   inbound: DraftInbound;
-  user: unknown;
+  user: DraftInboundUser;
 }) {
   const { data: rawDraftConfig } = useConfigQuery();
 
@@ -24,13 +29,7 @@ export function InboundUserRow({
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const name =
-    typeof user === "object" &&
-    user &&
-    "name" in user &&
-    typeof user.name === "string"
-      ? user.name
-      : "Без имени";
+  const name = getInboundUserName(inbound.type, user);
 
   const link = buildInboundShareLink(
     inbound,

@@ -14,6 +14,15 @@ export {
   RuntimeVlessInboundSchema,
 } from "./inbounds.schema";
 export {
+  BaseInboundSchema,
+  type DraftInboundUser,
+  DraftInboundUserSchema,
+  type Hysteria2User,
+  Hysteria2UserSchema,
+  type VlessUser,
+  VlessUserSchema,
+} from "./inbounds.schema";
+export {
   type DirectOutbound,
   DirectOutboundSchema,
   type DraftOutbound,

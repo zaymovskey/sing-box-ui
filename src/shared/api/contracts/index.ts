@@ -12,9 +12,14 @@ export {
   DraftConfigSchema,
   type DraftInbound,
   DraftInboundSchema,
+  type Hysteria2User,
+  Hysteria2UserSchema,
   RuntimeConfigSchema,
   stripDraftFields,
+  type VlessUser,
+  VlessUserSchema,
 } from "./sing-box/core";
+export { type DraftInboundUser, DraftInboundUserSchema } from "./sing-box/core";
 export {
   type Hy2TlsCheckItem,
   type Hy2TlsCheckRequest,
@@ -33,6 +38,10 @@ export {
   type InboundsListResponse,
   InboundsListResponseSchema,
 } from "./sing-box/inbounds/list.schema";
+export {
+  type InboundUserConntectionStatusResponse,
+  InboundUserConntectionStatusResponseSchema,
+} from "./sing-box/inbounds/users/connection-status.schema";
 export {
   type VlessTlsGenerateResponse,
   VlessTlsGenerateResponseSchema,
