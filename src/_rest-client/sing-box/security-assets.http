@@ -1,0 +1,4 @@
+### GET Config
+GET {{baseUrl}}{{apiPrefix}}/sing-box/security-assets
+
+###

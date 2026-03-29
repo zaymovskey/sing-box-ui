@@ -39,6 +39,12 @@ export {
   InboundsListResponseSchema,
 } from "./sing-box/inbounds/list.schema";
 export {
+  type SecurityAsset,
+  type SecurityAssets,
+  SecurityAssetSchema,
+  SecurityAssetsSchema,
+} from "./sing-box/inbounds/security-assets/security-assets.schema";
+export {
   type InboundUserConntectionStatusResponse,
   InboundUserConntectionStatusResponseSchema,
 } from "./sing-box/inbounds/users/connection-status.schema";
