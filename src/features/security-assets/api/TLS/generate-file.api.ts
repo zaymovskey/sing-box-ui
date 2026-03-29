@@ -7,7 +7,7 @@ import { apiFetch, apiRoutes } from "@/shared/lib";
 export async function generateFileTLS(
   body: TLSFileGenerateRequest,
 ): Promise<TLSFileGenerateResponse> {
-  return apiFetch(apiRoutes.singBox.inbounds.hy2.tls.generate, {
+  return apiFetch(apiRoutes.securityAssets.tls.file.generate, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
