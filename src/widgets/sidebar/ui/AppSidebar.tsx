@@ -1,6 +1,6 @@
 "use client";
 
-import { DoorOpen, FileCog, PanelLeft, UserRound } from "lucide-react";
+import { DoorOpen, FileCog, PanelLeft, Shield, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,6 +33,11 @@ const items = [
     title: "Инбаунды",
     url: appRoutes.inbounds,
     icon: UserRound,
+  },
+  {
+    title: "TLS Reality",
+    url: appRoutes.securityAssets,
+    icon: Shield,
   },
 ];
 

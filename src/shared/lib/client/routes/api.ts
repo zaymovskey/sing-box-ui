@@ -26,4 +26,10 @@ export const apiRoutes = {
       },
     },
   },
+  securityAssets: {
+    list: "/api/sing-box/security-assets",
+    create: "/api/sing-box/security-assets",
+    delete: (id: string) => `/api/sing-box/security-assets/${id}`,
+    edit: (id: string) => `/api/sing-box/security-assets/${id}`,
+  },
 } as const;
