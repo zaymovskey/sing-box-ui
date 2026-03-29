@@ -49,10 +49,12 @@ export function CreateSecurityAssetDialog({
 
     serverToast.loading("Сохранение...", { id: "save-security-asset" });
 
+    const typeTitle = type === "tls" ? "TLS" : "Reality";
+
     try {
       await createSecurityAsset(values);
 
-      serverToast.success("Security asset создан", {
+      serverToast.success(`${typeTitle} создан`, {
         id: "save-security-asset",
         duration: 2000,
       });
@@ -62,7 +64,7 @@ export function CreateSecurityAssetDialog({
 
       onOpenChange(false);
     } catch {
-      serverToast.error("Не удалось создать security asset", {
+      serverToast.error(`Не удалось создать ${typeTitle}`, {
         id: "save-security-asset",
         duration: 2000,
       });
@@ -79,13 +81,13 @@ export function CreateSecurityAssetDialog({
       <DialogTrigger asChild>
         <Button className="w-fit">
           <PlusCircle />
-          Создать security asset
+          Создать TLS / Reality
         </Button>
       </DialogTrigger>
 
       <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="shrink-0 px-6 pt-6">
-          <DialogTitle>Создать security asset</DialogTitle>
+          <DialogTitle>Создать TLS / Reality</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">

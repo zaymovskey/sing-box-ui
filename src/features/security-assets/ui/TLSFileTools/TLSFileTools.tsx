@@ -6,7 +6,6 @@ import {
   Wand2,
 } from "lucide-react";
 
-import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import {
   Alert,
@@ -15,6 +14,8 @@ import {
   Button,
   ControlledSwitchField,
 } from "@/shared/ui";
+
+import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 
 export type Status = "idle" | "loading" | "success" | "error" | "generating";
 
@@ -29,7 +30,7 @@ export type TlsStatuses = {
   pair: TlsStatus;
 };
 
-interface Hy2TlsToolsProps {
+interface TLSFileToolsProps {
   statuses: TlsStatuses;
   onCheck: () => void;
   onGenerate: () => void;
@@ -38,14 +39,14 @@ interface Hy2TlsToolsProps {
   error?: string;
 }
 
-export function Hy2TlsTools({
+export function TLSFileTools({
   statuses,
   onCheck,
   onGenerate,
   disabled = false,
   generateError,
   error,
-}: Hy2TlsToolsProps) {
+}: TLSFileToolsProps) {
   const isChecking = [
     statuses.crt.status,
     statuses.key.status,
@@ -76,7 +77,7 @@ export function Hy2TlsTools({
       )}
 
       <p className="text-muted-foreground text-xs">
-        Проверка и генерация TLS сертификатов для inbound.
+        Проверка и генерация TLS сертификатов
       </p>
 
       {error && (
@@ -87,7 +88,7 @@ export function Hy2TlsTools({
         </div>
       )}
 
-      <ControlledSwitchField<InboundFormValues>
+      <ControlledSwitchField<SecurityAssetFormValues>
         disabled={disabled}
         label="Перезапись (overwrite)"
         name="_tlsOverwrite"

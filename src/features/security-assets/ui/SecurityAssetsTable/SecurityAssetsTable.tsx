@@ -74,7 +74,7 @@ export function SecurityAssetsTable({
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                Security assets не найдены.
+                TLS / Reality не найдены.
               </TableCell>
             </TableRow>
           )}

@@ -32,7 +32,7 @@ export function DeleteSecurityAssetDialog({
     try {
       await deleteSecurityAsset(securityAsset.id);
 
-      serverToast.success("Security asset успешно удален", {
+      serverToast.success("TLS / Reality успешно удален", {
         id: "delete-security-asset",
         duration: 2000,
       });
@@ -42,7 +42,7 @@ export function DeleteSecurityAssetDialog({
       const errorMessage =
         e instanceof Error ? e.message : "Неизвестная ошибка";
 
-      serverToast.error("Не удалось удалить security asset", {
+      serverToast.error("Не удалось удалить TLS / Reality", {
         description: errorMessage,
         id: "delete-security-asset",
         duration: 2000,
@@ -54,11 +54,11 @@ export function DeleteSecurityAssetDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0">
         <DialogHeader className="shrink-0 px-6 pt-6">
-          <DialogTitle>Подтвердите удаление security asset</DialogTitle>
+          <DialogTitle>Подтвердите удаление TLS / Reality</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          Вы уверены, что хотите удалить security asset{" "}
+          Вы уверены, что хотите удалить TLS / Reality{" "}
           <span className="font-medium">{securityAsset.name}</span>?
         </div>
 

@@ -1,12 +1,12 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
-import { VlessTlsGenerateResponseSchema } from "@/shared/api/contracts";
+import { RealityKeysPairResponseSchema } from "@/shared/api/contracts";
 import { ServerApiError, withRoute } from "@/shared/lib/server";
 
 export const POST = withRoute({
   auth: true,
-  responseSchema: VlessTlsGenerateResponseSchema,
+  responseSchema: RealityKeysPairResponseSchema,
   handler: async () => {
     try {
       return await generateRealityKeypair();

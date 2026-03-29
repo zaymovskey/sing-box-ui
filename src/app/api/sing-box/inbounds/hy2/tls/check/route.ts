@@ -6,9 +6,9 @@ import {
 import { readFile } from "node:fs/promises";
 
 import {
-  Hy2TlsCheckRequestSchema,
-  type Hy2TlsCheckResponse,
-  Hy2TlsCheckResponseSchema,
+  TLSFileCheckRequestSchema,
+  type TLSFileCheckResponse,
+  TLSFileCheckResponseSchema,
 } from "@/shared/api/contracts";
 import {
   checkFilePresence,
@@ -79,13 +79,13 @@ async function validatePair(
 
 export const POST = withRoute({
   auth: true,
-  requestSchema: Hy2TlsCheckRequestSchema,
-  responseSchema: Hy2TlsCheckResponseSchema,
+  requestSchema: TLSFileCheckRequestSchema,
+  responseSchema: TLSFileCheckResponseSchema,
   handler: async ({ body }) => {
     const certPath = resolveHostCertPath(body.certificatePath);
     const keyPath = resolveHostCertPath(body.keyPath);
 
-    const result: Hy2TlsCheckResponse = {
+    const result: TLSFileCheckResponse = {
       cert: "skipped",
       key: "skipped",
       pair: "skipped",

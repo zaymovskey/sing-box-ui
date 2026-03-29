@@ -1,12 +1,11 @@
+import { type SelectFieldItem } from "@/shared/ui";
+
 import type { SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 
-export const typeItems = [
+export const typeItems: SelectFieldItem[] = [
   { label: "TLS", value: "tls" },
   { label: "Reality", value: "reality" },
-] as const satisfies ReadonlyArray<{
-  label: string;
-  value: SecurityAssetFormValues["type"];
-}>;
+];
 
 function createMeta() {
   return {
@@ -35,7 +34,7 @@ export const defaultsByType = {
     serverName: "",
     privateKey: "",
     shortId: "",
-    publicKey: "",
+    _publicKey: "",
   }),
 } satisfies Record<
   SecurityAssetFormValues["type"],

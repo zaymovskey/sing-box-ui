@@ -12,8 +12,6 @@ import {
   UncontrolledUuidField,
 } from "@/shared/ui";
 
-import { VlessTlsToolsSection } from "./VlessTlsToolsSection";
-
 export function InboundFormVlessFields() {
   const { control, clearErrors, setValue, trigger, formState } =
     useFormContext<InboundFormValues>();
@@ -156,7 +154,6 @@ export function InboundFormVlessFields() {
           placeholder="443"
         />
       </div>
-      <VlessTlsToolsSection />
     </>
   );
 }

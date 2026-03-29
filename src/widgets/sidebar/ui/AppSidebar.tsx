@@ -35,7 +35,7 @@ const items = [
     icon: UserRound,
   },
   {
-    title: "TLS Reality",
+    title: "TLS / Reality",
     url: appRoutes.securityAssets,
     icon: Shield,
   },

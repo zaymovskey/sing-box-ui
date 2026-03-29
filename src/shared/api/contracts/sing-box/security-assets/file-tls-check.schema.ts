@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const Hy2TlsCheckRequestSchema = z.object({
+export const TLSFileCheckRequestSchema = z.object({
   certificatePath: z.string().trim().min(1),
   keyPath: z.string().trim().min(1),
 });
@@ -15,12 +15,12 @@ export const Hy2TlsCheckItemSchema = z.enum([
   "outside_allowed_dir",
 ]);
 
-export const Hy2TlsCheckResponseSchema = z.object({
+export const TLSFileCheckResponseSchema = z.object({
   cert: Hy2TlsCheckItemSchema,
   key: Hy2TlsCheckItemSchema,
   pair: Hy2TlsCheckItemSchema,
 });
 
-export type Hy2TlsCheckItem = z.infer<typeof Hy2TlsCheckItemSchema>;
-export type Hy2TlsCheckRequest = z.infer<typeof Hy2TlsCheckRequestSchema>;
-export type Hy2TlsCheckResponse = z.infer<typeof Hy2TlsCheckResponseSchema>;
+export type TLSCheckItem = z.infer<typeof Hy2TlsCheckItemSchema>;
+export type TLSFileCheckRequest = z.infer<typeof TLSFileCheckRequestSchema>;
+export type TLSFileCheckResponse = z.infer<typeof TLSFileCheckResponseSchema>;

@@ -4,19 +4,19 @@ import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button, UncontrolledTextField } from "@/shared/ui";
 
-interface VlessTlsToolsProps {
+interface RealityToolsProps {
   disabled?: boolean;
   onGenerate: () => void;
   loading?: boolean;
   error?: string;
 }
 
-export function VlessTlsTools({
+export function RealityTools({
   disabled = false,
   loading,
   onGenerate,
   error,
-}: VlessTlsToolsProps) {
+}: RealityToolsProps) {
   return (
     <div
       className={cn(

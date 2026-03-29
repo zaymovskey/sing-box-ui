@@ -2,9 +2,9 @@ import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  Hy2TlsGenerateRequestSchema,
-  type Hy2TlsGenerateResponse,
-  Hy2TlsGenerateResponseSchema,
+  TLSFileGenerateRequestSchema,
+  type TLSFileGenerateResponse,
+  TLSFileGenerateResponseSchema,
 } from "@/shared/api/contracts";
 import {
   checkFilePresence,
@@ -17,8 +17,8 @@ export const runtime = "nodejs";
 
 export const POST = withRoute({
   auth: true,
-  requestSchema: Hy2TlsGenerateRequestSchema,
-  responseSchema: Hy2TlsGenerateResponseSchema,
+  requestSchema: TLSFileGenerateRequestSchema,
+  responseSchema: TLSFileGenerateResponseSchema,
   handler: async ({ body }) => {
     const certificatePath = resolveHostCertPath(body.certificatePath);
     const keyPath = resolveHostCertPath(body.keyPath);
@@ -41,7 +41,7 @@ export const POST = withRoute({
       return {
         result: "error",
         message,
-      } satisfies Hy2TlsGenerateResponse;
+      } satisfies TLSFileGenerateResponse;
     }
 
     const isThereCert = await checkFilePresence(certificatePath);
@@ -66,7 +66,7 @@ export const POST = withRoute({
       return {
         result: "conflict",
         message,
-      } satisfies Hy2TlsGenerateResponse;
+      } satisfies TLSFileGenerateResponse;
     }
 
     try {
@@ -87,7 +87,7 @@ export const POST = withRoute({
       return {
         result: "generated",
         message: "Сертификат и ключ успешно сгенерированы.",
-      } satisfies Hy2TlsGenerateResponse;
+      } satisfies TLSFileGenerateResponse;
     } catch (error) {
       return {
         result: "error",
@@ -95,7 +95,7 @@ export const POST = withRoute({
           error instanceof Error
             ? error.message
             : "Неизвестная ошибка при генерации сертификата.",
-      } satisfies Hy2TlsGenerateResponse;
+      } satisfies TLSFileGenerateResponse;
     }
   },
 });

@@ -28,7 +28,7 @@ async function readSecurityAssetsFile(): Promise<SecurityAssets> {
 
     if (!parseResult.success) {
       throw new Error(
-        `Invalid security assets content: ${JSON.stringify(parseResult.error.issues)}`,
+        `Invalid TLS / Realitys content: ${JSON.stringify(parseResult.error.issues)}`,
       );
     }
 
@@ -71,7 +71,7 @@ export const PUT = withRoute({
     const currentAsset = securityAssets.find((asset) => asset.id === id);
 
     if (!currentAsset) {
-      throw new ServerApiError(404, "NOT_FOUND", "Security asset not found");
+      throw new ServerApiError(404, "NOT_FOUND", "TLS / Reality not found");
     }
 
     const updatedAsset: SecurityAsset = {
@@ -103,7 +103,7 @@ export const DELETE = withRoute({
     const hasAsset = securityAssets.some((asset) => asset.id === id);
 
     if (!hasAsset) {
-      throw new ServerApiError(404, "NOT_FOUND", "Security asset not found");
+      throw new ServerApiError(404, "NOT_FOUND", "TLS / Reality not found");
     }
 
     const nextSecurityAssets = securityAssets.filter(

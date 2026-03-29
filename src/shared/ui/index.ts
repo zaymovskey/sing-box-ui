@@ -29,6 +29,10 @@ export {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 export { Field, FieldGroup, FieldLegend } from "./field";
+export {
+  ControlledSelectField,
+  type SelectFieldItem,
+} from "./form/controlled/ControlledSelectField";
 export { ControlledSwitchField } from "./form/controlled/ControlledSwitchField";
 export {
   FormControl,

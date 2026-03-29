@@ -4,20 +4,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Separator,
-} from "@/shared/ui";
+import { ControlledSelectField, Separator } from "@/shared/ui";
 
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
@@ -45,44 +32,12 @@ export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
   return (
     <FormProvider {...form}>
       <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
+        <ControlledSelectField
+          items={typeItems}
+          label="Тип"
           name="type"
-          render={({ field: typeField }) => (
-            <FormItem className="gap-2">
-              <FormLabel>Тип</FormLabel>
-
-              <FormControl>
-                <Select
-                  value={typeField.value}
-                  onValueChange={(v) => {
-                    form.clearErrors("root");
-                    typeField.onChange(v);
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Выбери тип" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      {typeItems.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-
-              <div className="min-h-5">
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
+          placeholder="Выбери тип"
         />
-
         <InboundFormBaseFields />
 
         <div className="space-y-4">

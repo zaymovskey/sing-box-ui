@@ -76,6 +76,6 @@ export function mapSecurityAssetToFormValues(
     serverName: asset.serverName,
     privateKey: asset.privateKey,
     shortId: asset.shortId,
-    publicKey: asset.publicKey ?? "",
+    _publicKey: asset.publicKey ?? "",
   };
 }

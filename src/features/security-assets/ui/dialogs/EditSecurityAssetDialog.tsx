@@ -65,7 +65,7 @@ export function EditSecurityAssetDialog({
     try {
       await editSecurityAsset(securityAsset.id, values);
 
-      serverToast.success("Security asset успешно обновлён", {
+      serverToast.success("TLS / Reality успешно обновлён", {
         id: "edit-security-asset",
         duration: 2000,
       });
@@ -77,7 +77,7 @@ export function EditSecurityAssetDialog({
 
       if (msg === SECURITY_ASSET_INVALID_AFTER_MAPPING) {
         serverToast.error(
-          "Security asset получился невалидным после маппинга.",
+          "TLS / Reality получился невалидным после маппинга.",
           {
             id: "edit-security-asset",
             duration: 2000,
@@ -86,7 +86,7 @@ export function EditSecurityAssetDialog({
         return;
       }
 
-      serverToast.error("Не удалось обновить security asset", {
+      serverToast.error("Не удалось обновить TLS / Reality", {
         description: `Message: ${msg}`,
         id: "edit-security-asset",
         duration: 2000,
@@ -109,7 +109,7 @@ export function EditSecurityAssetDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="shrink-0 px-6 pt-6">
-          <DialogTitle>Редактировать security asset</DialogTitle>
+          <DialogTitle>Редактировать TLS / Reality</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">

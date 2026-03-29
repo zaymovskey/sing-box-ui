@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const VlessTlsGenerateResponseSchema = z.object({
+export const RealityKeysPairResponseSchema = z.object({
   privateKey: z.string().min(1),
   publicKey: z.string().min(1),
 });
 
-export type VlessTlsGenerateResponse = z.infer<
-  typeof VlessTlsGenerateResponseSchema
+export type RealityKeysPairResponse = z.infer<
+  typeof RealityKeysPairResponseSchema
 >;

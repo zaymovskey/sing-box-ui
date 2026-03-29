@@ -15,12 +15,15 @@ const TlsFileSourceFormSchema = z.object({
   sourceType: z.literal("file"),
   certificatePath: z.string().min(1, "Certificate path is required"),
   keyPath: z.string().min(1, "Key path is required"),
+  _tlsChecked: z.boolean().optional(),
+  _is_selfsigned_cert: z.boolean().optional(),
 });
 
 const TlsFormSchema = SecurityAssetMetaFormSchema.extend({
   type: z.literal("tls"),
   name: z.string().min(1, "Name is required"),
   serverName: z.string().optional(),
+  _tlsOverwrite: z.boolean().optional(),
   source: z.discriminatedUnion("sourceType", [
     TlsInlineSourceFormSchema,
     TlsFileSourceFormSchema,
@@ -32,6 +35,7 @@ const RealityFormSchema = SecurityAssetMetaFormSchema.extend({
   name: z.string().min(1, "Name is required"),
   serverName: z.string().min(1, "Server name is required"),
   privateKey: z.string().min(1, "Private key is required"),
+  _publicKey: z.string().min(1, "Public key is required"),
   shortId: z.string().min(1, "Short ID is required"),
   publicKey: z.string().optional(),
 });

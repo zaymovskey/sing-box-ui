@@ -3,17 +3,13 @@ import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { clientEnv } from "@/shared/lib";
 import {
   Button,
   ControlledSwitchField,
   Separator,
   UncontrolledNumberField,
-  UncontrolledPathField,
   UncontrolledTextField,
 } from "@/shared/ui";
-
-import { Hy2TlsToolsSection } from "./Hy2TlsToolsSection";
 
 export function InboundFormHy2Fields() {
   const { control, clearErrors, setValue, trigger, formState } =
@@ -127,35 +123,6 @@ export function InboundFormHy2Fields() {
       <ControlledSwitchField<InboundFormValues>
         label="TLS - Transport Layer Security"
         name="tls_enabled"
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          disabled={!tlsEnabled}
-          label="TLS server name"
-          name="tls_server_name"
-          placeholder="www.cloudflare.com"
-        />
-
-        <UncontrolledPathField<InboundFormValues>
-          disabled={!tlsEnabled}
-          label="Certificate path (.crt)"
-          name="certificate_path"
-          path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-          placeholder="hy2.crt"
-        />
-      </div>
-      <UncontrolledPathField<InboundFormValues>
-        disabled={!tlsEnabled}
-        label="Key path (.key)"
-        name="key_path"
-        path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-        placeholder="hy2.key"
-      />
-      <Hy2TlsToolsSection />
-      <ControlledSwitchField<InboundFormValues>
-        disabled={!tlsEnabled}
-        label="Разрешить самоподписанный сертификат"
-        name="_is_selfsigned_cert"
       />
     </>
   );

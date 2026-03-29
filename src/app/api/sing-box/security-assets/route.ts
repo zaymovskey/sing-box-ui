@@ -21,7 +21,7 @@ async function readSecurityAssetsFile(): Promise<SecurityAssets> {
 
   if (!parseResult.success) {
     throw new Error(
-      `Invalid security assets content: ${JSON.stringify(parseResult.error.issues)}`,
+      `Invalid TLS / Realitys content: ${JSON.stringify(parseResult.error.issues)}`,
     );
   }
 

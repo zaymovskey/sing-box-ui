@@ -106,7 +106,7 @@ export function SecurityAssetsTableScreen() {
           <div className="flex items-center justify-between gap-2">
             <MultiSelect
               options={securityAssetTypeOptions}
-              placeholder="Тип security asset"
+              placeholder="Тип"
               value={selectedTypes}
               onValueChange={(values) =>
                 setGetParam({

@@ -1,12 +1,10 @@
 import type { InboundFormValues } from "@/features/sing-box/config-core";
+import { type SelectFieldItem } from "@/shared/ui";
 
-export const typeItems = [
+export const typeItems: SelectFieldItem[] = [
   { label: "VLESS", value: "vless" },
   { label: "Hysteria2", value: "hysteria2" },
-] as const satisfies ReadonlyArray<{
-  label: string;
-  value: InboundFormValues["type"];
-}>;
+];
 
 export const defaultsByType = {
   vless: {

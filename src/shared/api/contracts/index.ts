@@ -21,37 +21,37 @@ export {
 } from "./sing-box/core";
 export { type DraftInboundUser, DraftInboundUserSchema } from "./sing-box/core";
 export {
-  type Hy2TlsCheckItem,
-  type Hy2TlsCheckRequest,
-  Hy2TlsCheckRequestSchema,
-  type Hy2TlsCheckResponse,
-  Hy2TlsCheckResponseSchema,
-} from "./sing-box/inbounds/hy2/tls/check.schema";
-export {
-  type Hy2TlsGenerateRequest,
-  Hy2TlsGenerateRequestSchema,
-  type Hy2TlsGenerateResponse,
-  Hy2TlsGenerateResponseSchema,
-  Hy2TlsGenerateResultSchema,
-} from "./sing-box/inbounds/hy2/tls/generate.schema";
-export {
   type InboundsListResponse,
   InboundsListResponseSchema,
 } from "./sing-box/inbounds/list.schema";
-export {
-  type SecurityAsset,
-  type SecurityAssets,
-  SecurityAssetSchema,
-  SecurityAssetsSchema,
-} from "./sing-box/inbounds/security-assets/security-assets.schema";
 export {
   type InboundUserConntectionStatusResponse,
   InboundUserConntectionStatusResponseSchema,
 } from "./sing-box/inbounds/users/connection-status.schema";
 export {
-  type VlessTlsGenerateResponse,
-  VlessTlsGenerateResponseSchema,
+  type RealityKeysPairResponse,
+  RealityKeysPairResponseSchema,
 } from "./sing-box/inbounds/vless/tls/generate.schema";
+export {
+  type TLSCheckItem,
+  type TLSFileCheckRequest,
+  TLSFileCheckRequestSchema,
+  type TLSFileCheckResponse,
+  TLSFileCheckResponseSchema,
+} from "./sing-box/security-assets/file-tls-check.schema";
+export {
+  type TLSFileGenerateRequest,
+  TLSFileGenerateRequestSchema,
+  type TLSFileGenerateResponse,
+  TLSFileGenerateResponseSchema,
+  TLSGenerateResultSchema,
+} from "./sing-box/security-assets/file-tls-generate.schema";
+export {
+  type SecurityAsset,
+  type SecurityAssets,
+  SecurityAssetSchema,
+  SecurityAssetsSchema,
+} from "./sing-box/security-assets/security-assets.schema";
 export {
   type SingBoxStatusCheck,
   type SingBoxStatusCheckCode,

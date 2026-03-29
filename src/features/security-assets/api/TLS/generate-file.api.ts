@@ -4,7 +4,7 @@ import {
 } from "@/shared/api/contracts";
 import { apiFetch, apiRoutes } from "@/shared/lib";
 
-export async function generateTLS(
+export async function generateFileTLS(
   body: TLSFileGenerateRequest,
 ): Promise<TLSFileGenerateResponse> {
   return apiFetch(apiRoutes.singBox.inbounds.hy2.tls.generate, {

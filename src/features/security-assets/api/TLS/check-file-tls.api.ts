@@ -4,7 +4,7 @@ import {
 } from "@/shared/api/contracts";
 import { apiFetch, apiRoutes } from "@/shared/lib";
 
-export async function checkTLS(
+export async function checkFileTLS(
   body: TLSFileCheckRequest,
 ): Promise<TLSFileCheckResponse> {
   return apiFetch(apiRoutes.singBox.inbounds.hy2.tls.check, {
