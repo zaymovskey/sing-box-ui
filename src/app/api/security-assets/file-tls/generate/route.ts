@@ -8,7 +8,7 @@ import {
 } from "@/shared/api/contracts";
 import {
   checkFilePresence,
-  generateSelfSignedCert,
+  generateSelfSignedFilesCert,
   resolveHostCertPath,
   withRoute,
 } from "@/shared/lib/server";
@@ -78,7 +78,7 @@ export const POST = withRoute({
         await rm(keyPath, { force: true });
       }
 
-      await generateSelfSignedCert({
+      await generateSelfSignedFilesCert({
         certificatePath,
         keyPath,
         commonName,

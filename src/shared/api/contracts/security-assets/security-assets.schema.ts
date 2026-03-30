@@ -33,7 +33,7 @@ export const RealitySecurityAssetSchema = SecurityAssetBaseSchema.extend({
   serverName: z.string().min(1),
   privateKey: z.string().min(1),
   shortId: z.string().min(1),
-  publicKey: z.string().min(1).optional(),
+  _publicKey: z.string().min(1).optional(),
 });
 
 export const SecurityAssetSchema = z.discriminatedUnion("type", [

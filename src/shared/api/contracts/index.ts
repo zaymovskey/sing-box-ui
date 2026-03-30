@@ -8,6 +8,36 @@ export {
 } from "./common/api-error.schema";
 export { type OkResponse, OkResponseSchema } from "./common/ok.schema";
 export {
+  type TLSCheckItem,
+  type TLSFileCheckRequest,
+  TLSFileCheckRequestSchema,
+  type TLSFileCheckResponse,
+  TLSFileCheckResponseSchema,
+} from "./security-assets/file-tls-check.schema";
+export {
+  type TLSFileGenerateRequest,
+  TLSFileGenerateRequestSchema,
+  type TLSFileGenerateResponse,
+  TLSFileGenerateResponseSchema,
+  TLSGenerateResultSchema,
+} from "./security-assets/file-tls-generate.schema";
+export {
+  type TLSInlineGenerateRequest,
+  TLSInlineGenerateRequestSchema,
+  type TLSInlineGenerateResponse,
+  TLSInlineGenerateResponseSchema,
+} from "./security-assets/inline-tls-generate.schema";
+export {
+  type RealityKeysPairResponse,
+  RealityKeysPairResponseSchema,
+} from "./security-assets/reality-keys-pair-generate.schema";
+export {
+  type SecurityAsset,
+  type SecurityAssets,
+  SecurityAssetSchema,
+  SecurityAssetsSchema,
+} from "./security-assets/security-assets.schema";
+export {
   type DraftConfig,
   DraftConfigSchema,
   type DraftInbound,
@@ -28,30 +58,6 @@ export {
   type InboundUserConntectionStatusResponse,
   InboundUserConntectionStatusResponseSchema,
 } from "./sing-box/inbounds/users/connection-status.schema";
-export {
-  type RealityKeysPairResponse,
-  RealityKeysPairResponseSchema,
-} from "./sing-box/inbounds/vless/tls/generate.schema";
-export {
-  type TLSCheckItem,
-  type TLSFileCheckRequest,
-  TLSFileCheckRequestSchema,
-  type TLSFileCheckResponse,
-  TLSFileCheckResponseSchema,
-} from "./sing-box/security-assets/file-tls-check.schema";
-export {
-  type TLSFileGenerateRequest,
-  TLSFileGenerateRequestSchema,
-  type TLSFileGenerateResponse,
-  TLSFileGenerateResponseSchema,
-  TLSGenerateResultSchema,
-} from "./sing-box/security-assets/file-tls-generate.schema";
-export {
-  type SecurityAsset,
-  type SecurityAssets,
-  SecurityAssetSchema,
-  SecurityAssetsSchema,
-} from "./sing-box/security-assets/security-assets.schema";
 export {
   type SingBoxStatusCheck,
   type SingBoxStatusCheckCode,

@@ -15,7 +15,7 @@ import {
   ControlledSwitchField,
 } from "@/shared/ui";
 
-import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
+import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
 
 export type Status = "idle" | "loading" | "success" | "error" | "generating";
 

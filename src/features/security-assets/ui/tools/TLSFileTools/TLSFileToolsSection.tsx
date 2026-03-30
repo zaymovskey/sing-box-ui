@@ -6,10 +6,10 @@ import { type TLSCheckItem } from "@/shared/api/contracts";
 import { clientEnv } from "@/shared/lib";
 import { clientToast, UncontrolledPathField } from "@/shared/ui";
 
-import { useFileTLSCheckMutation } from "../../model/mutations/TLS/file-tls-check.mutation";
-import { useFileTLSGenerateMutation } from "../../model/mutations/TLS/file-tls-generate.mutation";
-import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
-import { useSecurityAssetFormContext } from "../../model/security-assets-form-ui.context";
+import { useFileTLSCheckMutation } from "../../../model/mutations/TLS/file-tls-check.mutation";
+import { useFileTLSGenerateMutation } from "../../../model/mutations/TLS/file-tls-generate.mutation";
+import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
+import { useSecurityAssetFormContext } from "../../../model/security-assets-form-ui.context";
 import { TLSFileTools, type TlsStatuses } from "./TLSFileTools";
 
 const messageByCheckResultMap = {

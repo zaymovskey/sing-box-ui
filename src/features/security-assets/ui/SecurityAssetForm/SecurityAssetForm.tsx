@@ -10,8 +10,9 @@ import {
 } from "@/shared/ui";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
-import { RealityToolsSection } from "../RealityTools/RealityToolsSection";
-import { TLSFileToolsSection } from "../TLSFileTools/TLSFileToolsSection";
+import { RealityToolsSection } from "../tools/RealityTools/RealityToolsSection";
+import { TLSFileToolsSection } from "../tools/TLSFileTools/TLSFileToolsSection";
+import { TLSTextToolsSection } from "../tools/TLSTextTools/TLSTextToolsSection";
 import { defaultsByType, typeItems } from "./SecurityAssetForm.constants";
 
 type SecurityAssetFormProps = {
@@ -78,7 +79,7 @@ export function SecurityAssetForm({
               placeholder="Выбери источник сертификата"
             />
 
-            {sourceType === "inline" && <div>Два инпута</div>}
+            {sourceType === "inline" && <TLSTextToolsSection />}
 
             {sourceType === "file" && <TLSFileToolsSection />}
           </>

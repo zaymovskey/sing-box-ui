@@ -2,11 +2,11 @@ import { useFormContext } from "react-hook-form";
 
 import { clientToast } from "@/shared/ui";
 
-import { useGenerateRealityKeysPairMutation } from "../../model/mutations/reality-key-pair-generate.mutation";
-import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
-import { RealityTools } from "./RealityTools";
+import { useGenerateRealityKeysPairMutation } from "../../../model/mutations/reality-key-pair-generate.mutation";
+import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
+import { TLSTextTools } from "./TLSTextTools";
 
-export function RealityToolsSection() {
+export function TLSTextToolsSection() {
   const { setValue, clearErrors, getFieldState, formState } =
     useFormContext<SecurityAssetFormValues>();
 
@@ -31,7 +31,7 @@ export function RealityToolsSection() {
 
   return (
     <div className="mb-4">
-      <RealityTools
+      <TLSTextTools
         error={error?.message}
         loading={isPending}
         onGenerate={handleGenerate}

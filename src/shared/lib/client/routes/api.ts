@@ -18,17 +18,16 @@ export const apiRoutes = {
   securityAssets: {
     list: "/api/sing-box/security-assets",
     create: "/api/sing-box/security-assets",
-    delete: (id: string) => `/api/sing-box/security-assets/${id}`,
-    edit: (id: string) => `/api/sing-box/security-assets/${id}`,
+    delete: (id: string) => `/api/security-assets/${id}`,
+    edit: (id: string) => `/api/security-assets/${id}`,
     tls: {
       file: {
-        check: "/api/sing-box/security-assets/file-tls/check",
-        generate: "/api/sing-box/security-assets/file-tls/generate",
+        check: "/api/security-assets/file-tls/check",
+        generate: "/api/security-assets/file-tls/generate",
       },
     },
     reality: {
-      keysPairGenerate:
-        "/api/sing-box/security-assets/reality/keys-pair-generate",
+      keysPairGenerate: "/api/security-assets/reality/keys-pair-generate",
     },
   },
 } as const;

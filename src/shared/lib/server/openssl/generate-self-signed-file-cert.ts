@@ -1,18 +1,18 @@
 import { spawn } from "node:child_process";
 
-type GenerateSelfSignedCertParams = {
+type generateSelfSignedFilesCertParams = {
   certificatePath: string;
   keyPath: string;
   commonName: string;
   days?: number;
 };
 
-export function generateSelfSignedCert({
+export function generateSelfSignedFilesCert({
   certificatePath,
   keyPath,
   commonName,
   days = 3650,
-}: GenerateSelfSignedCertParams): Promise<void> {
+}: generateSelfSignedFilesCertParams): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn("openssl", [
       "req",

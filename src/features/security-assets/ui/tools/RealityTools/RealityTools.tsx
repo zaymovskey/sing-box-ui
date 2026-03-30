@@ -1,8 +1,9 @@
 import { Wand2 } from "lucide-react";
 
-import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button, UncontrolledTextField } from "@/shared/ui";
+
+import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
 
 interface RealityToolsProps {
   disabled?: boolean;
@@ -24,18 +25,18 @@ export function RealityTools({
         disabled && "opacity-70",
       )}
     >
-      <UncontrolledTextField<InboundFormValues>
+      <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
         errorMessage={false}
         label="Reality private key"
-        name="reality_private_key"
+        name="privateKey"
         placeholder="private_key"
       />
-      <UncontrolledTextField<InboundFormValues>
+      <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
         errorMessage={false}
         label="Reality public key"
-        name="_reality_public_key"
+        name="_publicKey"
         placeholder="public_key"
       />
       {error && (
