@@ -33,9 +33,10 @@ function SubsectionTitle({
 export function InboundFormHy2Fields() {
   const { control, trigger, formState } = useFormContext<InboundFormValues>();
 
-  const { data: securityAssetsList } = useSecurityAssetsListQuery({
-    type: "tls",
-  });
+  const { data: securityAssetsList, isLoading: securityAssetsListLoading } =
+    useSecurityAssetsListQuery({
+      type: "tls",
+    });
 
   const securityAssetsOptions: SelectFieldItem[] =
     securityAssetsList?.map((asset) => ({
@@ -155,6 +156,7 @@ export function InboundFormHy2Fields() {
         <ControlledSelectField<InboundFormValues>
           items={securityAssetsOptions}
           label="TLS asset"
+          loading={securityAssetsListLoading}
           name="_security_asset_id"
           placeholder="Выберите TLS asset"
         />

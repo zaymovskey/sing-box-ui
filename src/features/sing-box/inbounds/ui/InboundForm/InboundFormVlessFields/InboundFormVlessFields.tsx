@@ -34,9 +34,10 @@ function SubsectionTitle({
 export function InboundFormVlessFields() {
   const { control, trigger, formState } = useFormContext<InboundFormValues>();
 
-  const { data: securityAssetsList } = useSecurityAssetsListQuery({
-    type: "reality",
-  });
+  const { data: securityAssetsList, isLoading: securityAssetsListLoading } =
+    useSecurityAssetsListQuery({
+      type: "reality",
+    });
 
   const securityAssetsOptions: SelectFieldItem[] = securityAssetsList
     ? securityAssetsList.map((asset) => ({
@@ -152,6 +153,7 @@ export function InboundFormVlessFields() {
           disabled={!tlsEnabled}
           items={securityAssetsOptions}
           label="Reality asset"
+          loading={securityAssetsListLoading}
           name="_security_asset_id"
           placeholder="Выберите Reality asset"
         />

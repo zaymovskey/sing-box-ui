@@ -25,6 +25,7 @@ type SelectFieldProps<T extends FieldValues> = {
   disabled?: boolean;
   items: SelectFieldItem[];
   showErrorMessage?: boolean;
+  loading?: boolean;
 };
 
 export function ControlledSelectField<T extends FieldValues>({
@@ -34,6 +35,7 @@ export function ControlledSelectField<T extends FieldValues>({
   disabled = false,
   items,
   showErrorMessage = true,
+  loading = false,
 }: SelectFieldProps<T>) {
   const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
@@ -68,7 +70,9 @@ export function ControlledSelectField<T extends FieldValues>({
                   "w-full",
                   error && "border-destructive focus-visible:ring-destructive",
                 )}
+                disabled={disabled || loading}
                 id={inputId}
+                loading={loading}
               >
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
