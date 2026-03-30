@@ -73,6 +73,7 @@ export function useInboundsColumns() {
           >
             <Pencil className="size-4" />
           </Button>
+
           <Button
             variant="ghost"
             onClick={() => {
@@ -96,29 +97,11 @@ export function useInboundsColumns() {
     {
       accessorKey: "type",
       header: "Тип (Type)",
-      cell: ({ row }) => {
-        const inbound = row.original.inbound;
-        const badges: string[] = [];
-        badges.push(row.original.type!);
-        if (inbound.type === "vless") {
-          if (inbound.tls?.reality?.enabled) {
-            badges.push("reality");
-          }
-        }
-        return (
-          <>
-            {badges.map((badge, index) => (
-              <Badge
-                key={index}
-                className="mr-1 rounded-full px-2 py-0 text-xs"
-                variant="outline"
-              >
-                {badge}
-              </Badge>
-            ))}
-          </>
-        );
-      },
+      cell: ({ row }) => (
+        <Badge className="rounded-full px-2 py-0 text-xs" variant="outline">
+          {row.original.type ?? "—"}
+        </Badge>
+      ),
     },
     {
       id: "listen",

@@ -26,42 +26,14 @@ export const Hysteria2UserSchema = z.object({
   password: NonEmptyStringSchema,
 });
 
-export const VlessRealityHandshakeSchema = z.object({
-  server: NonEmptyStringSchema,
-  server_port: ListenPortSchema.optional(),
-});
-
-export const RuntimeVlessRealitySchema = z.object({
-  enabled: z.boolean().optional(),
-  handshake: VlessRealityHandshakeSchema.optional(),
-  private_key: z.string().optional(),
-  short_id: z.union([z.string(), z.array(z.string())]).optional(),
-});
-
-export const DraftVlessRealitySchema = RuntimeVlessRealitySchema.extend({
-  _reality_public_key: z.string().optional(),
-});
-
-export const RuntimeVlessTlsSchema = z.object({
-  enabled: z.boolean().optional(),
-  server_name: z.string().optional(),
-  reality: RuntimeVlessRealitySchema.optional(),
-});
-
-export const DraftVlessTlsSchema = RuntimeVlessTlsSchema.extend({
-  reality: DraftVlessRealitySchema.optional(),
-});
-
 export const RuntimeVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).optional(),
-  tls: RuntimeVlessTlsSchema.optional(),
 });
 
 export const DraftVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).optional(),
-  tls: DraftVlessTlsSchema.optional(),
 });
 
 export const Hysteria2ObfsSchema = z.object({
@@ -69,23 +41,11 @@ export const Hysteria2ObfsSchema = z.object({
   password: z.string().optional(),
 });
 
-export const RuntimeHysteria2TlsSchema = z.object({
-  enabled: z.boolean().optional(),
-  server_name: z.string().optional(),
-  certificate_path: z.string().optional(),
-  key_path: z.string().optional(),
-});
-
-export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema.extend({
-  _is_selfsigned_cert: z.boolean().optional(),
-});
-
 export const RuntimeHysteria2InboundSchema = BaseInboundSchema.extend({
   type: z.literal("hysteria2"),
   up_mbps: z.number().nonnegative().optional(),
   down_mbps: z.number().nonnegative().optional(),
   users: z.array(Hysteria2UserSchema).optional(),
-  tls: RuntimeHysteria2TlsSchema.optional(),
   obfs: Hysteria2ObfsSchema.optional(),
 });
 
@@ -94,7 +54,6 @@ export const DraftHysteria2InboundSchema = BaseInboundSchema.extend({
   up_mbps: z.number().nonnegative().optional(),
   down_mbps: z.number().nonnegative().optional(),
   users: z.array(Hysteria2UserSchema).optional(),
-  tls: DraftHysteria2TlsSchema.optional(),
   obfs: Hysteria2ObfsSchema.optional(),
 });
 
