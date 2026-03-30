@@ -1,23 +1,48 @@
-import { Trash2 } from "lucide-react";
+import { CircleHelp, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { clientEnv } from "@/shared/lib";
 import {
   Button,
-  ControlledSwitchField,
+  ControlledSelectField,
+  type SelectFieldItem,
   Separator,
   UncontrolledNumberField,
-  UncontrolledPathField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
-import { Hy2TlsToolsSection } from "./Hy2TlsToolsSection";
+function SubsectionTitle({
+  title,
+  description,
+}: {
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <h4 className="text-sm font-medium">{title}</h4>
+      {description ? (
+        <p className="text-muted-foreground text-sm">{description}</p>
+      ) : null}
+    </div>
+  );
+}
 
 export function InboundFormHy2Fields() {
-  const { control, clearErrors, setValue, trigger, formState } =
-    useFormContext<InboundFormValues>();
+  const { control, trigger, formState } = useFormContext<InboundFormValues>();
+
+  const { data: securityAssetsList, isLoading: securityAssetsListLoading } =
+    useSecurityAssetsListQuery({
+      type: "tls",
+    });
+
+  const securityAssetsOptions: SelectFieldItem[] =
+    securityAssetsList?.map((asset) => ({
+      value: asset.id,
+      label: asset.name,
+    })) ?? [];
 
   const {
     fields: users,
@@ -27,28 +52,6 @@ export function InboundFormHy2Fields() {
     control,
     name: "users",
   });
-
-  const tlsEnabled = useWatch({
-    control,
-    name: "tls_enabled",
-  });
-
-  useEffect(() => {
-    if (!tlsEnabled) {
-      setValue("_tlsChecked", false, {
-        shouldDirty: false,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-
-      clearErrors([
-        "tls_server_name",
-        "certificate_path",
-        "key_path",
-        "_tlsChecked",
-      ]);
-    }
-  }, [tlsEnabled, setValue, clearErrors]);
 
   const watchedUsers = useWatch({
     control,
@@ -64,99 +67,125 @@ export function InboundFormHy2Fields() {
   }, [watchedUsers, formState.submitCount, trigger]);
 
   return (
-    <>
+    <div className="space-y-6">
       <div className="space-y-4">
-        {users.map((user, index) => (
-          <div key={user.id} className="space-y-4 rounded-lg border p-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium">Пользователь {index + 1}</h4>
+        <SubsectionTitle
+          description="Добавьте пользователей, которые смогут подключаться к этому inbound."
+          title="Пользователи"
+        />
 
-              <Button
-                disabled={users.length === 1}
-                size="icon"
-                type="button"
-                variant="outline"
-                onClick={() => remove(index)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
+        <div className="space-y-4">
+          {users.map((user, index) => (
+            <div key={user.id} className="space-y-4 rounded-lg border p-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium">Пользователь {index + 1}</h4>
+
+                <Button
+                  disabled={users.length === 1}
+                  size="icon"
+                  type="button"
+                  variant="outline"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <UncontrolledTextField<InboundFormValues>
+                  label="User name"
+                  name={`users.${index}.name`}
+                  placeholder="user"
+                />
+
+                <UncontrolledTextField<InboundFormValues>
+                  label="Password"
+                  name={`users.${index}.password`}
+                  placeholder="password"
+                />
+              </div>
             </div>
+          ))}
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <UncontrolledTextField<InboundFormValues>
-                label="User name"
-                name={`users.${index}.name`}
-                placeholder="user"
-              />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              append({
+                name: "",
+                password: "",
+              })
+            }
+          >
+            Добавить пользователя
+          </Button>
+        </div>
+      </div>
 
-              <UncontrolledTextField<InboundFormValues>
-                label="Password"
-                name={`users.${index}.password`}
-                placeholder="password"
-              />
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Укажите лимиты скорости для входящего соединения."
+          title="Скорость"
+        />
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <UncontrolledNumberField<InboundFormValues>
+            label="Up (Mbps)"
+            name="up_mbps"
+            placeholder="100"
+          />
+
+          <UncontrolledNumberField<InboundFormValues>
+            label="Down (Mbps)"
+            name="down_mbps"
+            placeholder="100"
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Для Hysteria2 необходимо выбрать заранее созданный TLS asset."
+          title="Безопасность"
+        />
+
+        <ControlledSelectField<InboundFormValues>
+          items={securityAssetsOptions}
+          label="TLS asset"
+          loading={securityAssetsListLoading}
+          name="_security_asset_id"
+          placeholder="Выберите TLS asset"
+        />
+
+        <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+          <div className="flex items-start gap-2">
+            <CircleHelp className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+
+            <div className="space-y-1">
+              <p className="text-foreground font-medium">Как это работает</p>
+
+              <p className="text-muted-foreground">
+                TLS-конфигурация для Hysteria2 хранится отдельно как security
+                asset. Здесь вы только выбираете уже созданный объект
+                безопасности для этого inbound.
+              </p>
+
+              <a
+                className="text-primary inline-flex w-fit underline underline-offset-4"
+                href="/security-assets"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Открыть страницу security assets
+              </a>
             </div>
           </div>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() =>
-            append({
-              name: "",
-              password: "",
-            })
-          }
-        >
-          Добавить пользователя
-        </Button>
+        </div>
       </div>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledNumberField<InboundFormValues>
-          label="Up (Mbps)"
-          name="up_mbps"
-          placeholder="100"
-        />
-
-        <UncontrolledNumberField<InboundFormValues>
-          label="Down (Mbps)"
-          name="down_mbps"
-          placeholder="100"
-        />
-      </div>
-      <Separator />
-      <ControlledSwitchField<InboundFormValues>
-        label="TLS - Transport Layer Security"
-        name="tls_enabled"
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          disabled={!tlsEnabled}
-          label="TLS server name"
-          name="tls_server_name"
-          placeholder="www.cloudflare.com"
-        />
-
-        <UncontrolledPathField<InboundFormValues>
-          disabled={!tlsEnabled}
-          label="Certificate path (.crt)"
-          name="certificate_path"
-          path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-          placeholder="hy2.crt"
-        />
-      </div>
-      <UncontrolledPathField<InboundFormValues>
-        disabled={!tlsEnabled}
-        label="Key path (.key)"
-        name="key_path"
-        path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-        placeholder="hy2.key"
-      />
-      <Hy2TlsToolsSection />
-      <ControlledSwitchField<InboundFormValues>
-        disabled={!tlsEnabled}
-        label="Разрешить самоподписанный сертификат"
-        name="_is_selfsigned_cert"
-      />
-    </>
+    </div>
   );
 }

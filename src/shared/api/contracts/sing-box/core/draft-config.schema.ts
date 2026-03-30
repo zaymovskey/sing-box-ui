@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { DraftExperimentalSchema } from "./experimental.schema";
 import { DraftInboundSchema } from "./inbounds.schema";
 import { DraftOutboundSchema } from "./outbounds.schema";
 
@@ -32,6 +33,7 @@ export const DraftConfigSchema = z.object({
   inbounds: z.array(DraftInboundSchema).optional(),
   outbounds: z.array(DraftOutboundSchema).optional(),
   route: DraftRouteSchema,
+  experimental: DraftExperimentalSchema,
 });
 
 export type DraftConfig = z.infer<typeof DraftConfigSchema>;

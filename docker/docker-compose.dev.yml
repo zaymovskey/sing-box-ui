@@ -1,6 +1,6 @@
 services:
   sing-box:
-    image: ghcr.io/sagernet/sing-box:v1.12.21
+    image: bi4nbn/sing-box:v1.11.15
     container_name: sing-box
     restart: unless-stopped
     command: ["run", "-c", "/etc/sing-box/config.json"]
@@ -10,6 +10,8 @@ services:
     ports:
       - "18443:18443/tcp"
       - "18443:18443/udp"
+      # Для V2Ray API
+      - "8080:8080"
 
   ui:
     build:

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { DraftExperimentalSchema } from "./experimental.schema";
 import { RuntimeInboundSchema } from "./inbounds.schema";
 import { RuntimeOutboundSchema } from "./outbounds.schema";
 
@@ -32,6 +33,7 @@ export const RuntimeConfigSchema = z.object({
   inbounds: z.array(RuntimeInboundSchema).optional(),
   outbounds: z.array(RuntimeOutboundSchema).optional(),
   route: RouteSchema,
+  experimental: DraftExperimentalSchema,
 });
 
 export type RuntimeConfig = z.infer<typeof RuntimeConfigSchema>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { DoorOpen, FileCog, PanelLeft, UserRound } from "lucide-react";
+import { DoorOpen, FileCog, PanelLeft, Shield, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,6 +34,11 @@ const items = [
     url: appRoutes.inbounds,
     icon: UserRound,
   },
+  {
+    title: "TLS / Reality",
+    url: appRoutes.securityAssets,
+    icon: Shield,
+  },
 ];
 
 export function AppSidebar() {
@@ -48,6 +53,24 @@ export function AppSidebar() {
   }, [pathname]);
 
   const activePath = pendingPath ?? pathname;
+
+  const onItemClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    url: string,
+  ) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+
+    e.preventDefault();
+
+    if (url === pathname) {
+      return;
+    }
+
+    setPendingPath(url);
+    onClickLink(url);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -75,12 +98,7 @@ export function AppSidebar() {
                     asChild
                     isActive={activePath === item.url}
                     onClick={(e) => {
-                      e.preventDefault();
-                      if (item.url === pathname) {
-                        return;
-                      }
-                      setPendingPath(item.url);
-                      onClickLink(item.url);
+                      onItemClick(e, item.url);
                     }}
                   >
                     <Link href={item.url}>

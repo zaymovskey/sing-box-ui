@@ -10,17 +10,9 @@ const VlessUserSchema = z.object({
 
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
-
-  tls_enabled: z.boolean(),
-  reality_enabled: z.boolean(),
-
-  tls_server_name: z.string().trim().optional(),
-  reality_handshake_server: z.string().trim().optional(),
-  reality_handshake_server_port: z.number().int().min(1).max(65535).optional(),
-  reality_private_key: z.string().trim().optional(),
-  _reality_public_key: z.string().trim().optional(),
-
   users: z.array(VlessUserSchema).min(1, "Нужен хотя бы один пользователь"),
+  _security_asset_id: z.string().optional(),
+  _tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
   usersValidate(data, ctx);
@@ -30,56 +22,12 @@ const tlsValidate = (
   data: z.input<typeof VlessFormSchema>,
   ctx: z.RefinementCtx,
 ) => {
-  if (data.tls_enabled) {
-    if (!data.tls_server_name) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["tls_server_name"],
-        message: "Нужен TLS server name",
-      });
-    }
-  }
-
-  if (data.reality_enabled) {
-    if (!data.tls_enabled) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["reality_enabled"],
-        message: "Reality требует включенного TLS",
-      });
-    }
-
-    if (!data.reality_handshake_server) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["reality_handshake_server"],
-        message: "Нужен handshake server",
-      });
-    }
-
-    if (data.reality_handshake_server_port == null) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["reality_handshake_server_port"],
-        message: "Нужен handshake server port",
-      });
-    }
-
-    if (!data.reality_private_key) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["reality_private_key"],
-        message: "Необходимо сгенерировать пару ключей",
-      });
-    }
-
-    if (!data._reality_public_key) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["_reality_public_key"],
-        message: "Необходимо сгенерировать пару ключей",
-      });
-    }
+  if (data._tls_enabled && !data._security_asset_id) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["_security_asset_id"],
+      message: "При включенном TLS необходимо выбрать TLS / Reality",
+    });
   }
 };
 
@@ -110,7 +58,7 @@ const usersValidate = (
     ctx.addIssue({
       code: "custom",
       path: ["users", index, "uuid"],
-      message: "Имя пользователя должно быть уникальным",
+      message: "UUID пользователя должен быть уникальным",
     });
   }
 };

@@ -7,7 +7,7 @@ const ListenPortSchema = z.number().int().min(0).max(65535);
 const SniffSchema = z.boolean().optional();
 const SniffOverrideDestinationSchema = z.boolean().optional();
 
-const BaseInboundSchema = z.object({
+export const BaseInboundSchema = z.object({
   tag: NonEmptyStringSchema.optional(),
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
@@ -27,7 +27,7 @@ export const Hysteria2UserSchema = z.object({
 });
 
 export const VlessRealityHandshakeSchema = z.object({
-  server: NonEmptyStringSchema,
+  server: NonEmptyStringSchema.optional(),
   server_port: ListenPortSchema.optional(),
 });
 
@@ -52,6 +52,24 @@ export const DraftVlessTlsSchema = RuntimeVlessTlsSchema.extend({
   reality: DraftVlessRealitySchema.optional(),
 });
 
+export const Hysteria2ObfsSchema = z.object({
+  type: z.string().optional(),
+  password: z.string().optional(),
+});
+
+export const RuntimeHysteria2TlsSchema = z.object({
+  enabled: z.boolean().optional(),
+  server_name: z.string().optional(),
+  certificate: z.string().optional(),
+  key: z.string().optional(),
+  certificate_path: z.string().optional(),
+  key_path: z.string().optional(),
+});
+
+export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema.extend({
+  _is_selfsigned_cert: z.boolean().optional(),
+});
+
 export const RuntimeVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).optional(),
@@ -62,22 +80,8 @@ export const DraftVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).optional(),
   tls: DraftVlessTlsSchema.optional(),
-});
-
-export const Hysteria2ObfsSchema = z.object({
-  type: z.string().optional(),
-  password: z.string().optional(),
-});
-
-export const RuntimeHysteria2TlsSchema = z.object({
-  enabled: z.boolean().optional(),
-  server_name: z.string().optional(),
-  certificate_path: z.string().optional(),
-  key_path: z.string().optional(),
-});
-
-export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema.extend({
-  _is_selfsigned_cert: z.boolean().optional(),
+  _security_asset_id: z.string().optional(),
+  _tls_enabled: z.boolean().optional(),
 });
 
 export const RuntimeHysteria2InboundSchema = BaseInboundSchema.extend({
@@ -85,8 +89,8 @@ export const RuntimeHysteria2InboundSchema = BaseInboundSchema.extend({
   up_mbps: z.number().nonnegative().optional(),
   down_mbps: z.number().nonnegative().optional(),
   users: z.array(Hysteria2UserSchema).optional(),
-  tls: RuntimeHysteria2TlsSchema.optional(),
   obfs: Hysteria2ObfsSchema.optional(),
+  tls: RuntimeHysteria2TlsSchema.optional(),
 });
 
 export const DraftHysteria2InboundSchema = BaseInboundSchema.extend({
@@ -94,8 +98,9 @@ export const DraftHysteria2InboundSchema = BaseInboundSchema.extend({
   up_mbps: z.number().nonnegative().optional(),
   down_mbps: z.number().nonnegative().optional(),
   users: z.array(Hysteria2UserSchema).optional(),
-  tls: DraftHysteria2TlsSchema.optional(),
   obfs: Hysteria2ObfsSchema.optional(),
+  tls: DraftHysteria2TlsSchema.optional(),
+  _security_asset_id: z.string().optional(),
 });
 
 export const RuntimeInboundSchema = z.discriminatedUnion("type", [
@@ -107,6 +112,23 @@ export const DraftInboundSchema = z.discriminatedUnion("type", [
   DraftVlessInboundSchema,
   DraftHysteria2InboundSchema,
 ]);
+
+export const DraftInboundUserSchema = z.union([
+  VlessUserSchema,
+  Hysteria2UserSchema,
+]);
+
+export type Hysteria2User = z.infer<typeof Hysteria2UserSchema>;
+export type VlessUser = z.infer<typeof VlessUserSchema>;
+
+export type DraftInboundUser = z.infer<typeof DraftInboundUserSchema>;
+
+export type RuntimeVlessReality = z.infer<typeof RuntimeVlessRealitySchema>;
+export type DraftVlessReality = z.infer<typeof DraftVlessRealitySchema>;
+export type RuntimeVlessTls = z.infer<typeof RuntimeVlessTlsSchema>;
+export type DraftVlessTls = z.infer<typeof DraftVlessTlsSchema>;
+export type RuntimeHysteria2Tls = z.infer<typeof RuntimeHysteria2TlsSchema>;
+export type DraftHysteria2Tls = z.infer<typeof DraftHysteria2TlsSchema>;
 
 export type RuntimeVlessInbound = z.infer<typeof RuntimeVlessInboundSchema>;
 export type DraftVlessInbound = z.infer<typeof DraftVlessInboundSchema>;

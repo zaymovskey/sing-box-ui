@@ -6,9 +6,13 @@ import {
   type SingBoxStatusCheck,
   type SingBoxStatusResponse,
   SingBoxStatusResponseSchema,
-  stripDraftFields,
 } from "@/shared/api/contracts";
-import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
+import {
+  buildRuntimeConfigFromDraft,
+  getServerEnv,
+  ServerApiError,
+  withRoute,
+} from "@/shared/lib/server";
 
 const execFileAsync = promisify(execFile);
 
@@ -171,17 +175,13 @@ const checkSingBoxConfig = async (
 };
 
 const checkDraftApplied = async (): Promise<CheckResult> => {
-  const draftPath = getServerEnv().SINGBOX_DRAFT_CONFIG_PATH;
   const configPath = getServerEnv().SINGBOX_CONFIG_PATH;
 
   try {
-    const rawDraft = JSON.parse(
-      await fs.readFile(draftPath, "utf-8"),
-    ) as Record<string, unknown>;
+    const expectedRuntime = await buildRuntimeConfigFromDraft();
     const real = JSON.parse(await fs.readFile(configPath, "utf-8"));
 
-    const strippedDraft = stripDraftFields(rawDraft);
-    const isSame = isDeepStrictEqual(strippedDraft, real);
+    const isSame = isDeepStrictEqual(expectedRuntime, real);
 
     if (!isSame) {
       return {
@@ -274,17 +274,12 @@ async function getContainerLastLogs(containerName: string): Promise<string> {
 }
 
 function stripAnsi(input: string): string {
-  return (
-    input
-      // обычные ANSI escape sequences
-      .replace(
-        // eslint-disable-next-line no-control-regex
-        /[\u001B\u009B][[\]()#;?]*(?:(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nq-uy=><~])/g,
-        "",
-      )
-      // на случай уже битой декодировки вида "�[31m"
-      .replace(/�\[[0-9;]*m/g, "")
-      // на всякий случай остатки "[31m", "[0m" в начале/середине
-      .replace(/\[[0-9;]*m/g, "")
-  );
+  return input
+    .replace(
+      // eslint-disable-next-line no-control-regex
+      /[\u001B\u009B][[\]()#;?]*(?:(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nq-uy=><~])/g,
+      "",
+    )
+    .replace(/�\[[0-9;]*m/g, "")
+    .replace(/\[[0-9;]*m/g, "");
 }

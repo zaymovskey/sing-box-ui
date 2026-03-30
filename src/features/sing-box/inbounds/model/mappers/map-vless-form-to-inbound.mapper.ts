@@ -16,18 +16,7 @@ export function mapVlessFormToInbound(
       uuid: user.uuid,
       flow: user.flow || undefined,
     })),
-    tls: {
-      enabled: values.tls_enabled,
-      server_name: values.tls_server_name,
-      reality: {
-        enabled: values.reality_enabled,
-        handshake: {
-          server: values.reality_handshake_server ?? "",
-          server_port: values.reality_handshake_server_port,
-        },
-        private_key: values.reality_private_key,
-        _reality_public_key: values._reality_public_key,
-      },
-    },
+    _tls_enabled: values._tls_enabled,
+    _security_asset_id: values._security_asset_id,
   };
 }

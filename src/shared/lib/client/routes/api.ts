@@ -12,18 +12,25 @@ export const apiRoutes = {
       create: "/api/sing-box/inbounds",
       edit: (originalTag: string) => `/api/sing-box/inbounds/${originalTag}`,
       delete: (tag: string) => `/api/sing-box/inbounds/${tag}`,
-      list: "/api/sing-box/inbounds/list",
-      hy2: {
-        tls: {
-          check: "/api/sing-box/inbounds/hy2/tls/check",
-          generate: "/api/sing-box/inbounds/hy2/tls/generate",
-        },
+      list: "/api/sing-box/inbounds",
+    },
+  },
+  securityAssets: {
+    list: "/api/security-assets",
+    create: "/api/security-assets",
+    delete: (id: string) => `/api/security-assets/${id}`,
+    edit: (id: string) => `/api/security-assets/${id}`,
+    tls: {
+      file: {
+        check: "/api/security-assets/file-tls/check",
+        generate: "/api/security-assets/file-tls/generate",
       },
-      vless: {
-        tls: {
-          generate: "/api/sing-box/inbounds/vless/tls/generate",
-        },
+      inline: {
+        generate: "/api/security-assets/inline-tls/generate",
       },
+    },
+    reality: {
+      keysPairGenerate: "/api/security-assets/reality/keys-pair-generate",
     },
   },
 } as const;

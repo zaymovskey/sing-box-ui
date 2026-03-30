@@ -15,42 +15,11 @@ export function buildInboundShareLink(
     const port = vlessInbound.listen_port;
     const params = new URLSearchParams();
 
-    if (vlessInbound.tls?.enabled) {
-      params.set("security", "tls");
-
-      if (vlessInbound.tls.server_name) {
-        params.set("sni", vlessInbound.tls.server_name);
-      }
-
-      if (vlessInbound.tls.reality?.enabled) {
-        params.set("security", "reality");
-
-        const publicKey = vlessInbound.tls.reality._reality_public_key;
-
-        if (!publicKey) {
-          return null;
-        }
-
-        params.set("pbk", publicKey);
-
-        const shortId = vlessInbound.tls.reality.short_id;
-
-        if (Array.isArray(shortId)) {
-          if (shortId[0]) {
-            params.set("sid", shortId[0]);
-          }
-        } else if (shortId) {
-          params.set("sid", shortId);
-        }
-      }
-    } else {
-      params.set("security", "none");
-    }
-
     if (vlessUser.flow) {
       params.set("flow", vlessUser.flow);
     }
 
+    params.set("security", "none");
     params.set("type", "tcp");
 
     return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${vlessInbound.tag}`;
@@ -64,14 +33,6 @@ export function buildInboundShareLink(
 
     const port = hy2Inbound.listen_port;
     const params = new URLSearchParams();
-
-    if (hy2Inbound.tls?.server_name) {
-      params.set("sni", hy2Inbound.tls.server_name);
-    }
-
-    if (hy2Inbound.tls?._is_selfsigned_cert) {
-      params.set("insecure", "1");
-    }
 
     if (hy2Inbound.obfs?.password) {
       params.set("obfs", "salamander");
