@@ -7,6 +7,7 @@ import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   Button,
   ControlledSelectField,
+  ControlledSwitchField,
   type SelectFieldItem,
   Separator,
   UncontrolledNumberField,
@@ -33,7 +34,7 @@ function SubsectionTitle({
 export function InboundFormHy2Fields() {
   const { control, trigger, formState } = useFormContext<InboundFormValues>();
 
-  const { data: securityAssetsList, isLoading: securityAssetsListLoading } =
+  const { data: securityAssetsList, isPending: securityAssetsListPending } =
     useSecurityAssetsListQuery({
       type: "tls",
     });
@@ -66,11 +67,16 @@ export function InboundFormHy2Fields() {
     void trigger("users");
   }, [watchedUsers, formState.submitCount, trigger]);
 
+  const obfsEnabled = useWatch({
+    control,
+    name: "obfs_enabled",
+  });
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <SubsectionTitle
-          description="Добавьте пользователей, которые смогут подключаться к этому inbound."
+          description="Добавьте пользователей, которым будет разрешено подключение к этому Hysteria2 inbound."
           title="Пользователи"
         />
 
@@ -126,7 +132,7 @@ export function InboundFormHy2Fields() {
 
       <div className="space-y-4">
         <SubsectionTitle
-          description="Укажите лимиты скорости для входящего соединения."
+          description="Укажите ограничения входящей и исходящей скорости для этого inbound."
           title="Скорость"
         />
 
@@ -149,14 +155,35 @@ export function InboundFormHy2Fields() {
 
       <div className="space-y-4">
         <SubsectionTitle
-          description="Для Hysteria2 необходимо выбрать заранее созданный TLS asset."
+          description="Дополнительная маскировка трафика. Обычно используется только если это действительно нужно вашему сценарию."
+          title="Obfuscation"
+        />
+
+        <ControlledSwitchField<InboundFormValues>
+          label="Enable obfs"
+          name="obfs_enabled"
+        />
+
+        <UncontrolledTextField<InboundFormValues>
+          disabled={!obfsEnabled}
+          label="Obfs password"
+          name="obfs_password"
+          placeholder="secret"
+        />
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Для Hysteria2 нужно выбрать заранее созданный TLS asset с сертификатом и ключом."
           title="Безопасность"
         />
 
         <ControlledSelectField<InboundFormValues>
           items={securityAssetsOptions}
           label="TLS asset"
-          loading={securityAssetsListLoading}
+          loading={securityAssetsListPending}
           name="_security_asset_id"
           placeholder="Выберите TLS asset"
         />
@@ -169,9 +196,14 @@ export function InboundFormHy2Fields() {
               <p className="text-foreground font-medium">Как это работает</p>
 
               <p className="text-muted-foreground">
-                TLS-конфигурация для Hysteria2 хранится отдельно как security
-                asset. Здесь вы только выбираете уже созданный объект
-                безопасности для этого inbound.
+                TLS-настройки для Hysteria2 хранятся отдельно в разделе security
+                assets. В этой форме вы только привязываете готовый TLS asset к
+                inbound.
+              </p>
+
+              <p className="text-muted-foreground">
+                Если нужного asset ещё нет, сначала создайте его на отдельной
+                странице, а потом вернитесь сюда и выберите из списка.
               </p>
 
               <a

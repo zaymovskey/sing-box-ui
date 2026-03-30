@@ -28,5 +28,7 @@ export const defaultsByType = {
     sniff_override_destination: true,
     up_mbps: 100,
     down_mbps: 100,
+    obfs_enabled: false,
+    obfs_password: "",
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

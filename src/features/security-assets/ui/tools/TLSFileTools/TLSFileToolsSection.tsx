@@ -121,6 +121,12 @@ export function TLSFileToolsSection() {
           shouldTouch: false,
           shouldValidate: false,
         });
+        const isSelfSigned = result.isSelfSigned ?? false;
+        setValue("source._is_selfsigned_cert", isSelfSigned, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
         clearErrors("source._tlsChecked");
         setGenerateError("");
       } else {

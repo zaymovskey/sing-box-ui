@@ -28,6 +28,14 @@ const TlsFormSchema = SecurityAssetMetaFormSchema.extend({
     TlsInlineSourceFormSchema,
     TlsFileSourceFormSchema,
   ]),
+}).superRefine((data, ctx) => {
+  if (data.source.sourceType === "file" && data.source._tlsChecked !== true) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["source", "_tlsChecked"],
+      message: "Сначала проверьте сертификат и ключ",
+    });
+  }
 });
 
 const RealityFormSchema = SecurityAssetMetaFormSchema.extend({

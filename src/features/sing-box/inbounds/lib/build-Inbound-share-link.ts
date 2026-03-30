@@ -1,8 +1,9 @@
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type DraftInbound, type SecurityAsset } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
   inbound: DraftInbound,
   user: unknown,
+  securityAssets: SecurityAsset[],
   host: string,
 ): string | null {
   if (inbound.type === "vless") {
@@ -31,8 +32,31 @@ export function buildInboundShareLink(
       password: string;
     };
 
+    const tlsAsset = securityAssets.find(
+      (asset) =>
+        asset.id === hy2Inbound._security_asset_id && asset.type === "tls",
+    );
+
+    console.log("Building share link for hysteria2 inbound", {
+      inbound,
+      user,
+      tlsAsset,
+      host,
+    });
+
     const port = hy2Inbound.listen_port;
     const params = new URLSearchParams();
+
+    if (tlsAsset?.type === "tls" && tlsAsset.serverName) {
+      params.set("sni", tlsAsset.serverName);
+    }
+
+    if (
+      tlsAsset?.type === "tls" &&
+      tlsAsset.source._is_selfsigned_cert === true
+    ) {
+      params.set("insecure", "1");
+    }
 
     if (hy2Inbound.obfs?.password) {
       params.set("obfs", "salamander");

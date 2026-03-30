@@ -1,6 +1,7 @@
 import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import { useConfigQuery } from "@/features/sing-box/config-core";
 import {
   DraftConfigSchema,
@@ -22,6 +23,7 @@ export function InboundUserRow({
   user: DraftInboundUser;
 }) {
   const { data: rawDraftConfig } = useConfigQuery();
+  const { data: securityAssets } = useSecurityAssetsListQuery();
 
   const parsedDraft = DraftConfigSchema.safeParse(rawDraftConfig);
   const draftConfig = parsedDraft.success ? parsedDraft.data : null;
@@ -34,6 +36,7 @@ export function InboundUserRow({
   const link = buildInboundShareLink(
     inbound,
     user,
+    securityAssets ?? [],
     clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
   );
 

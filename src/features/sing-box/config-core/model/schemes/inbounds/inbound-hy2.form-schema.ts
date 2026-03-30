@@ -12,11 +12,27 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   up_mbps: z.number().int().min(1),
   down_mbps: z.number().int().min(1),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
+  obfs_enabled: z.boolean(),
+  obfs_password: z.string().trim().optional(),
   _security_asset_id: z.string().optional(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
   usersValidate(data, ctx);
+  obfsValidate(data, ctx);
 });
+
+const obfsValidate = (
+  data: z.input<typeof Hy2FormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (data.obfs_enabled && !data.obfs_password) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["obfs_password"],
+      message: "Укажите obfs password",
+    });
+  }
+};
 
 const tlsValidate = (
   data: z.input<typeof Hy2FormSchema>,

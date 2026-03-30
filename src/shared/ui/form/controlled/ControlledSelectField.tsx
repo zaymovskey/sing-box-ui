@@ -74,7 +74,9 @@ export function ControlledSelectField<T extends FieldValues>({
                 id={inputId}
                 loading={loading}
               >
-                <SelectValue placeholder={placeholder} />
+                <SelectValue
+                  placeholder={items.length === 0 ? "Нет данных" : placeholder}
+                />
               </SelectTrigger>
 
               <SelectContent>

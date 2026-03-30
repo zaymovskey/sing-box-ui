@@ -11,12 +11,14 @@ const TlsInlineSourceSchema = z.object({
   sourceType: z.literal("inline"),
   certificatePem: z.string().min(1),
   keyPem: z.string().min(1),
+  _is_selfsigned_cert: z.boolean().optional(),
 });
 
 const TlsFileSourceSchema = z.object({
   sourceType: z.literal("file"),
   certificatePath: z.string().min(1),
   keyPath: z.string().min(1),
+  _is_selfsigned_cert: z.boolean().optional(),
 });
 
 export const TlsSecurityAssetSchema = SecurityAssetBaseSchema.extend({

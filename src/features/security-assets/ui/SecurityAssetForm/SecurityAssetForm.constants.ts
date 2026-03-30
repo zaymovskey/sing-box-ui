@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import { type SelectFieldItem } from "@/shared/ui";
 
 import type { SecurityAssetFormValues } from "../../model/security-asset-form.schema";
@@ -11,7 +9,7 @@ export const typeItems: SelectFieldItem[] = [
 
 function createMeta() {
   return {
-    id: randomUUID(),
+    id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
   };
 }
@@ -26,6 +24,8 @@ export const defaultsByType = {
       sourceType: "file",
       certificatePath: "certificate.crt",
       keyPath: "kkey.key",
+      _is_selfsigned_cert: false,
+      _tlsChecked: false,
     },
   }),
 
