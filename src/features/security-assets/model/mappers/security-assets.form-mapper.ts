@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { type SecurityAsset } from "@/shared/api/contracts";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
@@ -9,7 +11,7 @@ export function mapFormToSecurityAsset(
 
   if (values.type === "tls") {
     return {
-      id: values.id ?? crypto.randomUUID(),
+      id: values.id ?? randomUUID(),
       name: values.name,
       type: "tls",
       createdAt: values.createdAt ?? now,
@@ -31,7 +33,7 @@ export function mapFormToSecurityAsset(
   }
 
   return {
-    id: values.id ?? crypto.randomUUID(),
+    id: values.id ?? randomUUID(),
     name: values.name,
     type: "reality",
     createdAt: values.createdAt ?? now,

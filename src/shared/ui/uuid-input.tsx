@@ -1,5 +1,7 @@
 "use client";
 
+import { randomUUID } from "node:crypto";
+
 import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { type ComponentPropsWithoutRef, forwardRef } from "react";
@@ -23,7 +25,7 @@ export const UuidInput = forwardRef<HTMLInputElement, Props>(
     };
 
     const handleGenerate = () => {
-      const uuid = crypto.randomUUID();
+      const uuid = randomUUID();
       const el = innerRef.current;
       if (!el) return;
 
