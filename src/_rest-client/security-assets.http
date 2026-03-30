@@ -1,0 +1,184 @@
+@baseUrl = {{$shared local.baseUrl}}
+@apiPrefix = {{$shared apiPrefix}}
+@json = {{$shared json}}
+
+##################################################
+#                     AUTH
+##################################################
+
+### Login
+# @name login
+POST {{baseUrl}}{{apiPrefix}}/auth/login
+Content-Type: {{json}}
+
+{
+  "email": "demo@example.com",
+  "password": "demo"
+}
+
+### Me
+GET {{baseUrl}}{{apiPrefix}}/auth/me
+
+##################################################
+#               SECURITY ASSETS LIST
+##################################################
+
+### Get all security assets
+# @name getSecurityAssets
+GET {{baseUrl}}{{apiPrefix}}/security-assets
+
+### Get only TLS assets
+# @name getTlsSecurityAssets
+GET {{baseUrl}}{{apiPrefix}}/security-assets?type=tls
+
+### Get only Reality assets
+# @name getRealitySecurityAssets
+GET {{baseUrl}}{{apiPrefix}}/security-assets?type=reality
+
+##################################################
+#               SECURITY ASSETS CREATE
+##################################################
+
+### Create TLS asset (file)
+# @name createTlsFileAsset
+POST {{baseUrl}}{{apiPrefix}}/security-assets
+Content-Type: {{json}}
+
+{
+  "id": "tls-file-1",
+  "name": "tls-file-1",
+  "createdAt": "2026-03-30T12:00:00.000Z",
+  "updatedAt": "2026-03-30T12:00:00.000Z",
+  "type": "tls",
+  "serverName": "www.cloudflare.com",
+  "source": {
+    "sourceType": "file",
+    "certificatePath": "certificate.crt",
+    "keyPath": "private.key"
+  }
+}
+
+### Create TLS asset (inline)
+# @name createTlsInlineAsset
+POST {{baseUrl}}{{apiPrefix}}/security-assets
+Content-Type: {{json}}
+
+{
+  "id": "tls-inline-1",
+  "name": "tls-inline-1",
+  "createdAt": "2026-03-30T12:00:00.000Z",
+  "updatedAt": "2026-03-30T12:00:00.000Z",
+  "type": "tls",
+  "serverName": "www.cloudflare.com",
+  "source": {
+    "sourceType": "inline",
+    "certificatePem": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+    "keyPem": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+  }
+}
+
+### Create Reality asset
+# @name createRealityAsset
+POST {{baseUrl}}{{apiPrefix}}/security-assets
+Content-Type: {{json}}
+
+{
+  "id": "reality-1",
+  "name": "reality-1",
+  "createdAt": "2026-03-30T12:00:00.000Z",
+  "updatedAt": "2026-03-30T12:00:00.000Z",
+  "type": "reality",
+  "serverName": "www.cloudflare.com",
+  "privateKey": "PRIVATE_KEY_HERE",
+  "shortId": "abcd1234",
+  "_publicKey": "PUBLIC_KEY_HERE"
+}
+
+##################################################
+#               SECURITY ASSETS EDIT
+##################################################
+
+@assetIdForEdit = tls-file-1
+
+### Edit TLS asset by id
+# @name editTlsAsset
+PUT {{baseUrl}}{{apiPrefix}}/security-assets/{{assetIdForEdit}}
+Content-Type: {{json}}
+
+{
+  "id": "tls-file-1",
+  "name": "tls-file-1-updated",
+  "createdAt": "2026-03-30T12:00:00.000Z",
+  "updatedAt": "2026-03-30T12:10:00.000Z",
+  "type": "tls",
+  "serverName": "cdn.cloudflare.com",
+  "source": {
+    "sourceType": "file",
+    "certificatePath": "updated.crt",
+    "keyPath": "updated.key"
+  }
+}
+
+##################################################
+#               SECURITY ASSETS DELETE
+##################################################
+
+@assetIdForDelete = tls-file-1
+
+### Delete security asset by id
+# @name deleteSecurityAsset
+DELETE {{baseUrl}}{{apiPrefix}}/security-assets/{{assetIdForDelete}}
+
+##################################################
+#               FILE TLS CHECK
+##################################################
+
+### Check file TLS
+# @name checkFileTls
+POST {{baseUrl}}{{apiPrefix}}/security-assets/file-tls/check
+Content-Type: {{json}}
+
+{
+  "certificatePath": "certificate.crt",
+  "keyPath": "private.key"
+}
+
+##################################################
+#             FILE TLS GENERATE
+##################################################
+
+### Generate file TLS
+# @name generateFileTls
+POST {{baseUrl}}{{apiPrefix}}/security-assets/file-tls/generate
+Content-Type: {{json}}
+
+{
+  "certificatePath": "generated.crt",
+  "keyPath": "generated.key",
+  "serverName": "www.cloudflare.com",
+  "overwrite": false
+}
+
+##################################################
+#            INLINE TLS GENERATE
+##################################################
+
+### Generate inline TLS
+# @name generateInlineTls
+POST {{baseUrl}}{{apiPrefix}}/security-assets/inline-tls/generate
+Content-Type: {{json}}
+
+{
+  "serverName": "www.cloudflare.com"
+}
+
+##################################################
+#         REALITY KEYS PAIR GENERATE
+##################################################
+
+### Generate Reality keys pair
+# @name generateRealityKeys
+POST {{baseUrl}}{{apiPrefix}}/security-assets/reality/keys-pair-generate
+Content-Type: {{json}}
+
+{}

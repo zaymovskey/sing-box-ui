@@ -1,4 +1,0 @@
-### POST Generate
-POST {{baseUrl}}{{apiPrefix}}/sing-box/inbounds/vless/tls/generate
-
-###
