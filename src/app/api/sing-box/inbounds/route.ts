@@ -2,7 +2,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { saveConfigRevision } from "@/features/sing-box/config-core/server";
-import { DraftInboundSchema, OkResponseSchema } from "@/shared/api/contracts";
+import {
+  DraftInboundSchema,
+  InboundsListResponseSchema,
+  OkResponseSchema,
+} from "@/shared/api/contracts";
 import { getServerEnv, withRoute } from "@/shared/lib/server";
 
 export const POST = withRoute({
@@ -42,5 +46,23 @@ export const POST = withRoute({
     );
 
     return { ok: true };
+  },
+});
+
+export const GET = withRoute({
+  auth: true,
+  responseSchema: InboundsListResponseSchema,
+  handler: async () => {
+    const serverEnv = getServerEnv();
+    const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
+
+    const draftContent = await fs.readFile(draftPath, "utf-8");
+    const rawDraftContent = JSON.parse(draftContent);
+
+    const inbounds = rawDraftContent.inbounds || [];
+
+    return {
+      list: inbounds,
+    };
   },
 });

@@ -2,6 +2,7 @@
 
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 
+import { cn } from "../../../lib/client/cn";
 import {
   Select,
   SelectContent,
@@ -34,7 +35,7 @@ export function ControlledSelectField<T extends FieldValues>({
   items,
   errorMessage = true,
 }: SelectFieldProps<T>) {
-  const form = useFormContext();
+  const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
   const message = error?.message?.toString() ?? "";
   const safeName = String(name).replace(/[^a-zA-Z0-9_-]/g, "_");
@@ -45,20 +46,30 @@ export function ControlledSelectField<T extends FieldValues>({
     <FormField
       control={form.control}
       name={name}
-      render={({ field: typeField }) => (
+      render={({ field }) => (
         <FormItem className="gap-2">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="text-foreground" htmlFor={inputId}>
+            {label}
+          </FormLabel>
 
           <FormControl>
             <Select
               disabled={disabled}
-              value={typeField.value}
-              onValueChange={(v) => {
+              value={field.value ?? ""}
+              onValueChange={(value) => {
                 form.clearErrors("root");
-                typeField.onChange(v);
+                field.onChange(value);
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger
+                aria-describedby={message ? messageId : undefined}
+                aria-invalid={!!error}
+                className={cn(
+                  "w-full",
+                  error && "border-destructive focus-visible:ring-destructive",
+                )}
+                id={inputId}
+              >
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
 

@@ -242,7 +242,7 @@ export function TLSFileToolsSection() {
         label="Certificate path (.crt)"
         name="source.certificatePath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-        placeholder="hy2.crt"
+        placeholder="cert.crt"
       />
 
       <UncontrolledPathField<SecurityAssetFormValues>
@@ -250,7 +250,7 @@ export function TLSFileToolsSection() {
         label="Key path (.key)"
         name="source.keyPath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
-        placeholder="hy2.key"
+        placeholder="key.key"
       />
 
       <TLSFileTools

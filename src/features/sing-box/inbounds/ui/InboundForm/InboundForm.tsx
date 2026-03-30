@@ -32,7 +32,7 @@ export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
   return (
     <FormProvider {...form}>
       <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
-        <ControlledSelectField
+        <ControlledSelectField<InboundFormValues>
           items={typeItems}
           label="Тип"
           name="type"

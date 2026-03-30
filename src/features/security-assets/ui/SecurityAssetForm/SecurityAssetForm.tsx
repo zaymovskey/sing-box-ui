@@ -45,15 +45,19 @@ export function SecurityAssetForm({
   return (
     <FormProvider {...form}>
       <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
-        <ControlledSelectField
+        <ControlledSelectField<SecurityAssetFormValues>
           items={typeItems}
           label="Тип"
           name="type"
           placeholder="Выбери тип"
         />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <UncontrolledTextField label="Name" name="name" placeholder="name" />
-          <UncontrolledTextField
+          <UncontrolledTextField<SecurityAssetFormValues>
+            label="Name"
+            name="name"
+            placeholder="name"
+          />
+          <UncontrolledTextField<SecurityAssetFormValues>
             label="Server Name"
             name="serverName"
             placeholder="server_name"
@@ -69,7 +73,7 @@ export function SecurityAssetForm({
 
         {type === "tls" && (
           <>
-            <ControlledSelectField
+            <ControlledSelectField<SecurityAssetFormValues>
               items={[
                 { label: "Inline", value: "inline" },
                 { label: "File", value: "file" },

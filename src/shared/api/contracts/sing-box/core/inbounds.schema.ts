@@ -34,6 +34,8 @@ export const RuntimeVlessInboundSchema = BaseInboundSchema.extend({
 export const DraftVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).optional(),
+  _security_asset_id: z.string().optional(),
+  tls_enabled: z.boolean().optional(),
 });
 
 export const Hysteria2ObfsSchema = z.object({
@@ -55,6 +57,7 @@ export const DraftHysteria2InboundSchema = BaseInboundSchema.extend({
   down_mbps: z.number().nonnegative().optional(),
   users: z.array(Hysteria2UserSchema).optional(),
   obfs: Hysteria2ObfsSchema.optional(),
+  _security_asset_id: z.string().optional(),
 });
 
 export const RuntimeInboundSchema = z.discriminatedUnion("type", [

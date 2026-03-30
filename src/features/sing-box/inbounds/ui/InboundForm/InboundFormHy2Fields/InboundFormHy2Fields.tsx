@@ -2,15 +2,27 @@ import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   Button,
+  ControlledSelectField,
+  type SelectFieldItem,
   UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
 export function InboundFormHy2Fields() {
   const { control, trigger, formState } = useFormContext<InboundFormValues>();
+  const { data: securityAssetsList } = useSecurityAssetsListQuery({
+    type: "tls",
+  });
+
+  const securityAssetsOptions: SelectFieldItem[] =
+    securityAssetsList?.map((asset) => ({
+      value: asset.id,
+      label: asset.name,
+    })) || [];
 
   const {
     fields: users,
@@ -96,6 +108,13 @@ export function InboundFormHy2Fields() {
           placeholder="100"
         />
       </div>
+
+      <ControlledSelectField<InboundFormValues>
+        items={securityAssetsOptions}
+        label="TLS"
+        name="_security_asset_id"
+        placeholder="TLS"
+      />
     </>
   );
 }

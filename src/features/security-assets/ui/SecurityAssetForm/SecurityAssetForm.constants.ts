@@ -19,11 +19,11 @@ export const defaultsByType = {
     ...createMeta(),
     type: "tls",
     name: "",
-    serverName: "",
+    serverName: "www.cloudflare.com",
     source: {
       sourceType: "file",
-      certificatePath: "",
-      keyPath: "",
+      certificatePath: "certificate.crt",
+      keyPath: "kkey.key",
     },
   }),
 
@@ -31,9 +31,8 @@ export const defaultsByType = {
     ...createMeta(),
     type: "reality",
     name: "",
-    serverName: "",
+    serverName: "www.cloudflare.com",
     privateKey: "",
-    shortId: "",
     _publicKey: "",
   }),
 } satisfies Record<

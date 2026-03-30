@@ -12,9 +12,24 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   up_mbps: z.number().int().min(1),
   down_mbps: z.number().int().min(1),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
+  _security_asset_id: z.string().optional(),
 }).superRefine((data, ctx) => {
+  tlsValidate(data, ctx);
   usersValidate(data, ctx);
 });
+
+const tlsValidate = (
+  data: z.input<typeof Hy2FormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (!data._security_asset_id) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["_security_asset_id"],
+      message: "Для Hysteria2 необходимо выбрать TLS asset",
+    });
+  }
+};
 
 const usersValidate = (
   data: z.input<typeof Hy2FormSchema>,

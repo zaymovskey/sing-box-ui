@@ -11,9 +11,25 @@ const VlessUserSchema = z.object({
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).min(1, "Нужен хотя бы один пользователь"),
+  _security_asset_id: z.string().optional(),
+  tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {
+  tlsValidate(data, ctx);
   usersValidate(data, ctx);
 });
+
+const tlsValidate = (
+  data: z.input<typeof VlessFormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (data.tls_enabled && !data._security_asset_id) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["_security_asset_id"],
+      message: "При включенном TLS необходимо выбрать TLS / Reality",
+    });
+  }
+};
 
 const usersValidate = (
   data: z.input<typeof VlessFormSchema>,

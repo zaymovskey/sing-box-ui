@@ -36,7 +36,6 @@ const RealityFormSchema = SecurityAssetMetaFormSchema.extend({
   serverName: z.string().min(1, "Server name is required"),
   privateKey: z.string().min(1, "Private key is required"),
   _publicKey: z.string().min(1, "Public key is required"),
-  shortId: z.string().min(1, "Short ID is required"),
 });
 
 export const SecurityAssetFormSchema = z.discriminatedUnion("type", [

@@ -36,6 +36,8 @@ export {
   type SecurityAssets,
   SecurityAssetSchema,
   SecurityAssetsSchema,
+  type SecurityAssetType,
+  SecurityAssetTypeSchema,
 } from "./security-assets/security-assets.schema";
 export {
   type DraftConfig,

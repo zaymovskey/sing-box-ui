@@ -2,11 +2,14 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import z from "zod";
+
 import {
   type SecurityAsset,
   type SecurityAssets,
   SecurityAssetSchema,
   SecurityAssetsSchema,
+  SecurityAssetTypeSchema,
 } from "@/shared/api/contracts";
 import { getServerEnv, withRoute } from "@/shared/lib/server";
 
@@ -45,8 +48,20 @@ async function writeSecurityAssetsFile(
 export const GET = withRoute({
   auth: true,
   responseSchema: SecurityAssetsSchema,
-  handler: async () => {
-    return readSecurityAssetsFile();
+  paramsSchema: z.object({
+    type: SecurityAssetTypeSchema.optional(),
+  }),
+  handler: async ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    const assets = await readSecurityAssetsFile();
+
+    if (type) {
+      return assets.filter((asset) => asset.type === type);
+    }
+
+    return assets;
   },
 });
 

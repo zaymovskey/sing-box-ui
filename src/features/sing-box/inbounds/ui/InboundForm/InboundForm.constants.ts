@@ -15,6 +15,8 @@ export const defaultsByType = {
     sniff: true,
     sniff_override_destination: true,
     users: [{ name: "", uuid: "", flow: "" }],
+    tls_enabled: false,
+    _security_asset_id: undefined,
   },
   hysteria2: {
     type: "hysteria2",

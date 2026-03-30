@@ -38,7 +38,6 @@ export function mapFormToSecurityAsset(
     updatedAt: now,
     serverName: values.serverName,
     privateKey: values.privateKey,
-    shortId: values.shortId,
     _publicKey: values._publicKey || undefined,
   };
 }
@@ -75,7 +74,6 @@ export function mapSecurityAssetToFormValues(
     createdAt: asset.createdAt,
     serverName: asset.serverName,
     privateKey: asset.privateKey,
-    shortId: asset.shortId,
     _publicKey: asset._publicKey ?? "",
   };
 }

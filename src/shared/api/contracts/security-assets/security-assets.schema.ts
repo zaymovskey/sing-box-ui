@@ -32,7 +32,6 @@ export const RealitySecurityAssetSchema = SecurityAssetBaseSchema.extend({
   type: z.literal("reality"),
   serverName: z.string().min(1),
   privateKey: z.string().min(1),
-  shortId: z.string().min(1),
   _publicKey: z.string().min(1).optional(),
 });
 
@@ -40,6 +39,9 @@ export const SecurityAssetSchema = z.discriminatedUnion("type", [
   TlsSecurityAssetSchema,
   RealitySecurityAssetSchema,
 ]);
+
+export const SecurityAssetTypeSchema = z.enum(["tls", "reality"]);
+export type SecurityAssetType = z.infer<typeof SecurityAssetTypeSchema>;
 
 export const SecurityAssetsSchema = z.array(SecurityAssetSchema);
 
