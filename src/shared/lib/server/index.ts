@@ -22,3 +22,5 @@ export { checkFilePresence } from "./filesystem/check-file-presence";
 export { resolveHostCertPath } from "./filesystem/resolve-host-cert-path";
 export { generateSelfSignedFilesCert } from "./openssl/generate-self-signed-file-cert";
 export { generateSelfSignedInlineCert } from "./openssl/generate-self-signed-inline-cert";
+export { buildRuntimeConfigFromDraft } from "./sing-box/build-runtime-config-from-draft";
+export { resolveSecurityAssets } from "./sing-box/resolve-security-assets";

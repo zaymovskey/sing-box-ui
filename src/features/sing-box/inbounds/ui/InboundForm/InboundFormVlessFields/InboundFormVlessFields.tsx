@@ -70,7 +70,7 @@ export function InboundFormVlessFields() {
 
   const tlsEnabled = useWatch({
     control,
-    name: "tls_enabled",
+    name: "_tls_enabled",
   });
 
   return (
@@ -146,7 +146,7 @@ export function InboundFormVlessFields() {
 
         <ControlledSwitchField<InboundFormValues>
           label="Reality enabled"
-          name="tls_enabled"
+          name="_tls_enabled"
         />
 
         <ControlledSelectField<InboundFormValues>

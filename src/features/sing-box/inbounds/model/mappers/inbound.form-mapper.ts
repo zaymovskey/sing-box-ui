@@ -27,7 +27,7 @@ export function mapInboundToFormValues(
     return {
       ...baseFields,
       type: "vless",
-      tls_enabled: inbound.tls_enabled ?? false,
+      _tls_enabled: inbound._tls_enabled ?? false,
       users: inbound.users?.map((user) => ({
         name: user.name ?? "",
         uuid: user.uuid ?? "",

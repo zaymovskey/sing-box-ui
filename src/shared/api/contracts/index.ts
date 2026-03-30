@@ -46,6 +46,7 @@ export {
   DraftInboundSchema,
   type Hysteria2User,
   Hysteria2UserSchema,
+  type RuntimeConfig,
   RuntimeConfigSchema,
   stripDraftFields,
   type VlessUser,
