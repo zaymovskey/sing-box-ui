@@ -1,4 +1,5 @@
 import { type SecurityAsset } from "@/shared/api/contracts";
+import { clientEnv } from "@/shared/lib";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 
@@ -24,8 +25,11 @@ export function mapFormToSecurityAsset(
             }
           : {
               sourceType: "file",
-              certificatePath: values.source.certificatePath,
-              keyPath: values.source.keyPath,
+              certificatePath:
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR +
+                values.source.certificatePath,
+              keyPath:
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + values.source.keyPath,
               _is_selfsigned_cert: values.source._is_selfsigned_cert,
             },
     };

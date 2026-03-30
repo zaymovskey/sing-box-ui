@@ -7,7 +7,8 @@ export const BaseInboundFormSchema = z.object({
     .number("Порт должен быть числом")
     .int("Порт должен быть целым числом")
     .min(1, "Минимум 1")
-    .max(65535, "Максимум 65535"),
+    .max(40000, "Максимум 40000")
+    .min(20000, "Минимум 20000"),
   sniff: z.boolean(),
   sniff_override_destination: z.boolean(),
   listen: z.string().trim(),

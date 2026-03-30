@@ -8,8 +8,10 @@ services:
       - ./data/sing-box:/etc/sing-box:ro
       - ./data/sing-box-state:/var/lib/sing-box
     ports:
-      - "18443:18443/tcp"
-      - "18443:18443/udp"
+      - "443:443/tcp"
+      - "443:443/udp"
+      - "20000-40000:20000-40000/tcp"
+      - "20000-40000:20000-40000/udp"
       # Для V2Ray API
       - "8080:8080"
 

@@ -12,9 +12,9 @@ export function useUpdateConfigMutation() {
   return useMutation<void, ApiError, DraftConfig>({
     mutationFn: (config) => updateConfigJson(config),
     onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
-      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
-      await qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
     },
   });
 }
