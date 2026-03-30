@@ -16,5 +16,7 @@ export function mapVlessFormToInbound(
       uuid: user.uuid,
       flow: user.flow || undefined,
     })),
+    tls_enabled: values.tls_enabled,
+    _security_asset_id: values._security_asset_id,
   };
 }

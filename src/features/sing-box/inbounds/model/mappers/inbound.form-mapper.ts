@@ -33,6 +33,7 @@ export function mapInboundToFormValues(
         uuid: user.uuid ?? "",
         flow: user.flow ?? "",
       })) ?? [{ name: "", uuid: "", flow: "" }],
+      _security_asset_id: inbound._security_asset_id ?? "",
     };
   }
 
@@ -46,6 +47,7 @@ export function mapInboundToFormValues(
         name: user.name ?? "",
         password: user.password ?? "",
       })) ?? [{ name: "", password: "" }],
+      _security_asset_id: inbound._security_asset_id ?? "",
     };
   }
 

@@ -1,46 +1,80 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   ControlledSwitchField,
+  Separator,
   UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
+function SubsectionTitle({
+  title,
+  description,
+}: {
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <h4 className="text-sm font-medium">{title}</h4>
+      {description ? (
+        <p className="text-muted-foreground text-sm">{description}</p>
+      ) : null}
+    </div>
+  );
+}
+
 export function InboundFormBaseFields() {
   return (
-    <>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          label="Tag"
-          name="tag"
-          placeholder="in-01"
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Базовые настройки тега, адреса прослушивания и порта."
+          title="Сетевые параметры"
         />
 
-        <UncontrolledNumberField<InboundFormValues>
-          label="Listen port"
-          name="listen_port"
-          placeholder="8443"
-        />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <UncontrolledTextField<InboundFormValues>
+            label="Tag"
+            name="tag"
+            placeholder="in-01"
+          />
 
-        <UncontrolledTextField<InboundFormValues>
-          label="Listen"
-          name="listen"
-          placeholder="::"
-        />
+          <UncontrolledNumberField<InboundFormValues>
+            label="Listen port"
+            name="listen_port"
+            placeholder="8443"
+          />
+
+          <UncontrolledTextField<InboundFormValues>
+            label="Listen"
+            name="listen"
+            placeholder="::"
+          />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <ControlledSwitchField<InboundFormValues>
-          label="Sniff"
-          name="sniff"
-          placeholder="Автодетект протокола/домена"
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Определение протокола и подмена destination по распознанным данным."
+          title="Sniffing"
         />
 
-        <ControlledSwitchField<InboundFormValues>
-          label="Override destination"
-          name="sniff_override_destination"
-          placeholder="Подменять destination по sniff"
-        />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <ControlledSwitchField<InboundFormValues>
+            label="Sniff"
+            name="sniff"
+            placeholder="Автоопределение протокола / домена"
+          />
+
+          <ControlledSwitchField<InboundFormValues>
+            label="Override destination"
+            name="sniff_override_destination"
+            placeholder="Подменять destination по sniff"
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

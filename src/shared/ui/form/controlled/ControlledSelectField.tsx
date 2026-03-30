@@ -24,7 +24,7 @@ type SelectFieldProps<T extends FieldValues> = {
   placeholder?: string;
   disabled?: boolean;
   items: SelectFieldItem[];
-  errorMessage?: boolean;
+  showErrorMessage?: boolean;
 };
 
 export function ControlledSelectField<T extends FieldValues>({
@@ -33,7 +33,7 @@ export function ControlledSelectField<T extends FieldValues>({
   placeholder,
   disabled = false,
   items,
-  errorMessage = true,
+  showErrorMessage = true,
 }: SelectFieldProps<T>) {
   const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
@@ -85,7 +85,7 @@ export function ControlledSelectField<T extends FieldValues>({
             </Select>
           </FormControl>
 
-          {errorMessage && (
+          {showErrorMessage && (
             <div className="text-destructive min-h-5 text-sm" id={messageId}>
               {message}
             </div>
