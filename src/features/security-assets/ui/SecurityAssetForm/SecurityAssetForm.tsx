@@ -12,7 +12,7 @@ import {
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 import { RealityToolsSection } from "../tools/RealityTools/RealityToolsSection";
 import { TLSFileToolsSection } from "../tools/TLSFileTools/TLSFileToolsSection";
-import { TLSTextToolsSection } from "../tools/TLSTextTools/TLSTextToolsSection";
+import { TLSInlineToolsSection } from "../tools/TLSInlineTools/TLSInlineToolsSection";
 import { defaultsByType, typeItems } from "./SecurityAssetForm.constants";
 
 type SecurityAssetFormProps = {
@@ -79,7 +79,7 @@ export function SecurityAssetForm({
               placeholder="Выбери источник сертификата"
             />
 
-            {sourceType === "inline" && <TLSTextToolsSection />}
+            {sourceType === "inline" && <TLSInlineToolsSection />}
 
             {sourceType === "file" && <TLSFileToolsSection />}
           </>

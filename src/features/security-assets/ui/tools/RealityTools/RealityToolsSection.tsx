@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 
 import { clientToast } from "@/shared/ui";
 
-import { useGenerateRealityKeysPairMutation } from "../../../model/mutations/reality-key-pair-generate.mutation";
+import { useGenerateRealityKeysPairMutation } from "../../../model/mutations/TLS/reality-key-pair-generate.mutation";
 import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
 import { RealityTools } from "./RealityTools";
 

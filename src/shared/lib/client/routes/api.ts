@@ -16,14 +16,17 @@ export const apiRoutes = {
     },
   },
   securityAssets: {
-    list: "/api/sing-box/security-assets",
-    create: "/api/sing-box/security-assets",
+    list: "/api/security-assets",
+    create: "/api/security-assets",
     delete: (id: string) => `/api/security-assets/${id}`,
     edit: (id: string) => `/api/security-assets/${id}`,
     tls: {
       file: {
         check: "/api/security-assets/file-tls/check",
         generate: "/api/security-assets/file-tls/generate",
+      },
+      inline: {
+        generate: "/api/security-assets/inline-tls/generate",
       },
     },
     reality: {

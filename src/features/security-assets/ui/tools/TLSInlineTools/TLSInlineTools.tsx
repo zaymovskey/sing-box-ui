@@ -12,7 +12,7 @@ interface RealityToolsProps {
   error?: string;
 }
 
-export function TLSTextTools({
+export function TLSInlineTools({
   disabled = false,
   loading,
   onGenerate,

@@ -5,15 +5,12 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   Button,
-  ControlledSwitchField,
-  Separator,
   UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
 export function InboundFormHy2Fields() {
-  const { control, clearErrors, setValue, trigger, formState } =
-    useFormContext<InboundFormValues>();
+  const { control, trigger, formState } = useFormContext<InboundFormValues>();
 
   const {
     fields: users,
@@ -23,28 +20,6 @@ export function InboundFormHy2Fields() {
     control,
     name: "users",
   });
-
-  const tlsEnabled = useWatch({
-    control,
-    name: "tls_enabled",
-  });
-
-  useEffect(() => {
-    if (!tlsEnabled) {
-      setValue("_tlsChecked", false, {
-        shouldDirty: false,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-
-      clearErrors([
-        "tls_server_name",
-        "certificate_path",
-        "key_path",
-        "_tlsChecked",
-      ]);
-    }
-  }, [tlsEnabled, setValue, clearErrors]);
 
   const watchedUsers = useWatch({
     control,
@@ -93,6 +68,7 @@ export function InboundFormHy2Fields() {
             </div>
           </div>
         ))}
+
         <Button
           type="button"
           variant="outline"
@@ -106,6 +82,7 @@ export function InboundFormHy2Fields() {
           Добавить пользователя
         </Button>
       </div>
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <UncontrolledNumberField<InboundFormValues>
           label="Up (Mbps)"
@@ -119,11 +96,6 @@ export function InboundFormHy2Fields() {
           placeholder="100"
         />
       </div>
-      <Separator />
-      <ControlledSwitchField<InboundFormValues>
-        label="TLS - Transport Layer Security"
-        name="tls_enabled"
-      />
     </>
   );
 }

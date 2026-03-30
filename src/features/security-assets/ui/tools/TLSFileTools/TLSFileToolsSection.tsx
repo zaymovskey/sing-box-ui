@@ -1,7 +1,8 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { type TLSCheckItem } from "@/shared/api/contracts";
 import { clientEnv } from "@/shared/lib";
 import { clientToast, UncontrolledPathField } from "@/shared/ui";
@@ -51,7 +52,8 @@ export function TLSFileToolsSection() {
 
   const { mutateAsync: checkMutateAsync } = useFileTLSCheckMutation();
   const { mutateAsync: generateMutateAsync } = useFileTLSGenerateMutation();
-  const { control, setValue, clearErrors } =
+
+  const { control, setValue, clearErrors, getFieldState, formState, trigger } =
     useFormContext<SecurityAssetFormValues>();
 
   const certificatePath = useWatch({
@@ -76,11 +78,12 @@ export function TLSFileToolsSection() {
     }) ?? false;
 
   const [statuses, setStatuses] = useState<TlsStatuses>(idleStatuses);
-
-  const [generateError, setGenerateError] = useState<string>("");
+  const [generateError, setGenerateError] = useState("");
 
   const handleCheck = useCallback(async () => {
-    if (!certificatePath || !keyPath) {
+    const isValid = await trigger(["source.certificatePath", "source.keyPath"]);
+
+    if (!isValid) {
       return;
     }
 
@@ -134,10 +137,26 @@ export function TLSFileToolsSection() {
         duration: 2000,
       });
     }
-  }, [checkMutateAsync, clearErrors, setValue, certificatePath, keyPath]);
+  }, [
+    trigger,
+    checkMutateAsync,
+    certificatePath,
+    keyPath,
+    setValue,
+    clearErrors,
+  ]);
 
   const handleGenerate = async () => {
-    if (!certificatePath || !keyPath || !serverName) {
+    const isValid = await trigger([
+      "serverName",
+      "source.certificatePath",
+      "source.keyPath",
+    ]);
+
+    if (!isValid) {
+      clientToast.error("Заполните serverName, certificate path и key path", {
+        duration: 2000,
+      });
       return;
     }
 
@@ -145,6 +164,14 @@ export function TLSFileToolsSection() {
     setGenerateError("");
 
     try {
+      if (!serverName) {
+        clientToast.error("Укажите serverName для генерации TLS", {
+          duration: 2000,
+        });
+        setStatuses(idleStatuses);
+        return;
+      }
+
       const result = await generateMutateAsync({
         certificatePath:
           clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + certificatePath,
@@ -167,13 +194,16 @@ export function TLSFileToolsSection() {
 
       setGenerateError("");
       setStatuses(successesStatuses);
+
       setValue("source._is_selfsigned_cert", true, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
       });
+
       await handleCheck();
     } catch {
+      setStatuses(idleStatuses);
       setGenerateError("Не удалось сгенерировать TLS сертификаты");
     }
   };
@@ -181,7 +211,6 @@ export function TLSFileToolsSection() {
   const hasInitializedRef = useRef(false);
 
   useEffect(() => {
-    // Не сбрасываем статусы при первом рендере
     if (!hasInitializedRef.current) {
       hasInitializedRef.current = true;
       return;
@@ -189,6 +218,7 @@ export function TLSFileToolsSection() {
 
     setStatuses(idleStatuses);
     setGenerateError("");
+
     setValue("source._tlsChecked", false, {
       shouldDirty: false,
       shouldTouch: false,
@@ -198,32 +228,31 @@ export function TLSFileToolsSection() {
 
   useEffect(() => {
     if (mode !== "edit") return;
-
     if (!certificatePath || !keyPath) return;
 
     void handleCheck();
+  }, [mode, certificatePath, keyPath, handleCheck]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const form = useFormContext<InboundFormValues>();
-
-  const error = form.getFieldState("_tlsChecked", form.formState).error;
+  const error = getFieldState("source._tlsChecked", formState).error;
 
   return (
     <>
       <UncontrolledPathField<SecurityAssetFormValues>
+        className="mb-5"
         label="Certificate path (.crt)"
         name="source.certificatePath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
         placeholder="hy2.crt"
       />
+
       <UncontrolledPathField<SecurityAssetFormValues>
+        className="mb-5"
         label="Key path (.key)"
         name="source.keyPath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
         placeholder="hy2.key"
       />
+
       <TLSFileTools
         error={error?.message}
         generateError={generateError}

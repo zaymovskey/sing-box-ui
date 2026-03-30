@@ -5,16 +5,12 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
   Button,
-  ControlledSwitchField,
-  Separator,
-  UncontrolledNumberField,
   UncontrolledTextField,
   UncontrolledUuidField,
 } from "@/shared/ui";
 
 export function InboundFormVlessFields() {
-  const { control, clearErrors, setValue, trigger, formState } =
-    useFormContext<InboundFormValues>();
+  const { control, trigger, formState } = useFormContext<InboundFormValues>();
 
   const {
     fields: users,
@@ -24,36 +20,6 @@ export function InboundFormVlessFields() {
     control,
     name: "users",
   });
-
-  const tlsEnabled = useWatch({
-    control,
-    name: "tls_enabled",
-  });
-
-  const realityEnabled = useWatch({
-    control,
-    name: "reality_enabled",
-  });
-
-  useEffect(() => {
-    if (!tlsEnabled && realityEnabled) {
-      setValue("reality_enabled", false, {
-        shouldDirty: true,
-        shouldValidate: false,
-        shouldTouch: false,
-      });
-    }
-
-    if (!tlsEnabled) {
-      clearErrors([
-        "tls_server_name",
-        "reality_enabled",
-        "reality_handshake_server",
-        "reality_handshake_server_port",
-        "reality_private_key",
-      ]);
-    }
-  }, [tlsEnabled, realityEnabled, clearErrors, setValue]);
 
   const watchedUsers = useWatch({
     control,
@@ -108,6 +74,7 @@ export function InboundFormVlessFields() {
             </div>
           </div>
         ))}
+
         <Button
           type="button"
           variant="outline"
@@ -121,38 +88,6 @@ export function InboundFormVlessFields() {
         >
           Добавить пользователя
         </Button>
-      </div>
-      <Separator />
-      <ControlledSwitchField<InboundFormValues>
-        label="TLS - Transport Layer Security"
-        name="tls_enabled"
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          disabled={!tlsEnabled}
-          label="TLS server name"
-          name="tls_server_name"
-          placeholder="www.cloudflare.com"
-        />
-      </div>
-      <ControlledSwitchField<InboundFormValues>
-        disabled={!tlsEnabled}
-        label="Reality"
-        name="reality_enabled"
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <UncontrolledTextField<InboundFormValues>
-          disabled={!realityEnabled || !tlsEnabled}
-          label="Handshake server"
-          name="reality_handshake_server"
-          placeholder="www.cloudflare.com"
-        />
-        <UncontrolledNumberField<InboundFormValues>
-          disabled={!realityEnabled || !tlsEnabled}
-          label="Handshake server port"
-          name="reality_handshake_server_port"
-          placeholder="443"
-        />
       </div>
     </>
   );

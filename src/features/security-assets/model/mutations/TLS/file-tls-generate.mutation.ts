@@ -6,7 +6,7 @@ import {
 } from "@/shared/api/contracts";
 import { type ApiError } from "@/shared/lib";
 
-import { generateFileTLS } from "../../../api/TLS/generate-file.api";
+import { generateFileTLS } from "../../../api/TLS/generate-file-tls.api";
 
 export function useFileTLSGenerateMutation() {
   return useMutation<TLSFileGenerateResponse, ApiError, TLSFileGenerateRequest>(

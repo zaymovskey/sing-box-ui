@@ -11,13 +11,18 @@ type Props<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   path: string;
-} & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
+  className?: string;
+} & Omit<
+  InputProps,
+  "name" | "id" | "aria-invalid" | "aria-describedby" | "className"
+>;
 
 export function UncontrolledPathField<T extends FieldValues>({
   name,
   label,
   type = "text",
   path,
+  className,
   ...inputProps
 }: Props<T>) {
   const form = useFormContext<T>();
@@ -29,13 +34,14 @@ export function UncontrolledPathField<T extends FieldValues>({
   const messageId = `${inputId}_message`;
 
   return (
-    <FormItem className="gap-2">
+    <FormItem className={className ?? "gap-2"}>
       <FormLabel htmlFor={inputId}>{label}</FormLabel>
 
       <div className="flex">
         <span className="border-input bg-background text-muted-foreground flex h-9 items-center rounded-md border border-r px-3 py-1 text-base whitespace-nowrap md:text-sm">
           {path}
         </span>
+
         <Input
           {...form.register(name)}
           {...inputProps}
