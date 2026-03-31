@@ -52,7 +52,14 @@ export function SecurityAssetForm({
 
     if (prev === type) return;
 
-    form.reset(defaultsByType[type]());
+    const currentValues = form.getValues();
+
+    form.reset({
+      ...defaultsByType[type](),
+      id: currentValues.id,
+      createdAt: currentValues.createdAt,
+    });
+
     prevTypeRef.current = type;
   }, [type, form]);
 
@@ -97,7 +104,7 @@ export function SecurityAssetForm({
             description={
               type === "tls"
                 ? "Настройте источник сертификата и ключа для TLS."
-                : "Настройте параметры Reality и сгенерируйте ключевую пару."
+                : "Настройте параметры Reality, handshake и сгенерируйте ключевую пару."
             }
             title={type === "tls" ? "TLS настройки" : "Reality настройки"}
           />

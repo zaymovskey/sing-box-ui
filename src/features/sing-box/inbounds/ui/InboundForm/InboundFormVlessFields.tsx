@@ -16,8 +16,16 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
+const flowOptions: SelectFieldItem[] = [
+  {
+    label: "xtls-rprx-vision",
+    value: "xtls-rprx-vision",
+  },
+];
+
 export function InboundFormVlessFields() {
-  const { control, trigger, formState } = useFormContext<InboundFormValues>();
+  const { control, trigger, formState, setValue } =
+    useFormContext<InboundFormValues>();
 
   const { data: securityAssetsList, isLoading: securityAssetsListLoading } =
     useSecurityAssetsListQuery({
@@ -45,6 +53,11 @@ export function InboundFormVlessFields() {
     name: "users",
   });
 
+  const tlsEnabled = useWatch({
+    control,
+    name: "_tls_enabled",
+  });
+
   useEffect(() => {
     if (formState.submitCount === 0) {
       return;
@@ -53,10 +66,16 @@ export function InboundFormVlessFields() {
     void trigger("users");
   }, [watchedUsers, formState.submitCount, trigger]);
 
-  const tlsEnabled = useWatch({
-    control,
-    name: "_tls_enabled",
-  });
+  useEffect(() => {
+    if (tlsEnabled) {
+      return;
+    }
+
+    setValue("_security_asset_id", undefined, {
+      shouldDirty: true,
+      shouldValidate: formState.submitCount > 0,
+    });
+  }, [tlsEnabled, setValue, formState.submitCount]);
 
   return (
     <div className="space-y-6">
@@ -97,10 +116,11 @@ export function InboundFormVlessFields() {
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                 />
 
-                <UncontrolledTextField<InboundFormValues>
+                <ControlledSelectField<InboundFormValues>
+                  items={flowOptions}
                   label="Flow (optional)"
                   name={`users.${index}.flow`}
-                  placeholder="xtls-rprx-vision"
+                  placeholder="Выберите flow"
                 />
               </div>
             </div>
@@ -113,7 +133,7 @@ export function InboundFormVlessFields() {
               append({
                 name: "",
                 uuid: "",
-                flow: "",
+                flow: undefined,
               })
             }
           >

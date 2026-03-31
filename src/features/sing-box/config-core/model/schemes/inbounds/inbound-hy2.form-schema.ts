@@ -9,23 +9,25 @@ const Hy2UserSchema = z.object({
 
 export const Hy2FormSchema = BaseInboundFormSchema.extend({
   type: z.literal("hysteria2"),
-  up_mbps: z.number().int().min(1),
-  down_mbps: z.number().int().min(1),
+  up_mbps: z.number().int().min(1, "Нужен up_mbps"),
+  down_mbps: z.number().int().min(1, "Нужен down_mbps"),
+  ignore_client_bandwidth: z.boolean(),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
   obfs_enabled: z.boolean(),
   obfs_password: z.string().trim().optional(),
-  _security_asset_id: z.string().optional(),
+  _security_asset_id: z.string().trim().min(1).optional(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
   usersValidate(data, ctx);
   obfsValidate(data, ctx);
+  bandwidthValidate(data, ctx);
 });
 
 const obfsValidate = (
   data: z.input<typeof Hy2FormSchema>,
   ctx: z.RefinementCtx,
 ) => {
-  if (data.obfs_enabled && !data.obfs_password) {
+  if (data.obfs_enabled && !data.obfs_password?.trim()) {
     ctx.addIssue({
       code: "custom",
       path: ["obfs_password"],
@@ -38,11 +40,27 @@ const tlsValidate = (
   data: z.input<typeof Hy2FormSchema>,
   ctx: z.RefinementCtx,
 ) => {
-  if (!data._security_asset_id) {
+  if (!data._security_asset_id?.trim()) {
     ctx.addIssue({
       code: "custom",
       path: ["_security_asset_id"],
       message: "Для Hysteria2 необходимо выбрать TLS asset",
+    });
+  }
+};
+
+const bandwidthValidate = (
+  data: z.input<typeof Hy2FormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (
+    data.ignore_client_bandwidth &&
+    (data.up_mbps !== undefined || data.down_mbps !== undefined)
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["ignore_client_bandwidth"],
+      message: "ignore_client_bandwidth конфликтует с up_mbps/down_mbps",
     });
   }
 };

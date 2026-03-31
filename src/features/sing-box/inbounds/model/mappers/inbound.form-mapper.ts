@@ -18,7 +18,7 @@ export function mapInboundToFormValues(
   const baseFields = {
     tag: inbound.tag ?? "",
     listen: inbound.listen ?? "",
-    listen_port: inbound.listen_port ?? 0,
+    listen_port: inbound.listen_port ?? 443,
     sniff: inbound.sniff ?? false,
     sniff_override_destination: inbound.sniff_override_destination ?? false,
   };
@@ -31,8 +31,8 @@ export function mapInboundToFormValues(
       users: inbound.users?.map((user) => ({
         name: user.name ?? "",
         uuid: user.uuid ?? "",
-        flow: user.flow ?? "",
-      })) ?? [{ name: "", uuid: "", flow: "" }],
+        flow: user.flow === "xtls-rprx-vision" ? "xtls-rprx-vision" : undefined,
+      })) ?? [{ name: "", uuid: "", flow: undefined }],
       _security_asset_id: inbound._security_asset_id ?? "",
     };
   }
@@ -41,14 +41,15 @@ export function mapInboundToFormValues(
     return {
       ...baseFields,
       type: "hysteria2",
-      up_mbps: inbound.up_mbps ?? 0,
-      down_mbps: inbound.down_mbps ?? 0,
+      up_mbps: inbound.up_mbps ?? 1,
+      down_mbps: inbound.down_mbps ?? 1,
+      ignore_client_bandwidth: inbound.ignore_client_bandwidth ?? false,
       users: inbound.users?.map((user) => ({
         name: user.name ?? "",
         password: user.password ?? "",
       })) ?? [{ name: "", password: "" }],
       _security_asset_id: inbound._security_asset_id ?? "",
-      obfs_enabled: Boolean(inbound.obfs?.password),
+      obfs_enabled: Boolean(inbound.obfs?.type || inbound.obfs?.password),
       obfs_password: inbound.obfs?.password ?? "",
     };
   }

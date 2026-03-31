@@ -11,8 +11,9 @@ export function mapHy2FormToInbound(
     listen_port: values.listen_port,
     sniff: values.sniff,
     sniff_override_destination: values.sniff_override_destination,
-    up_mbps: values.up_mbps,
-    down_mbps: values.down_mbps,
+    up_mbps: values.ignore_client_bandwidth ? undefined : values.up_mbps,
+    down_mbps: values.ignore_client_bandwidth ? undefined : values.down_mbps,
+    ignore_client_bandwidth: values.ignore_client_bandwidth,
     users: values.users.map((user) => ({
       name: user.name,
       password: user.password,
@@ -21,7 +22,7 @@ export function mapHy2FormToInbound(
     obfs: values.obfs_enabled
       ? {
           type: "salamander",
-          password: values.obfs_password,
+          password: values.obfs_password?.trim() || undefined,
         }
       : undefined,
   };

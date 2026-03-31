@@ -47,6 +47,11 @@ export function mapFormToSecurityAsset(
     shortId: values.shortId,
     fingerprint: values.fingerprint,
     spiderX: values.spiderX || undefined,
+    handshake: {
+      server: values.handshakeServer,
+      serverPort: values.handshakeServerPort,
+    },
+    maxTimeDifference: values.maxTimeDifference || undefined,
     _publicKey: values._publicKey,
   };
 }
@@ -94,6 +99,9 @@ export function mapSecurityAssetToFormValues(
     shortId: asset.shortId,
     fingerprint: asset.fingerprint,
     spiderX: asset.spiderX ?? "/",
+    handshakeServer: asset.handshake.server,
+    handshakeServerPort: asset.handshake.serverPort,
+    maxTimeDifference: asset.maxTimeDifference ?? "",
     _publicKey: asset._publicKey ?? "",
   };
 }

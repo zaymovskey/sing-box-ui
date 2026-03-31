@@ -2,16 +2,18 @@ import z from "zod";
 
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
+const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
+
 const VlessUserSchema = z.object({
   name: z.string().trim().min(1, "Нужен user_name"),
   uuid: z.uuid("Нужен UUID"),
-  flow: z.string().trim().optional(),
+  flow: VlessFlowSchema.optional(),
 });
 
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).min(1, "Нужен хотя бы один пользователь"),
-  _security_asset_id: z.string().optional(),
+  _security_asset_id: z.string().trim().min(1).optional(),
   _tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
@@ -22,7 +24,7 @@ const tlsValidate = (
   data: z.input<typeof VlessFormSchema>,
   ctx: z.RefinementCtx,
 ) => {
-  if (data._tls_enabled && !data._security_asset_id) {
+  if (data._tls_enabled && !data._security_asset_id?.trim()) {
     ctx.addIssue({
       code: "custom",
       path: ["_security_asset_id"],

@@ -9,6 +9,11 @@ import * as React from "react";
 
 import { cn } from "../lib";
 
+export type SelectFieldItem = {
+  value: string;
+  label: string;
+};
+
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
