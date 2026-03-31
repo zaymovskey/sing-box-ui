@@ -12,7 +12,7 @@ services:
       - "8443:8443/udp"
       - "${PORT_RANGE_START}-${PORT_RANGE_END}:${PORT_RANGE_START}-${PORT_RANGE_END}/tcp"
       - "${PORT_RANGE_START}-${PORT_RANGE_END}:${PORT_RANGE_START}-${PORT_RANGE_END}/udp"
-      -  # Для V2Ray API
+      # Для V2Ray API
       - "8080:8080"
     env_file:
       - .env
