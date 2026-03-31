@@ -35,6 +35,9 @@ export const defaultsByType = {
     name: "",
     serverName: "www.cloudflare.com",
     privateKey: "",
+    shortId: "",
+    fingerprint: "chrome",
+    spiderX: "/",
     _publicKey: "",
   }),
 } satisfies Record<

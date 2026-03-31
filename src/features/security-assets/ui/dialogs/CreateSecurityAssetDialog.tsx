@@ -40,8 +40,6 @@ export function CreateSecurityAssetDialog({
     defaultValues: defaultsByType.tls(),
   });
 
-  console.log(form.formState.errors, "errors");
-
   const type = useWatch({ control: form.control, name: "type" });
 
   const { createSecurityAsset, isPending } = useCreateSecurityAsset();

@@ -22,6 +22,7 @@ export function resolveSecurityAssets(
     if (!asset) {
       throw new Error(`Security asset not found: ${i._security_asset_id}`);
     }
+
     if (i.type === "vless") {
       if (asset.type !== "reality") {
         throw new Error("VLESS требует Reality asset");
@@ -35,6 +36,7 @@ export function resolveSecurityAssets(
           reality: {
             enabled: true,
             private_key: asset.privateKey,
+            short_id: asset.shortId,
           },
         },
       };

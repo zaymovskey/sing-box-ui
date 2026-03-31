@@ -13,15 +13,47 @@ export function buildInboundShareLink(
       flow?: string;
     };
 
+    const realityAsset = securityAssets.find(
+      (asset) =>
+        asset.id === vlessInbound._security_asset_id &&
+        asset.type === "reality",
+    );
+
     const port = vlessInbound.listen_port;
     const params = new URLSearchParams();
+
+    params.set("type", "tcp");
+    params.set("encryption", "none");
 
     if (vlessUser.flow) {
       params.set("flow", vlessUser.flow);
     }
 
-    params.set("security", "none");
-    params.set("type", "tcp");
+    if (realityAsset?.type === "reality") {
+      params.set("security", "reality");
+
+      if (realityAsset.serverName) {
+        params.set("sni", realityAsset.serverName);
+      }
+
+      if (realityAsset._publicKey) {
+        params.set("pbk", realityAsset._publicKey);
+      }
+
+      if (realityAsset.shortId) {
+        params.set("sid", realityAsset.shortId);
+      }
+
+      if (realityAsset.fingerprint) {
+        params.set("fp", realityAsset.fingerprint);
+      }
+
+      if (realityAsset.spiderX) {
+        params.set("spx", realityAsset.spiderX);
+      }
+    } else {
+      params.set("security", "none");
+    }
 
     return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${vlessInbound.tag}`;
   }
@@ -36,13 +68,6 @@ export function buildInboundShareLink(
       (asset) =>
         asset.id === hy2Inbound._security_asset_id && asset.type === "tls",
     );
-
-    console.log("Building share link for hysteria2 inbound", {
-      inbound,
-      user,
-      tlsAsset,
-      host,
-    });
 
     const port = hy2Inbound.listen_port;
     const params = new URLSearchParams();

@@ -38,11 +38,17 @@ const TlsFormSchema = SecurityAssetMetaFormSchema.extend({
   }
 });
 
-const RealityFormSchema = SecurityAssetMetaFormSchema.extend({
+const RealityFormSchema = z.object({
+  id: z.string().min(1),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1).optional(),
   type: z.literal("reality"),
   name: z.string().min(1, "Name is required"),
   serverName: z.string().min(1, "Server name is required"),
   privateKey: z.string().min(1, "Private key is required"),
+  shortId: z.string().min(1, "Short ID is required"),
+  fingerprint: z.string().min(1, "Fingerprint is required"),
+  spiderX: z.string().optional(),
   _publicKey: z.string().min(1, "Public key is required"),
 });
 
