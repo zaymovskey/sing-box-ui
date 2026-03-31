@@ -4,6 +4,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import { type InboundFormValues } from "@/features/sing-box/config-core";
+import { generateClientUuid } from "@/shared/lib";
 import {
   Button,
   ControlledSelectField,
@@ -90,7 +91,7 @@ export function InboundFormVlessFields() {
                 />
 
                 <UncontrolledInputWithGenerateField<InboundFormValues>
-                  generateFunction={() => window.crypto.randomUUID()}
+                  generateFunction={() => generateClientUuid()}
                   label="UUID"
                   name={`users.${index}.uuid`}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

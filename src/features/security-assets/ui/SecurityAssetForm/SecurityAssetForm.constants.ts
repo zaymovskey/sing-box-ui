@@ -1,3 +1,4 @@
+import { generateClientUuid } from "@/shared/lib";
 import { type SelectFieldItem } from "@/shared/ui";
 
 import type { SecurityAssetFormValues } from "../../model/security-asset-form.schema";
@@ -9,7 +10,7 @@ export const typeItems: SelectFieldItem[] = [
 
 function createMeta() {
   return {
-    id: window.crypto.randomUUID(),
+    id: generateClientUuid(),
     createdAt: new Date().toISOString(),
   };
 }
