@@ -49,6 +49,8 @@ jobs:
           build-args: |
             NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
             NEXT_PUBLIC_HOST_IP=${{ secrets.NEXT_PUBLIC_HOST_IP }}
+            NEXT_PUBLIC_PORT_RANGE_START=${{ vars.NEXT_PUBLIC_PORT_RANGE_START }}
+            NEXT_PUBLIC_PORT_RANGE_END=${{ vars.NEXT_PUBLIC_PORT_RANGE_END }}
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
