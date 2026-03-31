@@ -2,21 +2,34 @@ import path from "node:path";
 
 import { z } from "zod";
 
-const serverEnvSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
-  AUTH_COOKIE_NAME: z.string().min(1).default("sbui_session"),
-  AUTH_JWT_SECRET: z.string().min(1),
-  AUTH_DEMO_EMAIL: z.email(),
-  AUTH_DEMO_PASSWORD: z.string().min(1),
-  SINGBOX_DRAFT_CONFIG_PATH: z.string().min(1),
-  SINGBOX_CONFIG_PATH: z.string().min(1),
-  SINGBOX_CERTS_DIR: z.string().min(1),
-  SINGBOX_CONTAINER_NAME: z.string().min(1),
-  USE_HTTPS: z.enum(["true", "false"]).default("false"),
-  SECURITY_ASSETS_PATH: z.string().min(1),
-});
+const serverEnvSchema = z
+  .object({
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
+    AUTH_COOKIE_NAME: z.string().min(1).default("sbui_session"),
+    AUTH_JWT_SECRET: z.string().min(1),
+    AUTH_DEMO_EMAIL: z.email(),
+    AUTH_DEMO_PASSWORD: z.string().min(1),
+    SINGBOX_DRAFT_CONFIG_PATH: z.string().min(1),
+    SINGBOX_CONFIG_PATH: z.string().min(1),
+    SINGBOX_CERTS_DIR: z.string().min(1),
+    SINGBOX_CONTAINER_NAME: z.string().min(1),
+    USE_HTTPS: z.enum(["true", "false"]).default("false"),
+    SECURITY_ASSETS_PATH: z.string().min(1),
+    PORT_RANGE_START: z.coerce.number().int().positive(),
+    PORT_RANGE_END: z.coerce.number().int().positive(),
+  })
+  .superRefine((env, ctx) => {
+    if (env.PORT_RANGE_START > env.PORT_RANGE_END) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["PORT_RANGE_END"],
+        message:
+          "PORT_RANGE_END must be greater than or equal to PORT_RANGE_START",
+      });
+    }
+  });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;
 
@@ -36,6 +49,8 @@ function getBuildSafeEnv(source: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
       source.SINGBOX_CONTAINER_NAME ?? "build-placeholder",
     USE_HTTPS: source.USE_HTTPS ?? "false",
     SECURITY_ASSETS_PATH: source.SECURITY_ASSETS_PATH ?? "/tmp/security-assets",
+    PORT_RANGE_START: source.PORT_RANGE_START ?? "20000",
+    PORT_RANGE_END: source.PORT_RANGE_END ?? "40000",
   };
 }
 
