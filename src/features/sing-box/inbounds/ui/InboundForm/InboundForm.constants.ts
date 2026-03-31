@@ -14,7 +14,7 @@ export const defaultsByType = {
     listen_port: 443,
     sniff: true,
     sniff_override_destination: true,
-    users: [{ name: "", uuid: "", flow: "" }],
+    users: [{ name: "", uuid: "", flow: undefined }],
     _tls_enabled: false,
     _security_asset_id: undefined,
   },
@@ -28,7 +28,9 @@ export const defaultsByType = {
     sniff_override_destination: true,
     up_mbps: 100,
     down_mbps: 100,
+    ignore_client_bandwidth: false,
     obfs_enabled: false,
     obfs_password: "",
+    _security_asset_id: undefined,
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

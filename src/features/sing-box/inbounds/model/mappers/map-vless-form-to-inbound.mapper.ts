@@ -14,7 +14,7 @@ export function mapVlessFormToInbound(
     users: values.users.map((user) => ({
       name: user.name,
       uuid: user.uuid,
-      flow: user.flow || undefined,
+      flow: user.flow,
     })),
     _tls_enabled: values._tls_enabled,
     _security_asset_id: values._security_asset_id,

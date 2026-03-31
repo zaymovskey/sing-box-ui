@@ -16,7 +16,8 @@ import {
 } from "@/shared/ui";
 
 export function InboundFormHy2Fields() {
-  const { control, trigger, formState } = useFormContext<InboundFormValues>();
+  const { control, trigger, formState, setValue } =
+    useFormContext<InboundFormValues>();
 
   const { data: securityAssetsList, isPending: securityAssetsListPending } =
     useSecurityAssetsListQuery({
@@ -43,6 +44,16 @@ export function InboundFormHy2Fields() {
     name: "users",
   });
 
+  const obfsEnabled = useWatch({
+    control,
+    name: "obfs_enabled",
+  });
+
+  const ignoreClientBandwidth = useWatch({
+    control,
+    name: "ignore_client_bandwidth",
+  });
+
   useEffect(() => {
     if (formState.submitCount === 0) {
       return;
@@ -51,10 +62,32 @@ export function InboundFormHy2Fields() {
     void trigger("users");
   }, [watchedUsers, formState.submitCount, trigger]);
 
-  const obfsEnabled = useWatch({
-    control,
-    name: "obfs_enabled",
-  });
+  useEffect(() => {
+    if (obfsEnabled) {
+      return;
+    }
+
+    setValue("obfs_password", "", {
+      shouldDirty: true,
+      shouldValidate: formState.submitCount > 0,
+    });
+  }, [obfsEnabled, setValue, formState.submitCount]);
+
+  useEffect(() => {
+    if (!ignoreClientBandwidth) {
+      return;
+    }
+
+    setValue("up_mbps", 100, {
+      shouldDirty: true,
+      shouldValidate: formState.submitCount > 0,
+    });
+
+    setValue("down_mbps", 100, {
+      shouldDirty: true,
+      shouldValidate: formState.submitCount > 0,
+    });
+  }, [ignoreClientBandwidth, setValue, formState.submitCount]);
 
   return (
     <div className="space-y-6">
@@ -120,14 +153,21 @@ export function InboundFormHy2Fields() {
           title="Скорость"
         />
 
+        <ControlledSwitchField<InboundFormValues>
+          label="Ignore client bandwidth"
+          name="ignore_client_bandwidth"
+        />
+
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledNumberField<InboundFormValues>
+            disabled={ignoreClientBandwidth}
             label="Up (Mbps)"
             name="up_mbps"
             placeholder="100"
           />
 
           <UncontrolledNumberField<InboundFormValues>
+            disabled={ignoreClientBandwidth}
             label="Down (Mbps)"
             name="down_mbps"
             placeholder="100"
