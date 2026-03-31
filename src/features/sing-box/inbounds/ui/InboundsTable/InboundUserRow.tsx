@@ -1,10 +1,10 @@
 import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
-import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import {
   type DraftInbound,
   type DraftInboundUser,
+  type SecurityAsset,
 } from "@/shared/api/contracts";
 import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
@@ -16,11 +16,12 @@ import { InboundShareQrDialog } from "../dialogs/InboundShareQrDialog";
 export function InboundUserRow({
   inbound,
   user,
+  securityAssets,
 }: {
   inbound: DraftInbound;
   user: DraftInboundUser;
+  securityAssets: SecurityAsset[];
 }) {
-  const { data: securityAssets } = useSecurityAssetsListQuery();
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
