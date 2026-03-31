@@ -30,7 +30,9 @@ export function UncontrolledNumberField<T extends FieldValues>({
 
   return (
     <FormItem className="gap-2">
-      <FormLabel>{label}</FormLabel>
+      <FormLabel className={error ? "text-destructive" : undefined}>
+        {label}
+      </FormLabel>
       <Input
         {...inputProps}
         type="number"

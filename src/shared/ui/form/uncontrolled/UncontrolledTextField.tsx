@@ -30,7 +30,12 @@ export function UncontrolledTextField<T extends FieldValues>({
 
   return (
     <FormItem className="gap-2">
-      <FormLabel htmlFor={inputId}>{label}</FormLabel>
+      <FormLabel
+        className={error ? "text-destructive" : undefined}
+        htmlFor={inputId}
+      >
+        {label}
+      </FormLabel>
 
       <Input
         {...form.register(name)}

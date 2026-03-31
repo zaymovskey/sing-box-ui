@@ -28,7 +28,9 @@ export function UncontrolledInputWithGenerateField<T extends FieldValues>({
 
   return (
     <FormItem className="gap-2">
-      <FormLabel>{label}</FormLabel>
+      <FormLabel className={error ? "text-destructive" : undefined}>
+        {label}
+      </FormLabel>
       <InputWithGenerate
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}

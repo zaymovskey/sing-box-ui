@@ -50,7 +50,10 @@ export function ControlledSelectField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="gap-2">
-          <FormLabel className="text-foreground" htmlFor={inputId}>
+          <FormLabel
+            className={error ? "text-destructive" : undefined}
+            htmlFor={inputId}
+          >
             {label}
           </FormLabel>
 
