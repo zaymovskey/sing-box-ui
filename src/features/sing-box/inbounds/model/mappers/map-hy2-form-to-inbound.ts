@@ -17,5 +17,12 @@ export function mapHy2FormToInbound(
       name: user.name,
       password: user.password,
     })),
+    _security_asset_id: values._security_asset_id,
+    obfs: values.obfs_enabled
+      ? {
+          type: "salamander",
+          password: values.obfs_password,
+        }
+      : undefined,
   };
 }

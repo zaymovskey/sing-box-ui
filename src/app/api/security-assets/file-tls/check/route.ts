@@ -77,6 +77,19 @@ async function validatePair(
   }
 }
 
+async function detectSelfSignedCertificate(
+  filePath: string,
+): Promise<boolean | null> {
+  try {
+    const pem = await readFile(filePath, "utf-8");
+    const cert = new X509Certificate(pem);
+
+    return cert.issuer === cert.subject;
+  } catch {
+    return null;
+  }
+}
+
 export const POST = withRoute({
   auth: true,
   requestSchema: TLSFileCheckRequestSchema,
@@ -89,6 +102,7 @@ export const POST = withRoute({
       cert: "skipped",
       key: "skipped",
       pair: "skipped",
+      isSelfSigned: null,
     };
 
     if (!certPath) {
@@ -105,6 +119,10 @@ export const POST = withRoute({
 
     if (result.cert === "success" && result.key === "success") {
       result.pair = await validatePair(certPath!, keyPath!);
+    }
+
+    if (result.cert === "success") {
+      result.isSelfSigned = await detectSelfSignedCertificate(certPath!);
     }
 
     return result;

@@ -35,7 +35,12 @@ export function UncontrolledPathField<T extends FieldValues>({
 
   return (
     <FormItem className={className ?? "gap-2"}>
-      <FormLabel htmlFor={inputId}>{label}</FormLabel>
+      <FormLabel
+        className={error ? "text-destructive" : undefined}
+        htmlFor={inputId}
+      >
+        {label}
+      </FormLabel>
 
       <div className="flex">
         <span className="border-input bg-background text-muted-foreground flex h-9 items-center rounded-md border border-r px-3 py-1 text-base whitespace-nowrap md:text-sm">

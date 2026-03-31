@@ -48,6 +48,8 @@ export function mapInboundToFormValues(
         password: user.password ?? "",
       })) ?? [{ name: "", password: "" }],
       _security_asset_id: inbound._security_asset_id ?? "",
+      obfs_enabled: Boolean(inbound.obfs?.password),
+      obfs_password: inbound.obfs?.password ?? "",
     };
   }
 

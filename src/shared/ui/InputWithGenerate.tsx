@@ -7,10 +7,12 @@ import { type ComponentPropsWithoutRef, forwardRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 
-type Props = ComponentPropsWithoutRef<"input">;
+type Props = ComponentPropsWithoutRef<"input"> & {
+  generateFunction: () => string;
+};
 
-export const UuidInput = forwardRef<HTMLInputElement, Props>(
-  ({ ...props }, forwardedRef) => {
+export const InputWithGenerate = forwardRef<HTMLInputElement, Props>(
+  ({ generateFunction, ...props }, forwardedRef) => {
     const innerRef = React.useRef<HTMLInputElement | null>(null);
     const setRef = (node: HTMLInputElement | null) => {
       innerRef.current = node;
@@ -23,7 +25,7 @@ export const UuidInput = forwardRef<HTMLInputElement, Props>(
     };
 
     const handleGenerate = () => {
-      const uuid = crypto.randomUUID();
+      const value = generateFunction();
       const el = innerRef.current;
       if (!el) return;
 
@@ -32,7 +34,7 @@ export const UuidInput = forwardRef<HTMLInputElement, Props>(
         "value",
       )?.set;
 
-      nativeInputValueSetter?.call(el, uuid);
+      nativeInputValueSetter?.call(el, value);
       el.dispatchEvent(new Event("input", { bubbles: true }));
     };
 
@@ -48,4 +50,4 @@ export const UuidInput = forwardRef<HTMLInputElement, Props>(
   },
 );
 
-UuidInput.displayName = "UuidInput";
+InputWithGenerate.displayName = "InputWithGenerate";

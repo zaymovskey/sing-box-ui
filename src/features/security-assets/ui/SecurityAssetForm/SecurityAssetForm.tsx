@@ -10,10 +10,9 @@ import {
 } from "@/shared/ui";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
-import { RealityToolsSection } from "../tools/RealityTools/RealityToolsSection";
-import { TLSFileToolsSection } from "../tools/TLSFileTools/TLSFileToolsSection";
-import { TLSInlineToolsSection } from "../tools/TLSInlineTools/TLSInlineToolsSection";
 import { defaultsByType, typeItems } from "./SecurityAssetForm.constants";
+import { SecurityAssetFormRealityFields } from "./SecurityAssetFormRealityFields";
+import { SecurityAssetFormTlsFields } from "./SecurityAssetFormTlsFields";
 
 type SecurityAssetFormProps = {
   formId: string;
@@ -45,10 +44,6 @@ export function SecurityAssetForm({
   onSubmit,
 }: SecurityAssetFormProps) {
   const type = useWatch({ control: form.control, name: "type" });
-  const sourceType = useWatch({
-    control: form.control,
-    name: "source.sourceType",
-  });
 
   const prevTypeRef = useRef(type);
 
@@ -102,42 +97,14 @@ export function SecurityAssetForm({
             description={
               type === "tls"
                 ? "Настройте источник сертификата и ключа для TLS."
-                : "Настройте ключи и параметры для Reality."
+                : "Настройте параметры Reality и сгенерируйте ключевую пару."
             }
             title={type === "tls" ? "TLS настройки" : "Reality настройки"}
           />
 
-          {type === "tls" && (
-            <div className="space-y-4">
-              <ControlledSelectField<SecurityAssetFormValues>
-                items={[
-                  { label: "Inline", value: "inline" },
-                  { label: "File", value: "file" },
-                ]}
-                label="Certificate Source"
-                name="source.sourceType"
-                placeholder="Выбери источник сертификата"
-                showErrorMessage={false}
-              />
+          {type === "tls" && <SecurityAssetFormTlsFields />}
 
-              <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
-                <p className="text-foreground font-medium">
-                  Источник TLS сертификата
-                </p>
-
-                <p className="text-muted-foreground mt-1">
-                  Inline хранит сертификат и ключ прямо в конфигурации. File
-                  использует пути к файлам на сервере и подходит, если
-                  сертификаты уже лежат в управляемой директории.
-                </p>
-              </div>
-
-              {sourceType === "inline" && <TLSInlineToolsSection />}
-              {sourceType === "file" && <TLSFileToolsSection />}
-            </div>
-          )}
-
-          {type === "reality" && <RealityToolsSection />}
+          {type === "reality" && <SecurityAssetFormRealityFields />}
         </section>
       </form>
     </FormProvider>

@@ -1,4 +1,5 @@
 import { type SecurityAsset } from "@/shared/api/contracts";
+import { clientEnv } from "@/shared/lib";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 
@@ -21,11 +22,16 @@ export function mapFormToSecurityAsset(
               sourceType: "inline",
               certificatePem: values.source.certificatePem,
               keyPem: values.source.keyPem,
+              _is_selfsigned_cert: true,
             }
           : {
               sourceType: "file",
-              certificatePath: values.source.certificatePath,
-              keyPath: values.source.keyPath,
+              certificatePath:
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR +
+                values.source.certificatePath,
+              keyPath:
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + values.source.keyPath,
+              _is_selfsigned_cert: values.source._is_selfsigned_cert,
             },
     };
   }
@@ -38,7 +44,10 @@ export function mapFormToSecurityAsset(
     updatedAt: now,
     serverName: values.serverName,
     privateKey: values.privateKey,
-    _publicKey: values._publicKey || undefined,
+    shortId: values.shortId,
+    fingerprint: values.fingerprint,
+    spiderX: values.spiderX || undefined,
+    _publicKey: values._publicKey,
   };
 }
 
@@ -61,8 +70,16 @@ export function mapSecurityAssetToFormValues(
             }
           : {
               sourceType: "file",
-              certificatePath: asset.source.certificatePath,
-              keyPath: asset.source.keyPath,
+              certificatePath: asset.source.certificatePath.replace(
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR,
+                "",
+              ),
+              keyPath: asset.source.keyPath.replace(
+                clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR,
+                "",
+              ),
+              _tlsChecked: false,
+              _is_selfsigned_cert: asset.source._is_selfsigned_cert ?? false,
             },
     };
   }
@@ -74,6 +91,9 @@ export function mapSecurityAssetToFormValues(
     createdAt: asset.createdAt,
     serverName: asset.serverName,
     privateKey: asset.privateKey,
+    shortId: asset.shortId,
+    fingerprint: asset.fingerprint,
+    spiderX: asset.spiderX ?? "/",
     _publicKey: asset._publicKey ?? "",
   };
 }

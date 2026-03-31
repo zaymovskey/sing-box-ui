@@ -1,11 +1,10 @@
 import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
-import { useConfigQuery } from "@/features/sing-box/config-core";
 import {
-  DraftConfigSchema,
   type DraftInbound,
   type DraftInboundUser,
+  type SecurityAsset,
 } from "@/shared/api/contracts";
 import { clientEnv, copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
@@ -17,15 +16,12 @@ import { InboundShareQrDialog } from "../dialogs/InboundShareQrDialog";
 export function InboundUserRow({
   inbound,
   user,
+  securityAssets,
 }: {
   inbound: DraftInbound;
   user: DraftInboundUser;
+  securityAssets: SecurityAsset[];
 }) {
-  const { data: rawDraftConfig } = useConfigQuery();
-
-  const parsedDraft = DraftConfigSchema.safeParse(rawDraftConfig);
-  const draftConfig = parsedDraft.success ? parsedDraft.data : null;
-
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -34,6 +30,7 @@ export function InboundUserRow({
   const link = buildInboundShareLink(
     inbound,
     user,
+    securityAssets ?? [],
     clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
   );
 
@@ -58,10 +55,6 @@ export function InboundUserRow({
 
     window.prompt("Скопируй ссылку вручную:", link);
   };
-
-  if (!draftConfig) {
-    return null;
-  }
 
   return (
     <>

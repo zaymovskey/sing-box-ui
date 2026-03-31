@@ -3,7 +3,7 @@ import { z } from "zod";
 const NonEmptyStringSchema = z.string().min(1);
 
 const ListenSchema = z.string().min(1);
-const ListenPortSchema = z.number().int().min(0).max(65535);
+const ListenPortSchema = z.number().int().min(0).min(20000).max(40000);
 const SniffSchema = z.boolean().optional();
 const SniffOverrideDestinationSchema = z.boolean().optional();
 

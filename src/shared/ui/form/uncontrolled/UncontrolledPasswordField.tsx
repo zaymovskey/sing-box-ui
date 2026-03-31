@@ -26,7 +26,9 @@ export function UncontrolledPasswordField<T extends FieldValues>({
 
   return (
     <FormItem className="gap-2">
-      <FormLabel>{label}</FormLabel>
+      <FormLabel className={error ? "text-destructive" : undefined}>
+        {label}
+      </FormLabel>
       <PasswordInput
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}

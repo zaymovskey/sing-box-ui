@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { Fragment } from "react";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import {
   Table,
   TableBody,
@@ -37,6 +38,8 @@ export function InboundsTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const { data: securityAssets } = useSecurityAssetsListQuery();
 
   return (
     <div className="overflow-hidden rounded-md border">
@@ -100,6 +103,7 @@ export function InboundsTable({
                               <InboundUserRow
                                 key={`${row.id}-${index}`}
                                 inbound={inbound}
+                                securityAssets={securityAssets ?? []}
                                 user={user}
                               />
                             ))}

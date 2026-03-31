@@ -1,12 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import z from "zod";
+
 import { saveConfigRevision } from "@/features/sing-box/config-core/server";
-import {
-  DraftInboundSchema,
-  InboundsListResponseSchema,
-  OkResponseSchema,
-} from "@/shared/api/contracts";
+import { DraftInboundSchema, OkResponseSchema } from "@/shared/api/contracts";
 import { getServerEnv, withRoute } from "@/shared/lib/server";
 
 export const POST = withRoute({
@@ -51,7 +49,7 @@ export const POST = withRoute({
 
 export const GET = withRoute({
   auth: true,
-  responseSchema: InboundsListResponseSchema,
+  responseSchema: z.unknown(),
   handler: async () => {
     const serverEnv = getServerEnv();
     const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;

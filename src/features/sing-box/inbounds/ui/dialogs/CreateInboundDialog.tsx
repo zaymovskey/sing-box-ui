@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
@@ -104,12 +105,12 @@ export function CreateInboundDialog({
 
     try {
       await createInbound(values);
+
       serverToast.success("Инбаунд успешно создан", {
         id: "save-inbound",
         duration: 2000,
       });
-      form.reset(defaultsByType[type]);
-      form.clearErrors();
+
       onOpenChange(false);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
@@ -133,6 +134,12 @@ export function CreateInboundDialog({
     form.clearErrors();
     form.reset(defaultsByType[type]);
   };
+
+  useEffect(() => {
+    if (!open) return;
+
+    form.reset(defaultsByType.vless);
+  }, [open, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -19,6 +19,7 @@ export function ControlledSwitchField<T extends FieldValues>({
   disabled = false,
 }: SwitchFieldProps<T>) {
   const form = useFormContext();
+  const error = form.getFieldState(name, form.formState).error;
 
   return (
     <FormField
@@ -27,7 +28,9 @@ export function ControlledSwitchField<T extends FieldValues>({
       render={({ field }) => (
         <FormItem className="flex items-center justify-between rounded-md border p-3">
           <div className="space-y-1">
-            <FormLabel className="m-0">{label}</FormLabel>
+            <FormLabel className={error ? "text-destructive" : undefined}>
+              {label}
+            </FormLabel>
             <div className="text-muted-foreground text-xs">{placeholder}</div>
           </div>
           <FormControl>

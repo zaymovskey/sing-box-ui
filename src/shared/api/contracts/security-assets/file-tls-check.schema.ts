@@ -19,6 +19,7 @@ export const TLSFileCheckResponseSchema = z.object({
   cert: Hy2TlsCheckItemSchema,
   key: Hy2TlsCheckItemSchema,
   pair: Hy2TlsCheckItemSchema,
+  isSelfSigned: z.boolean().nullable().optional(),
 });
 
 export type TLSCheckItem = z.infer<typeof Hy2TlsCheckItemSchema>;

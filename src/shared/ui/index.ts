@@ -49,8 +49,9 @@ export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberF
 export { UncontrolledPasswordField } from "./form/uncontrolled/UncontrolledPasswordField";
 export { UncontrolledPathField } from "./form/uncontrolled/UncontrolledPathField";
 export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField";
-export { UncontrolledUuidField } from "./form/uncontrolled/UncontrolledUuidField";
+export { UncontrolledInputWithGenerateField } from "./form/uncontrolled/UncontrolledUuidField";
 export { Input } from "./input";
+export { InputWithGenerate } from "./InputWithGenerate";
 export { Label } from "./label";
 export { MultiSelect } from "./MultiSelect";
 export {
@@ -100,6 +101,7 @@ export {
 export { Toaster } from "./sonner/sonner";
 export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
 export { clientToast, infraToast, serverToast } from "./sonner/toasters";
+export { SubsectionTitle } from "./SubsectionTitle";
 export { Switch } from "./switch";
 export {
   Table,
@@ -109,4 +111,3 @@ export {
   TableHeader,
   TableRow,
 } from "./table";
-export { UuidInput } from "./uuid-input";

@@ -11,12 +11,14 @@ const TlsInlineSourceSchema = z.object({
   sourceType: z.literal("inline"),
   certificatePem: z.string().min(1),
   keyPem: z.string().min(1),
+  _is_selfsigned_cert: z.boolean().optional(),
 });
 
 const TlsFileSourceSchema = z.object({
   sourceType: z.literal("file"),
   certificatePath: z.string().min(1),
   keyPath: z.string().min(1),
+  _is_selfsigned_cert: z.boolean().optional(),
 });
 
 export const TlsSecurityAssetSchema = SecurityAssetBaseSchema.extend({
@@ -32,7 +34,10 @@ export const RealitySecurityAssetSchema = SecurityAssetBaseSchema.extend({
   type: z.literal("reality"),
   serverName: z.string().min(1),
   privateKey: z.string().min(1),
-  _publicKey: z.string().min(1).optional(),
+  shortId: z.string().min(1),
+  fingerprint: z.string().min(1),
+  spiderX: z.string().optional(),
+  _publicKey: z.string().min(1),
 });
 
 export const SecurityAssetSchema = z.discriminatedUnion("type", [

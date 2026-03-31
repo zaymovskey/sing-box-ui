@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
+import { useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
@@ -16,10 +17,11 @@ import {
 
 import { useCreateSecurityAsset } from "../../model/commands/security-assets-create.command";
 import {
-  SecurityAssetFormSchema,
+  createSecurityAssetFormSchema,
   type SecurityAssetFormValues,
 } from "../../model/security-asset-form.schema";
 import { SecurityAssetFormProvider } from "../../model/security-assets-form-ui.context";
+import { useSecurityAssetsListQuery } from "../../model/security-assets-list.query";
 import { SecurityAssetForm } from "../SecurityAssetForm/SecurityAssetForm";
 import { defaultsByType } from "../SecurityAssetForm/SecurityAssetForm.constants";
 
@@ -34,13 +36,23 @@ export function CreateSecurityAssetDialog({
   open,
   onOpenChange,
 }: CreateSecurityAssetDialogProps) {
+  const { data: securityAssets } = useSecurityAssetsListQuery();
+
+  const existingNames = useMemo(
+    () => securityAssets?.map((asset) => asset.name) ?? [],
+    [securityAssets],
+  );
+
+  const SecurityAssetFormSchema = useMemo(
+    () => createSecurityAssetFormSchema(existingNames),
+    [existingNames],
+  );
+
   const form = useForm<SecurityAssetFormValues>({
     resolver: zodResolver(SecurityAssetFormSchema),
     mode: "onSubmit",
     defaultValues: defaultsByType.tls(),
   });
-
-  console.log(form.formState.errors, "errors");
 
   const type = useWatch({ control: form.control, name: "type" });
 
@@ -61,9 +73,6 @@ export function CreateSecurityAssetDialog({
         duration: 2000,
       });
 
-      form.reset(defaultsByType[type]());
-      form.clearErrors();
-
       onOpenChange(false);
     } catch {
       serverToast.error(`Не удалось создать ${typeTitle}`, {
@@ -74,12 +83,19 @@ export function CreateSecurityAssetDialog({
   };
 
   const handleReset = () => {
-    form.clearErrors();
     form.reset(defaultsByType[type]());
   };
 
+  const handleDialogOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      form.reset(defaultsByType.tls());
+    }
+
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-fit">
           <PlusCircle />

@@ -24,6 +24,8 @@ export const defaultsByType = {
       sourceType: "file",
       certificatePath: "certificate.crt",
       keyPath: "kkey.key",
+      _is_selfsigned_cert: false,
+      _tlsChecked: false,
     },
   }),
 
@@ -33,6 +35,9 @@ export const defaultsByType = {
     name: "",
     serverName: "www.cloudflare.com",
     privateKey: "",
+    shortId: "",
+    fingerprint: "chrome",
+    spiderX: "/",
     _publicKey: "",
   }),
 } satisfies Record<

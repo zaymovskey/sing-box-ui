@@ -3,17 +3,19 @@
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 import { get } from "react-hook-form";
 
-import { UuidInput } from "../../uuid-input";
+import { InputWithGenerate } from "../../InputWithGenerate";
 import { FormItem, FormLabel } from "../form";
 
-export function UncontrolledUuidField<T extends FieldValues>({
+export function UncontrolledInputWithGenerateField<T extends FieldValues>({
   name,
   label,
   placeholder,
+  generateFunction,
 }: {
   name: Path<T>;
   label: string;
   placeholder?: string;
+  generateFunction: () => string;
 }) {
   const form = useFormContext<T>();
 
@@ -26,12 +28,15 @@ export function UncontrolledUuidField<T extends FieldValues>({
 
   return (
     <FormItem className="gap-2">
-      <FormLabel>{label}</FormLabel>
-      <UuidInput
+      <FormLabel className={error ? "text-destructive" : undefined}>
+        {label}
+      </FormLabel>
+      <InputWithGenerate
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}
         id={inputId}
         {...form.register(name)}
+        generateFunction={generateFunction}
         placeholder={placeholder}
       />
       <div className="text-destructive min-h-5 text-sm" id={messageId}>
