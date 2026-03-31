@@ -101,6 +101,7 @@ export {
 export { Toaster } from "./sonner/sonner";
 export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
 export { clientToast, infraToast, serverToast } from "./sonner/toasters";
+export { SubsectionTitle } from "./SubsectionTitle";
 export { Switch } from "./switch";
 export {
   Table,
