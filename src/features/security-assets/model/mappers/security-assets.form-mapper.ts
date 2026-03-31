@@ -1,5 +1,5 @@
 import { type SecurityAsset } from "@/shared/api/contracts";
-import { clientEnv } from "@/shared/lib";
+import { clientEnv, generateClientUuid } from "@/shared/lib";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 
@@ -10,7 +10,7 @@ export function mapFormToSecurityAsset(
 
   if (values.type === "tls") {
     return {
-      id: values.id ?? window.crypto.randomUUID(),
+      id: values.id ?? generateClientUuid(),
       name: values.name,
       type: "tls",
       createdAt: values.createdAt ?? now,
@@ -37,7 +37,7 @@ export function mapFormToSecurityAsset(
   }
 
   return {
-    id: values.id ?? window.crypto.randomUUID(),
+    id: values.id ?? generateClientUuid(),
     name: values.name,
     type: "reality",
     createdAt: values.createdAt ?? now,
