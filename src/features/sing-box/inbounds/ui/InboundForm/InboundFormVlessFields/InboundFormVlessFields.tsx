@@ -90,7 +90,7 @@ export function InboundFormVlessFields() {
                 />
 
                 <UncontrolledInputWithGenerateField<InboundFormValues>
-                  generateFunction={() => crypto.randomUUID()}
+                  generateFunction={() => window.crypto.randomUUID()}
                   label="UUID"
                   name={`users.${index}.uuid`}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

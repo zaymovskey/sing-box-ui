@@ -9,7 +9,7 @@ export const typeItems: SelectFieldItem[] = [
 
 function createMeta() {
   return {
-    id: crypto.randomUUID(),
+    id: window.crypto.randomUUID(),
     createdAt: new Date().toISOString(),
   };
 }
