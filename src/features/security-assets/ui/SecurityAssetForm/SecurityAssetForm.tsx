@@ -3,9 +3,11 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
+import { generateShortId } from "@/shared/lib";
 import {
   ControlledSelectField,
   Separator,
+  UncontrolledInputWithGenerateField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
@@ -163,7 +165,8 @@ export function SecurityAssetForm({
                 />
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <UncontrolledTextField<SecurityAssetFormValues>
+                  <UncontrolledInputWithGenerateField<SecurityAssetFormValues>
+                    generateFunction={() => generateShortId()}
                     label="Short ID"
                     name="shortId"
                     placeholder="a1b2c3d4"

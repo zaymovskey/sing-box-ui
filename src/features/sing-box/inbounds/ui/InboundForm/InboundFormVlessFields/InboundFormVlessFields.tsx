@@ -10,8 +10,8 @@ import {
   ControlledSwitchField,
   type SelectFieldItem,
   Separator,
+  UncontrolledInputWithGenerateField,
   UncontrolledTextField,
-  UncontrolledUuidField,
 } from "@/shared/ui";
 
 function SubsectionTitle({
@@ -105,7 +105,8 @@ export function InboundFormVlessFields() {
                   placeholder="user"
                 />
 
-                <UncontrolledUuidField<InboundFormValues>
+                <UncontrolledInputWithGenerateField<InboundFormValues>
+                  generateFunction={() => crypto.randomUUID()}
                   label="UUID"
                   name={`users.${index}.uuid`}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

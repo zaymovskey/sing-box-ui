@@ -49,8 +49,9 @@ export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberF
 export { UncontrolledPasswordField } from "./form/uncontrolled/UncontrolledPasswordField";
 export { UncontrolledPathField } from "./form/uncontrolled/UncontrolledPathField";
 export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField";
-export { UncontrolledUuidField } from "./form/uncontrolled/UncontrolledUuidField";
+export { UncontrolledInputWithGenerateField } from "./form/uncontrolled/UncontrolledUuidField";
 export { Input } from "./input";
+export { InputWithGenerate } from "./InputWithGenerate";
 export { Label } from "./label";
 export { MultiSelect } from "./MultiSelect";
 export {
@@ -109,4 +110,3 @@ export {
   TableHeader,
   TableRow,
 } from "./table";
-export { UuidInput } from "./uuid-input";

@@ -38,7 +38,14 @@ const BaseRealityFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   serverName: z.string().min(1, "Server name is required"),
   privateKey: z.string().min(1, "Private key is required"),
-  shortId: z.string().min(1, "Short ID is required"),
+  shortId: z
+    .string()
+    .min(1, "Short ID is required")
+    .max(16, "Short ID must be <= 16 characters")
+    .transform((v) => v.trim().toLowerCase())
+    .refine((v) => /^[0-9a-f]+$/.test(v), {
+      message: "Short ID must be hex (0-9, a-f)",
+    }),
   fingerprint: z.string().min(1, "Fingerprint is required"),
   spiderX: z.string().optional(),
   _publicKey: z.string().min(1, "Public key is required"),

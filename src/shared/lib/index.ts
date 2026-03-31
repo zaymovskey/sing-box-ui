@@ -1,5 +1,6 @@
 export { copyText } from "./client/browser/fallback-copy-text-to-clipboard";
 export { cn } from "./client/cn";
+export { generateShortId } from "./client/crypto/generate-short-id.hepler";
 export { clientEnv } from "./client/env-client";
 export { ApiError } from "./client/http/api-error.class";
 export { apiFetch } from "./client/http/api-fetch";
