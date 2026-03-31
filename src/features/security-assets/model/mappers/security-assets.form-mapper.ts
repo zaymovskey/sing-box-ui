@@ -10,7 +10,7 @@ export function mapFormToSecurityAsset(
 
   if (values.type === "tls") {
     return {
-      id: values.id ?? crypto.randomUUID(),
+      id: values.id ?? window.crypto.randomUUID(),
       name: values.name,
       type: "tls",
       createdAt: values.createdAt ?? now,
@@ -37,7 +37,7 @@ export function mapFormToSecurityAsset(
   }
 
   return {
-    id: values.id ?? crypto.randomUUID(),
+    id: values.id ?? window.crypto.randomUUID(),
     name: values.name,
     type: "reality",
     createdAt: values.createdAt ?? now,
