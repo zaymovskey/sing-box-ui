@@ -6,17 +6,13 @@ import { cn } from "../../../lib/client/cn";
 import {
   Select,
   SelectContent,
+  type SelectFieldItem,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "../../select";
 import { FormControl, FormField, FormItem, FormLabel } from "../form";
-
-export type SelectFieldItem = {
-  value: string;
-  label: string;
-};
 
 type SelectFieldProps<T extends FieldValues> = {
   name: Path<T>;

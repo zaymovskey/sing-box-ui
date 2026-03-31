@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { ControlledSelectField } from "@/shared/ui";
@@ -13,6 +14,42 @@ export function SecurityAssetFormTlsFields() {
     control: form.control,
     name: "source.sourceType",
   });
+
+  useEffect(() => {
+    if (sourceType === "inline") {
+      form.setValue("source._tlsChecked", undefined, {
+        shouldDirty: true,
+        shouldValidate: form.formState.submitCount > 0,
+      });
+
+      form.setValue("source._is_selfsigned_cert", undefined, {
+        shouldDirty: true,
+        shouldValidate: form.formState.submitCount > 0,
+      });
+
+      form.setValue("source.certificatePath", "", {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+
+      form.setValue("source.keyPath", "", {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+
+      return;
+    }
+
+    form.setValue("source.certificatePem", "", {
+      shouldDirty: true,
+      shouldValidate: false,
+    });
+
+    form.setValue("source.keyPem", "", {
+      shouldDirty: true,
+      shouldValidate: false,
+    });
+  }, [sourceType, form]);
 
   return (
     <div className="space-y-4">

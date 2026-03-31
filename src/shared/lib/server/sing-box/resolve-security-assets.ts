@@ -15,7 +15,15 @@ export function resolveSecurityAssets(
       _tls_enabled?: boolean;
     };
 
-    if (!i._security_asset_id) return inbound;
+    if (!i._security_asset_id) {
+      if (i.type === "vless" && i._tls_enabled !== true) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _tls_enabled, _security_asset_id, ...rest } = i;
+        return rest;
+      }
+
+      return inbound;
+    }
 
     const asset = assets.find((a) => a.id === i._security_asset_id);
 
@@ -24,19 +32,35 @@ export function resolveSecurityAssets(
     }
 
     if (i.type === "vless") {
+      if (i._tls_enabled !== true) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _tls_enabled, _security_asset_id, ...rest } = i;
+        return rest;
+      }
+
       if (asset.type !== "reality") {
         throw new Error("VLESS требует Reality asset");
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _tls_enabled, _security_asset_id, ...rest } = i;
+
       return {
-        ...i,
+        ...rest,
         tls: {
           enabled: true,
           server_name: asset.serverName,
           reality: {
             enabled: true,
+            handshake: {
+              server: asset.handshake.server,
+              server_port: asset.handshake.serverPort,
+            },
             private_key: asset.privateKey,
             short_id: asset.shortId,
+            ...(asset.maxTimeDifference
+              ? { max_time_difference: asset.maxTimeDifference }
+              : {}),
           },
         },
       };
@@ -47,9 +71,12 @@ export function resolveSecurityAssets(
         throw new Error("Hysteria2 требует TLS asset");
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _security_asset_id, ...rest } = i;
+
       if (asset.source.sourceType === "inline") {
         return {
-          ...i,
+          ...rest,
           tls: {
             enabled: true,
             server_name: asset.serverName,
@@ -60,7 +87,7 @@ export function resolveSecurityAssets(
       }
 
       return {
-        ...i,
+        ...rest,
         tls: {
           enabled: true,
           server_name: asset.serverName,

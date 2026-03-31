@@ -29,10 +29,8 @@ export {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 export { Field, FieldGroup, FieldLegend } from "./field";
-export {
-  ControlledSelectField,
-  type SelectFieldItem,
-} from "./form/controlled/ControlledSelectField";
+export { ControlledInputWithSelectField } from "./form/controlled/ControlledInputWithSelectField";
+export { ControlledSelectField } from "./form/controlled/ControlledSelectField";
 export { ControlledSwitchField } from "./form/controlled/ControlledSwitchField";
 export {
   FormControl,
@@ -52,6 +50,7 @@ export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField
 export { UncontrolledInputWithGenerateField } from "./form/uncontrolled/UncontrolledUuidField";
 export { Input } from "./input";
 export { InputWithGenerate } from "./InputWithGenerate";
+export { InputWithSelect } from "./InputWithSelect";
 export { Label } from "./label";
 export { MultiSelect } from "./MultiSelect";
 export {
@@ -75,6 +74,7 @@ export {
 export {
   Select,
   SelectContent,
+  type SelectFieldItem,
   SelectGroup,
   SelectItem,
   SelectLabel,

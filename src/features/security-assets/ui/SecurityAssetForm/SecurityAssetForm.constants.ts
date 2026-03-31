@@ -24,7 +24,7 @@ export const defaultsByType = {
     source: {
       sourceType: "file",
       certificatePath: "certificate.crt",
-      keyPath: "kkey.key",
+      keyPath: "key.key",
       _is_selfsigned_cert: false,
       _tlsChecked: false,
     },
@@ -39,6 +39,9 @@ export const defaultsByType = {
     shortId: "",
     fingerprint: "chrome",
     spiderX: "/",
+    handshakeServer: "www.cloudflare.com",
+    handshakeServerPort: 443,
+    maxTimeDifference: "",
     _publicKey: "",
   }),
 } satisfies Record<

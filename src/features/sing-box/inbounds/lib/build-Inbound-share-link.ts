@@ -6,12 +6,20 @@ export function buildInboundShareLink(
   securityAssets: SecurityAsset[],
   host: string,
 ): string | null {
+  if (!host || !inbound.listen_port) {
+    return null;
+  }
+
   if (inbound.type === "vless") {
     const vlessInbound = inbound as Extract<DraftInbound, { type: "vless" }>;
     const vlessUser = user as {
       uuid: string;
       flow?: string;
     };
+
+    if (!vlessUser?.uuid) {
+      return null;
+    }
 
     const realityAsset = securityAssets.find(
       (asset) =>
@@ -32,8 +40,11 @@ export function buildInboundShareLink(
     if (realityAsset?.type === "reality") {
       params.set("security", "reality");
 
-      if (realityAsset.serverName) {
-        params.set("sni", realityAsset.serverName);
+      const sni =
+        realityAsset.serverName || realityAsset.handshake?.server || undefined;
+
+      if (sni) {
+        params.set("sni", sni);
       }
 
       if (realityAsset._publicKey) {
@@ -55,7 +66,7 @@ export function buildInboundShareLink(
       params.set("security", "none");
     }
 
-    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${vlessInbound.tag}`;
+    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.tag ?? "")}`;
   }
 
   if (inbound.type === "hysteria2") {
@@ -63,6 +74,10 @@ export function buildInboundShareLink(
     const hyUser = user as {
       password: string;
     };
+
+    if (!hyUser?.password) {
+      return null;
+    }
 
     const tlsAsset = securityAssets.find(
       (asset) =>
@@ -88,7 +103,7 @@ export function buildInboundShareLink(
       params.set("obfs-password", hy2Inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${hy2Inbound.tag}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.tag ?? "")}`;
   }
 
   return null;

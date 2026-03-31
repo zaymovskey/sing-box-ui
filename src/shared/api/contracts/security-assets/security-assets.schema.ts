@@ -30,13 +30,24 @@ export const TlsSecurityAssetSchema = SecurityAssetBaseSchema.extend({
   ]),
 });
 
+const RealityHandshakeSchema = z.object({
+  server: z.string().min(1),
+  serverPort: z.number().int().min(1).max(65535),
+});
+
+const RealityShortIdSchema = z
+  .string()
+  .regex(/^[0-9a-f]{1,16}$/i, "shortId must be a hex string up to 16 chars");
+
 export const RealitySecurityAssetSchema = SecurityAssetBaseSchema.extend({
   type: z.literal("reality"),
   serverName: z.string().min(1),
   privateKey: z.string().min(1),
-  shortId: z.string().min(1),
+  shortId: RealityShortIdSchema,
   fingerprint: z.string().min(1),
   spiderX: z.string().optional(),
+  handshake: RealityHandshakeSchema,
+  maxTimeDifference: z.string().optional(),
   _publicKey: z.string().min(1),
 });
 
