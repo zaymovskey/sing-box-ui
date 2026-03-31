@@ -20,10 +20,11 @@ import {
 } from "../../model/commands/security-assets-edit.command";
 import { mapSecurityAssetToFormValues } from "../../model/mappers/security-assets.form-mapper";
 import {
-  SecurityAssetFormSchema,
+  createSecurityAssetFormSchema,
   type SecurityAssetFormValues,
 } from "../../model/security-asset-form.schema";
 import { SecurityAssetFormProvider } from "../../model/security-assets-form-ui.context";
+import { useSecurityAssetsListQuery } from "../../model/security-assets-list.query";
 import { SecurityAssetForm } from "../SecurityAssetForm/SecurityAssetForm";
 
 const FORM_ID = "edit-security-asset-form";
@@ -42,6 +43,18 @@ export function EditSecurityAssetDialog({
   const initialValues = useMemo(() => {
     return mapSecurityAssetToFormValues(securityAsset);
   }, [securityAsset]);
+
+  const { data: securityAssets } = useSecurityAssetsListQuery();
+
+  const existingNames = useMemo(
+    () => securityAssets?.map((asset) => asset.name) ?? [],
+    [securityAssets],
+  );
+
+  const SecurityAssetFormSchema = useMemo(
+    () => createSecurityAssetFormSchema(existingNames, securityAsset.name),
+    [existingNames, securityAsset.name],
+  );
 
   const form = useForm<SecurityAssetFormValues>({
     resolver: zodResolver(SecurityAssetFormSchema),
