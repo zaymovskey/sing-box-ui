@@ -12,9 +12,11 @@ export function useDeleteInboundMutation() {
   return useMutation<OkResponse, ApiError, string>({
     mutationFn: (tag) => deleteInbound(tag),
     onSuccess: async () => {
-      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
-      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() });
-      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() }),
+        qc.invalidateQueries({ queryKey: singBoxQueryKeys.config() }),
+        qc.invalidateQueries({ queryKey: singBoxQueryKeys.status() }),
+      ]);
     },
   });
 }
