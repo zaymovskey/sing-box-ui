@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { ControlledSelectField, Separator } from "@/shared/ui";
+import { ControlledSelectField, SectionTitle } from "@/shared/ui";
 
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
@@ -16,24 +16,6 @@ type InboundFormProps = {
   form: UseFormReturn<InboundFormValues>;
   onSubmit: (values: InboundFormValues) => Promise<void>;
 };
-
-function SectionTitle({
-  title,
-  description,
-}: {
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="space-y-1">
-      <h3 className="text-base font-semibold">{title}</h3>
-      {description ? (
-        <p className="text-muted-foreground text-sm">{description}</p>
-      ) : null}
-      <Separator className="mt-3" />
-    </div>
-  );
-}
 
 export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
   const type = useWatch({ control: form.control, name: "type" });

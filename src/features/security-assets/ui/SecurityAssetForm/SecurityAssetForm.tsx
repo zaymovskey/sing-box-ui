@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import {
   ControlledSelectField,
-  Separator,
+  SectionTitle,
   UncontrolledTextField,
 } from "@/shared/ui";
 
@@ -18,50 +17,27 @@ type SecurityAssetFormProps = {
   formId: string;
   form: UseFormReturn<SecurityAssetFormValues>;
   onSubmit: (values: SecurityAssetFormValues) => Promise<void>;
+  mode?: "create" | "edit";
+  initialValues?: SecurityAssetFormValues;
 };
-
-function SectionTitle({
-  title,
-  description,
-}: {
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="space-y-1">
-      <h3 className="text-base font-semibold">{title}</h3>
-      {description ? (
-        <p className="text-muted-foreground text-sm">{description}</p>
-      ) : null}
-      <Separator className="mt-3" />
-    </div>
-  );
-}
 
 export function SecurityAssetForm({
   formId,
   form,
   onSubmit,
+  mode = "create",
+  initialValues,
 }: SecurityAssetFormProps) {
-  const type = useWatch({ control: form.control, name: "type" });
+  const effectiveInitialValues = initialValues ?? defaultsByType.tls();
 
-  const prevTypeRef = useRef(type);
+  const watchedType = useWatch({
+    control: form.control,
+    name: "type",
+    defaultValue: effectiveInitialValues.type,
+  });
 
-  useEffect(() => {
-    const prev = prevTypeRef.current;
-
-    if (prev === type) return;
-
-    const currentValues = form.getValues();
-
-    form.reset({
-      ...defaultsByType[type](),
-      id: currentValues.id,
-      createdAt: currentValues.createdAt,
-    });
-
-    prevTypeRef.current = type;
-  }, [type, form]);
+  const tlsInitialValues =
+    effectiveInitialValues.type === "tls" ? effectiveInitialValues : null;
 
   return (
     <FormProvider {...form}>
@@ -77,11 +53,20 @@ export function SecurityAssetForm({
           />
 
           <ControlledSelectField<SecurityAssetFormValues>
+            disabled={mode === "edit"}
             items={typeItems}
             label="Тип"
             name="type"
             placeholder="Выбери тип"
             showErrorMessage={false}
+            onValueChangeExternal={(nextType) => {
+              const nextTypeCasted =
+                nextType as SecurityAssetFormValues["type"];
+
+              form.reset({
+                ...defaultsByType[nextTypeCasted](),
+              });
+            }}
           />
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -102,16 +87,20 @@ export function SecurityAssetForm({
         <section className="space-y-4">
           <SectionTitle
             description={
-              type === "tls"
+              watchedType === "tls"
                 ? "Настройте источник сертификата и ключа для TLS."
                 : "Настройте параметры Reality, handshake и сгенерируйте ключевую пару."
             }
-            title={type === "tls" ? "TLS настройки" : "Reality настройки"}
+            title={
+              watchedType === "tls" ? "TLS настройки" : "Reality настройки"
+            }
           />
 
-          {type === "tls" && <SecurityAssetFormTlsFields />}
+          {watchedType === "tls" && tlsInitialValues && (
+            <SecurityAssetFormTlsFields initialValues={tlsInitialValues} />
+          )}
 
-          {type === "reality" && <SecurityAssetFormRealityFields />}
+          {watchedType === "reality" && <SecurityAssetFormRealityFields />}
         </section>
       </form>
     </FormProvider>

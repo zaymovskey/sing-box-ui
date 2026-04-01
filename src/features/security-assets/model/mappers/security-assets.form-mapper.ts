@@ -5,15 +5,19 @@ import { type SecurityAssetFormValues } from "../../model/security-asset-form.sc
 
 export function mapFormToSecurityAsset(
   values: SecurityAssetFormValues,
+  meta?: {
+    id?: string;
+    createdAt?: string;
+  },
 ): SecurityAsset {
   const now = new Date().toISOString();
 
   if (values.type === "tls") {
     return {
-      id: values.id ?? generateClientUuid(),
+      id: meta?.id ?? generateClientUuid(),
       name: values.name,
       type: "tls",
-      createdAt: values.createdAt ?? now,
+      createdAt: meta?.createdAt ?? now,
       updatedAt: now,
       serverName: values.serverName || undefined,
       source:
@@ -37,10 +41,10 @@ export function mapFormToSecurityAsset(
   }
 
   return {
-    id: values.id ?? generateClientUuid(),
+    id: meta?.id ?? generateClientUuid(),
     name: values.name,
     type: "reality",
-    createdAt: values.createdAt ?? now,
+    createdAt: meta?.createdAt ?? now,
     updatedAt: now,
     serverName: values.serverName,
     privateKey: values.privateKey,
@@ -61,11 +65,9 @@ export function mapSecurityAssetToFormValues(
 ): SecurityAssetFormValues {
   if (asset.type === "tls") {
     return {
-      id: asset.id,
-      name: asset.name,
       type: "tls",
-      createdAt: asset.createdAt,
       serverName: asset.serverName ?? "",
+      name: asset.name,
       source:
         asset.source.sourceType === "inline"
           ? {
@@ -90,10 +92,8 @@ export function mapSecurityAssetToFormValues(
   }
 
   return {
-    id: asset.id,
     name: asset.name,
     type: "reality",
-    createdAt: asset.createdAt,
     serverName: asset.serverName,
     privateKey: asset.privateKey,
     shortId: asset.shortId,

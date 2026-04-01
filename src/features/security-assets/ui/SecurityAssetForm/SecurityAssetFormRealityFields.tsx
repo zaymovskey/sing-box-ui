@@ -31,11 +31,6 @@ export function SecurityAssetFormRealityFields() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <SubsectionTitle
-          description="Параметры, которые используются клиентом при Reality-подключении."
-          title="Клиентские параметры"
-        />
-
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledInputWithGenerateField<SecurityAssetFormValues>
             generateFunction={() => generateShortId()}

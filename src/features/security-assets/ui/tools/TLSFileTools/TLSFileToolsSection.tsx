@@ -5,7 +5,11 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { type TLSCheckItem } from "@/shared/api/contracts";
 import { clientEnv } from "@/shared/lib";
-import { clientToast, UncontrolledPathField } from "@/shared/ui";
+import {
+  clientToast,
+  UncontrolledHiddenField,
+  UncontrolledPathField,
+} from "@/shared/ui";
 
 import { useFileTLSCheckMutation } from "../../../model/mutations/TLS/file-tls-check.mutation";
 import { useFileTLSGenerateMutation } from "../../../model/mutations/TLS/file-tls-generate.mutation";
@@ -53,7 +57,7 @@ export function TLSFileToolsSection() {
   const { mutateAsync: checkMutateAsync } = useFileTLSCheckMutation();
   const { mutateAsync: generateMutateAsync } = useFileTLSGenerateMutation();
 
-  const { control, setValue, clearErrors, getFieldState, formState, trigger } =
+  const { control, setValue, trigger, clearErrors, getFieldState, formState } =
     useFormContext<SecurityAssetFormValues>();
 
   const certificatePath = useWatch({
@@ -71,14 +75,9 @@ export function TLSFileToolsSection() {
     name: "serverName",
   });
 
-  const tlsOverwrite =
-    useWatch({
-      control,
-      name: "_tlsOverwrite",
-    }) ?? false;
-
-  const [statuses, setStatuses] = useState<TlsStatuses>(idleStatuses);
+  const [tlsOverwrite, setTlsOverwrite] = useState(false);
   const [generateError, setGenerateError] = useState("");
+  const [statuses, setStatuses] = useState<TlsStatuses>(idleStatuses);
 
   const handleCheck = useCallback(async () => {
     const isValid = await trigger(["source.certificatePath", "source.keyPath"]);
@@ -87,7 +86,12 @@ export function TLSFileToolsSection() {
       return;
     }
 
+    if (!certificatePath || !keyPath) {
+      return;
+    }
+
     setStatuses(loadingStatuses);
+    setGenerateError("");
 
     try {
       const result = await checkMutateAsync({
@@ -121,23 +125,31 @@ export function TLSFileToolsSection() {
           shouldTouch: false,
           shouldValidate: false,
         });
-        const isSelfSigned = result.isSelfSigned ?? false;
-        setValue("source._is_selfsigned_cert", isSelfSigned, {
+
+        setValue("source._is_selfsigned_cert", result.isSelfSigned ?? false, {
           shouldDirty: false,
           shouldTouch: false,
           shouldValidate: false,
         });
-        clearErrors("source._tlsChecked");
+
+        clearErrors("source");
         setGenerateError("");
-      } else {
-        setValue("source._tlsChecked", false, {
-          shouldDirty: false,
-          shouldTouch: false,
-          shouldValidate: false,
-        });
+        return;
       }
+
+      setValue("source._tlsChecked", false, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
     } catch {
       setStatuses(idleStatuses);
+
+      setValue("source._tlsChecked", false, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
 
       clientToast.error("Не удалось проверить TLS сертификаты", {
         duration: 2000,
@@ -145,14 +157,14 @@ export function TLSFileToolsSection() {
     }
   }, [
     trigger,
-    checkMutateAsync,
     certificatePath,
     keyPath,
+    checkMutateAsync,
     setValue,
     clearErrors,
   ]);
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     const isValid = await trigger([
       "serverName",
       "source.certificatePath",
@@ -166,18 +178,17 @@ export function TLSFileToolsSection() {
       return;
     }
 
+    if (!serverName || !certificatePath || !keyPath) {
+      clientToast.error("Заполните все поля для генерации TLS", {
+        duration: 2000,
+      });
+      return;
+    }
+
     setStatuses(generatingStatuses);
     setGenerateError("");
 
     try {
-      if (!serverName) {
-        clientToast.error("Укажите serverName для генерации TLS", {
-          duration: 2000,
-        });
-        setStatuses(idleStatuses);
-        return;
-      }
-
       const result = await generateMutateAsync({
         certificatePath:
           clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR + certificatePath,
@@ -186,15 +197,16 @@ export function TLSFileToolsSection() {
         overwrite: tlsOverwrite,
       });
 
-      if (result.result === "error") {
+      if (result.result === "error" || result.result === "conflict") {
         setGenerateError(result.message);
         setStatuses(idleStatuses);
-        return;
-      }
 
-      if (result.result === "conflict") {
-        setGenerateError(result.message);
-        setStatuses(idleStatuses);
+        setValue("source._tlsChecked", false, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+
         return;
       }
 
@@ -202,17 +214,32 @@ export function TLSFileToolsSection() {
       setStatuses(successesStatuses);
 
       setValue("source._is_selfsigned_cert", true, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
       });
 
       await handleCheck();
     } catch {
       setStatuses(idleStatuses);
       setGenerateError("Не удалось сгенерировать TLS сертификаты");
+
+      setValue("source._tlsChecked", false, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
     }
-  };
+  }, [
+    trigger,
+    serverName,
+    certificatePath,
+    keyPath,
+    generateMutateAsync,
+    tlsOverwrite,
+    setValue,
+    handleCheck,
+  ]);
 
   const hasInitializedRef = useRef(false);
 
@@ -230,7 +257,7 @@ export function TLSFileToolsSection() {
       shouldTouch: false,
       shouldValidate: false,
     });
-  }, [certificatePath, keyPath, setValue]);
+  }, [certificatePath, keyPath, serverName, setValue]);
 
   useEffect(() => {
     if (mode !== "edit") return;
@@ -239,10 +266,13 @@ export function TLSFileToolsSection() {
     void handleCheck();
   }, [mode, certificatePath, keyPath, handleCheck]);
 
-  const error = getFieldState("source._tlsChecked", formState).error;
+  const error = getFieldState("source", formState).error;
 
   return (
     <>
+      <UncontrolledHiddenField<SecurityAssetFormValues> name="source._tlsChecked" />
+      <UncontrolledHiddenField<SecurityAssetFormValues> name="source._is_selfsigned_cert" />
+
       <UncontrolledPathField<SecurityAssetFormValues>
         className="mb-5"
         label="Certificate path (.crt)"
@@ -262,7 +292,9 @@ export function TLSFileToolsSection() {
       <TLSFileTools
         error={error?.message}
         generateError={generateError}
+        setTlsOverwrite={setTlsOverwrite}
         statuses={statuses}
+        tlsOverwrite={tlsOverwrite}
         onCheck={handleCheck}
         onGenerate={handleGenerate}
       />

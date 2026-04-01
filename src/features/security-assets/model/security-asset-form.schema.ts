@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-const SecurityAssetMetaFormSchema = z.object({
-  id: z.string().min(1),
-  createdAt: z.iso.datetime(),
-});
+// const SecurityAssetMetaFormSchema = z.object({
+//   id: z.string().min(1),
+//   createdAt: z.iso.datetime(),
+//   updatedAt: z.iso.datetime().optional(),
+// });
 
 const TlsInlineSourceFormSchema = z.object({
   sourceType: z.literal("inline"),
@@ -19,11 +20,10 @@ const TlsFileSourceFormSchema = z.object({
   _is_selfsigned_cert: z.boolean().optional(),
 });
 
-const BaseTlsFormSchema = SecurityAssetMetaFormSchema.extend({
+const BaseTlsFormSchema = z.object({
   type: z.literal("tls"),
   name: z.string().min(1, "Name is required"),
   serverName: z.string().optional(),
-  _tlsOverwrite: z.boolean().optional(),
   source: z.discriminatedUnion("sourceType", [
     TlsInlineSourceFormSchema,
     TlsFileSourceFormSchema,
@@ -40,9 +40,6 @@ const RealityShortIdSchema = z
   });
 
 const BaseRealityFormSchema = z.object({
-  id: z.string().min(1),
-  createdAt: z.string().min(1),
-  updatedAt: z.string().min(1).optional(),
   type: z.literal("reality"),
   name: z.string().min(1, "Name is required"),
   serverName: z.string().min(1, "Server name is required"),
@@ -105,7 +102,7 @@ export function createTlsFormSchema(
     if (data.source.sourceType === "file" && data.source._tlsChecked !== true) {
       ctx.addIssue({
         code: "custom",
-        path: ["source", "_tlsChecked"],
+        path: ["source"],
         message: "Сначала проверьте сертификат и ключ",
       });
     }

@@ -22,6 +22,7 @@ type SelectFieldProps<T extends FieldValues> = {
   items: SelectFieldItem[];
   showErrorMessage?: boolean;
   loading?: boolean;
+  onValueChangeExternal?: (value: string) => void;
 };
 
 export function ControlledSelectField<T extends FieldValues>({
@@ -32,6 +33,7 @@ export function ControlledSelectField<T extends FieldValues>({
   items,
   showErrorMessage = true,
   loading = false,
+  onValueChangeExternal,
 }: SelectFieldProps<T>) {
   const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
@@ -60,6 +62,8 @@ export function ControlledSelectField<T extends FieldValues>({
               onValueChange={(value) => {
                 form.clearErrors("root");
                 field.onChange(value);
+
+                onValueChangeExternal?.(value);
               }}
             >
               <SelectTrigger
