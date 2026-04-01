@@ -12,7 +12,7 @@ services:
       - .env
 
   ui:
-    image: ghcr.io/zaymovskey/sing-box-ui:latest
+    image: ghcr.io/zaymovskey/sing-box-ui:${IMAGE_TAG:-latest}
     container_name: sing-box-ui
     restart: unless-stopped
     env_file:
