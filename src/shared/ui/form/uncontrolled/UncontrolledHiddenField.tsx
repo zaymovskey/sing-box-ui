@@ -1,3 +1,5 @@
+"use client";
+
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 
 type HiddenFieldProps<T extends FieldValues> = {
