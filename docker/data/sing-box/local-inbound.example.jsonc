@@ -1,0 +1,14 @@
+// Инбаунд для локалки
+// vless://37af2816-b46b-4180-b20e-44aa2b583fa2@192.168.1.65:20000?encryption=none&type=tcp#local-vless
+{
+  "type": "vless",
+  "tag": "vless-in",
+  "listen": "0.0.0.0",
+  "listen_port": 20000,
+  "users": [
+    {
+      "name": "phone",
+      "uuid": "37af2816-b46b-4180-b20e-44aa2b583fa2"
+    }
+  ]
+}

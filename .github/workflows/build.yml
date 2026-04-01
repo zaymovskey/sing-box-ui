@@ -47,8 +47,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ vars.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
-            NEXT_PUBLIC_HOST_IP=${{ vars.NEXT_PUBLIC_HOST_IP }}
+            NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
+            NEXT_PUBLIC_HOST_IP=${{ secrets.NEXT_PUBLIC_HOST_IP }}
 
       - name: Show image tag
         run: echo "IMAGE_TAG=sha-${GITHUB_SHA::7}"
