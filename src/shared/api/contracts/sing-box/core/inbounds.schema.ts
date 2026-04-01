@@ -109,9 +109,7 @@ export const RuntimeHysteria2TlsSchema = z.object({
   key_path: z.string().optional(),
 });
 
-export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema.extend({
-  _is_selfsigned_cert: z.boolean().optional(),
-});
+export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema;
 
 export const RuntimeVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),

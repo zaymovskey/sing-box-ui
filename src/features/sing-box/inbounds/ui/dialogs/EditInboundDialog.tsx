@@ -59,19 +59,13 @@ export function EditInboundDialog({
     [rawDraftConfig],
   );
 
-  const [currentInboundTag, setCurrentInboundTag] = useState<
-    string | undefined
-  >(undefined);
-
-  useEffect(() => {
-    if (!open) return;
-
-    setCurrentInboundTag(inbound.tag);
-  }, [open, inbound.tag]);
-
   const initialValues = useMemo(() => {
     return mapInboundToFormValues(inbound);
   }, [inbound]);
+
+  const [currentInboundTag, setCurrentInboundTag] = useState<
+    string | undefined
+  >(inbound.tag);
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -80,17 +74,27 @@ export function EditInboundDialog({
   });
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
     setCurrentInboundTag(inbound.tag);
-    form.reset(mapInboundToFormValues(inbound));
-  }, [open, inbound, form]);
+    form.reset(initialValues, {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
+  }, [open, inbound.tag, initialValues, form]);
 
   const { editInbound, isPending } = useEditInbound();
 
-  const tags = rawInbounds
-    .map((item) => item.tag)
-    .filter((tag): tag is string => Boolean(tag));
+  const tags = useMemo(() => {
+    return rawInbounds
+      .map((item) => item.tag)
+      .filter((tag): tag is string => Boolean(tag));
+  }, [rawInbounds]);
 
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
     form,
@@ -123,25 +127,34 @@ export function EditInboundDialog({
       return;
     }
 
+    if (!currentInboundTag) {
+      serverToast.error("Инбаунд должен иметь тег для редактирования", {
+        id: "edit-inbound",
+        duration: 2000,
+      });
+      return;
+    }
+
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
-      if (!currentInboundTag) {
-        serverToast.error("Инбаунд должен иметь тег для редактирования", {
-          id: "edit-inbound",
-          duration: 2000,
-        });
-        return;
-      }
-
       await editInbound(currentInboundTag, values);
+
       serverToast.success("Инбаунд успешно обновлен", {
         id: "edit-inbound",
         duration: 2000,
       });
+
       setCurrentInboundTag(values.tag);
+
       form.clearErrors();
-      form.reset(values);
+      form.reset(values, {
+        keepDirty: false,
+        keepTouched: false,
+        keepErrors: false,
+        keepSubmitCount: false,
+        keepIsSubmitted: false,
+      });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 
@@ -163,6 +176,7 @@ export function EditInboundDialog({
 
   const handleReset = () => {
     form.clearErrors();
+
     form.reset(initialValues, {
       keepDirty: false,
       keepTouched: false,
@@ -181,7 +195,12 @@ export function EditInboundDialog({
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
           <InboundFormProvider contextValue={{ mode: "edit" }}>
-            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+            <InboundForm
+              form={form}
+              formId={FORM_ID}
+              initialValues={initialValues}
+              onSubmit={handleSubmit}
+            />
           </InboundFormProvider>
         </div>
 

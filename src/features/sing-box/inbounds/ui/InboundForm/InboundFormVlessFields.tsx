@@ -1,3 +1,5 @@
+"use client";
+
 import { CircleHelp, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
@@ -32,12 +34,11 @@ export function InboundFormVlessFields() {
       type: "reality",
     });
 
-  const securityAssetsOptions: SelectFieldItem[] = securityAssetsList
-    ? securityAssetsList.map((asset) => ({
-        value: asset.id,
-        label: asset.name,
-      }))
-    : [];
+  const securityAssetsOptions: SelectFieldItem[] =
+    securityAssetsList?.map((asset) => ({
+      value: asset.id,
+      label: asset.name,
+    })) ?? [];
 
   const {
     fields: users,
@@ -56,6 +57,7 @@ export function InboundFormVlessFields() {
   const tlsEnabled = useWatch({
     control,
     name: "_tls_enabled",
+    defaultValue: false,
   });
 
   useEffect(() => {
@@ -76,6 +78,14 @@ export function InboundFormVlessFields() {
       shouldValidate: formState.submitCount > 0,
     });
   }, [tlsEnabled, setValue, formState.submitCount]);
+
+  const handleAddUser = () => {
+    append({
+      name: "",
+      uuid: "",
+      flow: undefined,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -126,17 +136,7 @@ export function InboundFormVlessFields() {
             </div>
           ))}
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              append({
-                name: "",
-                uuid: "",
-                flow: undefined,
-              })
-            }
-          >
+          <Button type="button" variant="outline" onClick={handleAddUser}>
             Добавить пользователя
           </Button>
         </div>

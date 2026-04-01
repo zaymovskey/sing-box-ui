@@ -14,7 +14,6 @@ export function useCreateInbound() {
   const createInbound = useCallback(
     async (newInbound: InboundFormValues) => {
       const parsedNewInbound = mapFormToInbound(newInbound);
-      console.log(parsedNewInbound);
       const inboundParseResult = DraftInboundSchema.safeParse(parsedNewInbound);
 
       if (!inboundParseResult.success) {

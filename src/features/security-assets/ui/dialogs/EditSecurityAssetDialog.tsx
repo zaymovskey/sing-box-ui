@@ -60,13 +60,20 @@ export function EditSecurityAssetDialog({
     resolver: zodResolver(SecurityAssetFormSchema),
     mode: "onSubmit",
     defaultValues: initialValues,
+    shouldUnregister: true,
   });
 
   useEffect(() => {
     if (!open) return;
 
-    form.reset(mapSecurityAssetToFormValues(securityAsset));
-  }, [open, securityAsset, form]);
+    form.reset(mapSecurityAssetToFormValues(securityAsset), {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
+  }, [open, securityAsset.id, form, securityAsset]);
 
   const { editSecurityAsset, isPending } = useEditSecurityAsset();
 
@@ -76,7 +83,7 @@ export function EditSecurityAssetDialog({
     serverToast.loading("Сохранение...", { id: "edit-security-asset" });
 
     try {
-      await editSecurityAsset(securityAsset.id, values);
+      await editSecurityAsset(securityAsset, values);
 
       serverToast.success("TLS / Reality успешно обновлён", {
         id: "edit-security-asset",
@@ -120,7 +127,12 @@ export function EditSecurityAssetDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
+      <DialogContent
+        className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Редактировать TLS / Reality</DialogTitle>
         </DialogHeader>
@@ -130,6 +142,8 @@ export function EditSecurityAssetDialog({
             <SecurityAssetForm
               form={form}
               formId={FORM_ID}
+              initialValues={initialValues}
+              mode="edit"
               onSubmit={handleSubmit}
             />
           </SecurityAssetFormProvider>

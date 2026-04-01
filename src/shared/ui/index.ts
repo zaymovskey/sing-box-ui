@@ -43,6 +43,7 @@ export {
   useFormField,
 } from "./form/form";
 export { RootErrorMessage } from "./form/RootErrorMessage";
+export { UncontrolledHiddenField } from "./form/uncontrolled/UncontrolledHiddenField";
 export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberField";
 export { UncontrolledPasswordField } from "./form/uncontrolled/UncontrolledPasswordField";
 export { UncontrolledPathField } from "./form/uncontrolled/UncontrolledPathField";
@@ -71,6 +72,7 @@ export {
   PopoverTitle,
   PopoverTrigger,
 } from "./popover";
+export { SectionTitle } from "./SectionTitle";
 export {
   Select,
   SelectContent,
@@ -103,6 +105,7 @@ export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
 export { clientToast, infraToast, serverToast } from "./sonner/toasters";
 export { SubsectionTitle } from "./SubsectionTitle";
 export { Switch } from "./switch";
+export { SwitchField } from "./SwitchField";
 export {
   Table,
   TableBody,

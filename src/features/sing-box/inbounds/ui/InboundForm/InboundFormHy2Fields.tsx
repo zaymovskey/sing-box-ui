@@ -1,3 +1,5 @@
+"use client";
+
 import { CircleHelp, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
@@ -47,11 +49,13 @@ export function InboundFormHy2Fields() {
   const obfsEnabled = useWatch({
     control,
     name: "obfs_enabled",
+    defaultValue: false,
   });
 
   const ignoreClientBandwidth = useWatch({
     control,
     name: "ignore_client_bandwidth",
+    defaultValue: false,
   });
 
   useEffect(() => {
@@ -88,6 +92,13 @@ export function InboundFormHy2Fields() {
       shouldValidate: formState.submitCount > 0,
     });
   }, [ignoreClientBandwidth, setValue, formState.submitCount]);
+
+  const handleAddUser = () => {
+    append({
+      name: "",
+      password: "",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -130,16 +141,7 @@ export function InboundFormHy2Fields() {
             </div>
           ))}
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              append({
-                name: "",
-                password: "",
-              })
-            }
-          >
+          <Button type="button" variant="outline" onClick={handleAddUser}>
             Добавить пользователя
           </Button>
         </div>

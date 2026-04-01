@@ -12,10 +12,8 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
-  ControlledSwitchField,
+  SwitchField,
 } from "@/shared/ui";
-
-import { type SecurityAssetFormValues } from "../../../model/security-asset-form.schema";
 
 export type Status = "idle" | "loading" | "success" | "error" | "generating";
 
@@ -37,6 +35,8 @@ interface TLSFileToolsProps {
   disabled?: boolean;
   generateError?: string;
   error?: string;
+  tlsOverwrite: boolean;
+  setTlsOverwrite: (value: boolean) => void;
 }
 
 export function TLSFileTools({
@@ -46,6 +46,8 @@ export function TLSFileTools({
   disabled = false,
   generateError,
   error,
+  tlsOverwrite,
+  setTlsOverwrite,
 }: TLSFileToolsProps) {
   const isChecking = [
     statuses.crt.status,
@@ -88,10 +90,11 @@ export function TLSFileTools({
         </div>
       )}
 
-      <ControlledSwitchField<SecurityAssetFormValues>
-        disabled={disabled}
-        label="Перезапись (overwrite)"
-        name="_tlsOverwrite"
+      <SwitchField
+        checked={tlsOverwrite}
+        label="Overwrite TLS"
+        placeholder="Replace existing certificates"
+        onChange={setTlsOverwrite}
       />
 
       <div className="flex gap-2">

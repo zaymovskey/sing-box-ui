@@ -1,6 +1,9 @@
 import { useCallback } from "react";
 
-import { SecurityAssetSchema } from "@/shared/api/contracts";
+import {
+  type SecurityAsset,
+  SecurityAssetSchema,
+} from "@/shared/api/contracts";
 
 import { type SecurityAssetFormValues } from "../../model/security-asset-form.schema";
 import { mapFormToSecurityAsset } from "../mappers/security-assets.form-mapper";
@@ -14,11 +17,16 @@ export function useEditSecurityAsset() {
 
   const editSecurityAsset = useCallback(
     async (
-      originalId: string,
+      originalAsset: SecurityAsset,
       updatedSecurityAsset: SecurityAssetFormValues,
     ) => {
-      const parsedEditedSecurityAsset =
-        mapFormToSecurityAsset(updatedSecurityAsset);
+      const parsedEditedSecurityAsset = mapFormToSecurityAsset(
+        updatedSecurityAsset,
+        {
+          id: originalAsset.id,
+          createdAt: originalAsset.createdAt,
+        },
+      );
 
       const securityAssetParseResult = SecurityAssetSchema.safeParse(
         parsedEditedSecurityAsset,
@@ -29,7 +37,7 @@ export function useEditSecurityAsset() {
       }
 
       return editSecurityAssetMutation.mutateAsync({
-        originalId,
+        originalId: originalAsset.id,
         asset: securityAssetParseResult.data,
       });
     },
