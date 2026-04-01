@@ -10,5 +10,4 @@ export { getErrorMessage } from "./client/http/get-error-message";
 export { readErrorMessage } from "./client/http/read-error-message";
 export { apiRoutes } from "./client/routes/api";
 export { appRoutes } from "./client/routes/routes";
-export { createListenPortSchema } from "./universal/create-listen-port-schema.schema";
 export type { IssueLike } from "./universal/zod.types";

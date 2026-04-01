@@ -7,18 +7,12 @@ services:
     volumes:
       - ./data/sing-box:/etc/sing-box:ro
       - ./data/sing-box-state:/var/lib/sing-box
-    ports:
-      - "443:443/tcp"
-      - "8443:8443/udp"
-      - "${PORT_RANGE_START}-${PORT_RANGE_END}:${PORT_RANGE_START}-${PORT_RANGE_END}/tcp"
-      - "${PORT_RANGE_START}-${PORT_RANGE_END}:${PORT_RANGE_START}-${PORT_RANGE_END}/udp"
-      # Для V2Ray API
-      - "8080:8080"
+    network_mode: host
     env_file:
       - .env
 
   ui:
-    image: ghcr.io/zaymovskey/sing-box-ui:latest
+    image: ghcr.io/zaymovskey/sing-box-ui:${IMAGE_TAG:-latest}
     container_name: sing-box-ui
     restart: unless-stopped
     env_file:

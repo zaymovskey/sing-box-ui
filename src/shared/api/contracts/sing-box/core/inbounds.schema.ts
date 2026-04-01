@@ -1,15 +1,13 @@
 import { z } from "zod";
 
-import { clientEnv } from "../../../../lib/client/env-client";
-import { createListenPortSchema } from "../../../../lib/universal/create-listen-port-schema.schema";
-
 const NonEmptyStringSchema = z.string().min(1);
 
 const ListenSchema = z.string().min(1);
-const ListenPortSchema = createListenPortSchema({
-  rangeStart: clientEnv.NEXT_PUBLIC_PORT_RANGE_START,
-  rangeEnd: clientEnv.NEXT_PUBLIC_PORT_RANGE_END,
-});
+const ListenPortSchema = z
+  .number()
+  .positive()
+  .min(1, "Минимум 1")
+  .max(65535, "Максимум 65535");
 
 const SniffSchema = z.boolean().optional();
 const SniffOverrideDestinationSchema = z.boolean().optional();

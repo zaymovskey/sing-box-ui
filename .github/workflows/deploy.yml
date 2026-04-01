@@ -1,62 +1,42 @@
-name: Deploy production
+name: Deploy image
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment"
+        description: "Target environment"
         required: true
-        default: "production"
+        type: choice
+        options:
+          - development
+          - production
+      image_tag:
+        description: "Docker image tag to deploy (for example: sha-abc1234)"
+        required: true
+        default: "latest"
 
 permissions:
   contents: read
-  packages: write
+  packages: read
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/zaymovskey/sing-box-ui
-          tags: |
-            type=raw,value=latest
-
-      - name: Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
-            NEXT_PUBLIC_HOST_IP=${{ secrets.NEXT_PUBLIC_HOST_IP }}
-            NEXT_PUBLIC_PORT_RANGE_START=${{ secrets.NEXT_PUBLIC_PORT_RANGE_START }}
-            NEXT_PUBLIC_PORT_RANGE_END=${{ secrets.NEXT_PUBLIC_PORT_RANGE_END }}
+      - name: Resolve deploy path
+        id: vars
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "deploy_path=/root/sing-box-ui-prod/docker" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy_path=/root/sing-box-ui-dev/docker" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
@@ -67,6 +47,10 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd /root/sing-box-ui/docker
+
+            cd "${{ steps.vars.outputs.deploy_path }}"
+
+            export IMAGE_TAG="${{ inputs.image_tag }}"
+
             docker compose pull
             docker compose up -d
