@@ -51,4 +51,4 @@ jobs:
             NEXT_PUBLIC_HOST_IP=${{ vars.NEXT_PUBLIC_HOST_IP }}
 
       - name: Show image tag
-          run: echo "IMAGE_TAG=sha-${GITHUB_SHA::7}"
+        run: echo "IMAGE_TAG=sha-${GITHUB_SHA::7}"
