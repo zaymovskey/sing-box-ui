@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { ControlledSelectField, SectionTitle } from "@/shared/ui";
 
+import { useInboundFormContext } from "../../model/inbound-form-ui.context";
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
 import { InboundFormHy2Fields } from "./InboundFormHy2Fields";
@@ -15,20 +15,37 @@ type InboundFormProps = {
   formId: string;
   form: UseFormReturn<InboundFormValues>;
   onSubmit: (values: InboundFormValues) => Promise<void>;
+  initialValues: InboundFormValues;
 };
 
-export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
-  const type = useWatch({ control: form.control, name: "type" });
-  const prevTypeRef = useRef(type);
+export function InboundForm({
+  formId,
+  form,
+  onSubmit,
+  initialValues,
+}: InboundFormProps) {
+  const { mode } = useInboundFormContext();
 
-  useEffect(() => {
-    const prev = prevTypeRef.current;
+  const type = useWatch({
+    control: form.control,
+    name: "type",
+    defaultValue: initialValues.type,
+  });
 
-    if (prev === type) return;
+  const handleTypeChange = (nextType: string) => {
+    if (mode === "edit") return;
 
-    form.reset(defaultsByType[type]);
-    prevTypeRef.current = type;
-  }, [type, form]);
+    const nextInboundType = nextType as InboundFormValues["type"];
+
+    form.clearErrors();
+    form.reset(defaultsByType[nextInboundType], {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
+  };
 
   return (
     <FormProvider {...form}>
@@ -44,10 +61,12 @@ export function InboundForm({ formId, form, onSubmit }: InboundFormProps) {
           />
 
           <ControlledSelectField<InboundFormValues>
+            disabled={mode === "edit"}
             items={typeItems}
             label="Тип inbound"
             name="type"
             placeholder="Выбери тип"
+            onValueChangeExternal={handleTypeChange}
           />
 
           <InboundFormBaseFields />

@@ -2,14 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
-import { useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 
 import {
   InboundFormSchema,
   type InboundFormValues,
   useConfigQuery,
 } from "@/features/sing-box/config-core";
+import { type DraftInbound } from "@/shared/api/contracts";
 import {
   Button,
   clientToast,
@@ -38,16 +39,14 @@ interface CreateInboundDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function getRawInbounds(
-  rawDraftConfig: unknown,
-): InboundFormValues[] | never[] {
+function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
   if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
     return [];
   }
 
   const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
 
-  return Array.isArray(maybeInbounds) ? (maybeInbounds as never[]) : [];
+  return Array.isArray(maybeInbounds) ? (maybeInbounds as DraftInbound[]) : [];
 }
 
 export function CreateInboundDialog({
@@ -56,29 +55,30 @@ export function CreateInboundDialog({
 }: CreateInboundDialogProps) {
   const { data: rawDraftConfig } = useConfigQuery();
 
+  const initialValues = defaultsByType.vless;
+
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
-    defaultValues: defaultsByType.vless,
+    defaultValues: initialValues,
   });
 
-  const type = useWatch({ control: form.control, name: "type" });
+  const rawInbounds = useMemo(
+    () => getRawInbounds(rawDraftConfig),
+    [rawDraftConfig],
+  );
 
-  const rawInbounds = getRawInbounds(rawDraftConfig);
-
-  const tags = rawInbounds
-    .map((inbound) =>
-      inbound && typeof inbound === "object" && "tag" in inbound
-        ? inbound.tag
-        : undefined,
-    )
-    .filter((tag): tag is string => typeof tag === "string" && tag.length > 0);
+  const tags = useMemo(() => {
+    return rawInbounds
+      .map((inbound) => inbound.tag)
+      .filter((tag): tag is string => Boolean(tag));
+  }, [rawInbounds]);
 
   const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
-    inbounds: rawInbounds as never[],
+    inbounds: rawInbounds,
   });
 
   const { createInbound, isPending } = useCreateInbound();
@@ -132,14 +132,29 @@ export function CreateInboundDialog({
 
   const handleReset = () => {
     form.clearErrors();
-    form.reset(defaultsByType[type]);
+
+    form.reset(initialValues, {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
   };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
-    form.reset(defaultsByType.vless);
-  }, [open, form]);
+    form.reset(initialValues, {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
+  }, [open, form, initialValues]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -149,6 +164,7 @@ export function CreateInboundDialog({
           Создать инбаунд
         </Button>
       </DialogTrigger>
+
       <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Создать инбаунд</DialogTitle>
@@ -156,7 +172,12 @@ export function CreateInboundDialog({
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
           <InboundFormProvider contextValue={{ mode: "create" }}>
-            <InboundForm form={form} formId={FORM_ID} onSubmit={handleSubmit} />
+            <InboundForm
+              form={form}
+              formId={FORM_ID}
+              initialValues={initialValues}
+              onSubmit={handleSubmit}
+            />
           </InboundFormProvider>
         </div>
 

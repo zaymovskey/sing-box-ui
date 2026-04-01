@@ -48,13 +48,19 @@ export function CreateSecurityAssetDialog({
     [existingNames],
   );
 
+  const initialValues = defaultsByType.tls();
+
   const form = useForm<SecurityAssetFormValues>({
     resolver: zodResolver(SecurityAssetFormSchema),
     mode: "onSubmit",
-    defaultValues: defaultsByType.tls(),
+    defaultValues: initialValues,
   });
 
-  const type = useWatch({ control: form.control, name: "type" });
+  const type = useWatch({
+    control: form.control,
+    name: "type",
+    defaultValue: initialValues.type,
+  });
 
   const { createSecurityAsset, isPending } = useCreateSecurityAsset();
 
@@ -63,7 +69,7 @@ export function CreateSecurityAssetDialog({
 
     serverToast.loading("Сохранение...", { id: "save-security-asset" });
 
-    const typeTitle = type === "tls" ? "TLS" : "Reality";
+    const typeTitle = values.type === "tls" ? "TLS" : "Reality";
 
     try {
       await createSecurityAsset(values);
@@ -83,12 +89,28 @@ export function CreateSecurityAssetDialog({
   };
 
   const handleReset = () => {
-    form.reset(defaultsByType[type]());
+    form.clearErrors();
+
+    form.reset(defaultsByType[type](), {
+      keepDirty: false,
+      keepTouched: false,
+      keepErrors: false,
+      keepSubmitCount: false,
+      keepIsSubmitted: false,
+    });
   };
 
   const handleDialogOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
-      form.reset(defaultsByType.tls());
+      form.clearErrors();
+
+      form.reset(initialValues, {
+        keepDirty: false,
+        keepTouched: false,
+        keepErrors: false,
+        keepSubmitCount: false,
+        keepIsSubmitted: false,
+      });
     }
 
     onOpenChange(nextOpen);
@@ -113,6 +135,7 @@ export function CreateSecurityAssetDialog({
             <SecurityAssetForm
               form={form}
               formId={FORM_ID}
+              initialValues={initialValues}
               onSubmit={handleSubmit}
             />
           </SecurityAssetFormProvider>
