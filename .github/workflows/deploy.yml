@@ -33,7 +33,7 @@ jobs:
         id: vars
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "deploy_path=/root/sing-box-ui-prod/docker" >> "$GITHUB_OUTPUT"
+            echo "deploy_path=/root/sing-box-ui/docker" >> "$GITHUB_OUTPUT"
           else
             echo "deploy_path=/root/sing-box-ui/docker" >> "$GITHUB_OUTPUT"
           fi
