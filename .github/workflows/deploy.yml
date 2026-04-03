@@ -8,8 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - development
-          - production
+          - dev
+          - prod
       image_tag:
         description: "Docker image tag to deploy (for example: sha-abc1234)"
         required: true
