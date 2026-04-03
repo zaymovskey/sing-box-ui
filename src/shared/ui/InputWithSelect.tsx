@@ -13,11 +13,11 @@ type SelectOption = {
   label: string;
 };
 
-interface InputWithSelectProps {
+interface InputWithSelectProps<SelectValues extends string> {
   inputValue: string;
   selectValue: string;
   onInputChange: (value: string) => void;
-  onSelectChange: (value: string) => void;
+  onSelectChange: (value: SelectValues) => void;
   selectOptions: SelectOption[];
   inputPlaceholder?: string;
   selectPlaceholder?: string;
@@ -25,7 +25,7 @@ interface InputWithSelectProps {
   selectDisabled?: boolean;
 }
 
-export function InputWithSelect({
+export function InputWithSelect<SelectValues extends string>({
   inputValue,
   selectValue,
   onInputChange,
@@ -35,7 +35,7 @@ export function InputWithSelect({
   selectPlaceholder = "Select option",
   inputDisabled = false,
   selectDisabled = false,
-}: InputWithSelectProps) {
+}: InputWithSelectProps<SelectValues>) {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_12rem]">
       <Input
