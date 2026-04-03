@@ -29,6 +29,7 @@ services:
       - next_cache:/app/.next
       - ./data/sing-box:/etc/sing-box
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/data
     ports:
       - "3000:3000"
     command: npm run dev:docker
