@@ -51,6 +51,7 @@ export function SingBoxConfigScreen() {
     if (isConfigQueryError) {
       serverToast.error("Не удалось загрузить конфигурацию sing-box", {
         id: "load-config",
+        duration: 3000,
       });
       return;
     }
@@ -111,8 +112,9 @@ export function SingBoxConfigScreen() {
       showClientToasts(parseResult.error.issues);
       setInvalidKeys(buildInvalidConfigEditorKeys(new Set(issuePaths)));
 
-      serverToast.error("Исправь ошибки перед сохранением", {
+      serverToast.error("Исправьте ошибки перед сохранением", {
         id: "save-config",
+        duration: 3000,
       });
       return;
     }
@@ -123,8 +125,9 @@ export function SingBoxConfigScreen() {
       showClientToasts(issues);
       setInvalidKeys(buildInvalidConfigEditorKeys(newInvalidKeys));
 
-      serverToast.error("Исправь ошибки перед сохранением", {
+      serverToast.error("Исправьте ошибки перед сохранением", {
         id: "save-config",
+        duration: 3000,
       });
       return;
     }
@@ -134,7 +137,7 @@ export function SingBoxConfigScreen() {
     if (!configDraft) {
       serverToast.error("Нет данных для сохранения", {
         id: "save-config",
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }
@@ -143,7 +146,7 @@ export function SingBoxConfigScreen() {
       onSuccess: () => {
         serverToast.success("Конфигурация успешно сохранена", {
           id: "save-config",
-          duration: 2000,
+          duration: 3000,
         });
       },
       onError: (err) => {
@@ -152,7 +155,9 @@ export function SingBoxConfigScreen() {
         const issues = err.issues;
 
         if (!issues?.length) {
-          serverToast.error(err.uiMessage);
+          serverToast.error(err.uiMessage, {
+            duration: 3000,
+          });
           return;
         }
 

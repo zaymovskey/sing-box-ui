@@ -29,7 +29,7 @@ export function InboundShareQrDialog({
   const handleCopyQr = async () => {
     if (!link) {
       clientToast.error("Не удалось сгенерировать ссылку для данного входа", {
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }
@@ -38,7 +38,7 @@ export function InboundShareQrDialog({
 
     if (copied) {
       clientToast.success("Ссылка скопирована в буфер обмена", {
-        duration: 2000,
+        duration: 3000,
       });
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1000);

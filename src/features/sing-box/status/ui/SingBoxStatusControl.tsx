@@ -54,11 +54,11 @@ export function SingBoxStatusControl() {
       await refetchStatus();
 
       serverToast.success("sing-box перезагружен", {
-        duration: 2000,
+        duration: 3000,
       });
     } catch {
       serverToast.error("Не удалось перезагрузить sing-box", {
-        duration: 2000,
+        duration: 3000,
       });
     } finally {
       setIsApplyFlowActive(false);

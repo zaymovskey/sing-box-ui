@@ -24,7 +24,7 @@ export function TLSInlineToolsSection() {
 
     if (!isServerNameValid) {
       clientToast.error("Укажите serverName для генерации TLS", {
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }
@@ -33,7 +33,7 @@ export function TLSInlineToolsSection() {
       const serverName = getValues("serverName");
       if (!serverName) {
         clientToast.error("Укажите serverName для генерации TLS", {
-          duration: 2000,
+          duration: 3000,
         });
         return;
       }
@@ -56,7 +56,7 @@ export function TLSInlineToolsSection() {
       clearErrors("source.keyPem");
     } catch {
       clientToast.error("Не удалось сгенерировать TLS", {
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

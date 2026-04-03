@@ -121,7 +121,7 @@ export function EditInboundDialog({
     if (!currentInboundTag) {
       serverToast.error("Инбаунд должен иметь тег для редактирования", {
         id: "edit-inbound",
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }
@@ -133,7 +133,7 @@ export function EditInboundDialog({
 
       serverToast.success("Инбаунд успешно обновлен", {
         id: "edit-inbound",
-        duration: 2000,
+        duration: 3000,
       });
 
       setCurrentInboundTag(values.tag);
@@ -152,7 +152,7 @@ export function EditInboundDialog({
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "edit-inbound",
-          duration: 2000,
+          duration: 3000,
         });
         return;
       }
@@ -160,7 +160,7 @@ export function EditInboundDialog({
       serverToast.error("Не удалось обновить инбаунд", {
         description: `Message: ${msg}`,
         id: "edit-inbound",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

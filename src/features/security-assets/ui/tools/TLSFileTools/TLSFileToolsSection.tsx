@@ -152,7 +152,7 @@ export function TLSFileToolsSection() {
       });
 
       clientToast.error("Не удалось проверить TLS сертификаты", {
-        duration: 2000,
+        duration: 3000,
       });
     }
   }, [
@@ -173,14 +173,14 @@ export function TLSFileToolsSection() {
 
     if (!isValid) {
       clientToast.error("Заполните serverName, certificate path и key path", {
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }
 
     if (!serverName || !certificatePath || !keyPath) {
       clientToast.error("Заполните все поля для генерации TLS", {
-        duration: 2000,
+        duration: 3000,
       });
       return;
     }

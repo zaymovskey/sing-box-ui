@@ -22,7 +22,7 @@ export function RealityToolsSection() {
       clearErrors("_publicKey");
     } catch {
       clientToast.error("Не удалось сгенерировать ключи", {
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

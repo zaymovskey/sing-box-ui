@@ -31,7 +31,7 @@ export function DeleteInboundDialog({
       await deleteInbound(inbound.tag as string);
       serverToast.success("Инбаунд успешно удален", {
         id: "delete-inbound",
-        duration: 2000,
+        duration: 3000,
       });
       onOpenChange(false);
     } catch (e) {
@@ -40,7 +40,7 @@ export function DeleteInboundDialog({
       serverToast.error("Не удалось удалить инбаунд", {
         description: errorMessage,
         id: "delete-inbound",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

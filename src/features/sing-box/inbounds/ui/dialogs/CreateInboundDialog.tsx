@@ -99,7 +99,7 @@ export function CreateInboundDialog({
 
       serverToast.success("Инбаунд успешно создан", {
         id: "save-inbound",
-        duration: 2000,
+        duration: 3000,
       });
 
       onOpenChange(false);
@@ -109,14 +109,14 @@ export function CreateInboundDialog({
       if (msg === CONFIG_INVALID_AFTER_MAPPING) {
         serverToast.error("Конфиг получился невалидным (баг маппера).", {
           id: "save-inbound",
-          duration: 2000,
+          duration: 3000,
         });
         return;
       }
 
       serverToast.error("Не удалось создать инбаунд", {
         id: "save-inbound",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

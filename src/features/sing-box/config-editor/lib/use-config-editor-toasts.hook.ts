@@ -26,7 +26,7 @@ export function useConfigEditorToasts() {
       `Конфиг не сохранён: ${issues.length} ${numWord(issues.length, ["ошибка", "ошибки", "ошибок"])}`,
       {
         ...sonnerErrorCloseButton,
-        duration: 4000,
+        duration: 3000,
       },
     );
   };

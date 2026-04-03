@@ -34,7 +34,7 @@ export function DeleteSecurityAssetDialog({
 
       serverToast.success("TLS / Reality успешно удален", {
         id: "delete-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
 
       onOpenChange(false);
@@ -45,7 +45,7 @@ export function DeleteSecurityAssetDialog({
       serverToast.error("Не удалось удалить TLS / Reality", {
         description: errorMessage,
         id: "delete-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

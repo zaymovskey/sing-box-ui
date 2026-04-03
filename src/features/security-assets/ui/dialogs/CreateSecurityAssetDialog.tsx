@@ -67,7 +67,9 @@ export function CreateSecurityAssetDialog({
   const handleSubmit = async (values: SecurityAssetFormValues) => {
     form.clearErrors("root");
 
-    serverToast.loading("Сохранение...", { id: "save-security-asset" });
+    serverToast.loading("Сохранение...", {
+      id: "save-security-asset",
+    });
 
     const typeTitle = values.type === "tls" ? "TLS" : "Reality";
 
@@ -76,14 +78,14 @@ export function CreateSecurityAssetDialog({
 
       serverToast.success(`${typeTitle} создан`, {
         id: "save-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
 
       onOpenChange(false);
     } catch {
       serverToast.error(`Не удалось создать ${typeTitle}`, {
         id: "save-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

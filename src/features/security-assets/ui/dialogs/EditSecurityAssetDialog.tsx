@@ -87,7 +87,7 @@ export function EditSecurityAssetDialog({
 
       serverToast.success("TLS / Reality успешно обновлён", {
         id: "edit-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
 
       form.clearErrors();
@@ -100,7 +100,7 @@ export function EditSecurityAssetDialog({
           "TLS / Reality получился невалидным после маппинга.",
           {
             id: "edit-security-asset",
-            duration: 2000,
+            duration: 3000,
           },
         );
         return;
@@ -109,7 +109,7 @@ export function EditSecurityAssetDialog({
       serverToast.error("Не удалось обновить TLS / Reality", {
         description: `Message: ${msg}`,
         id: "edit-security-asset",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };
