@@ -174,11 +174,37 @@ const checkSingBoxConfig = async (
   }
 };
 
+function stripUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(stripUndefinedDeep) as T;
+  }
+
+  if (value && typeof value === "object") {
+    const result: Record<string, unknown> = {};
+
+    for (const [key, entry] of Object.entries(
+      value as Record<string, unknown>,
+    )) {
+      if (entry === undefined) {
+        continue;
+      }
+
+      result[key] = stripUndefinedDeep(entry);
+    }
+
+    return result as T;
+  }
+
+  return value;
+}
+
 const checkDraftApplied = async (): Promise<CheckResult> => {
   const configPath = getServerEnv().SINGBOX_CONFIG_PATH;
 
   try {
-    const expectedRuntime = await buildRuntimeConfigFromDraft();
+    const expectedRuntime = stripUndefinedDeep(
+      await buildRuntimeConfigFromDraft(),
+    );
     const real = JSON.parse(await fs.readFile(configPath, "utf-8"));
 
     const isSame = isDeepStrictEqual(expectedRuntime, real);
