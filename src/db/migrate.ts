@@ -16,17 +16,20 @@ function ensureMigrationsTable(db: Database.Database) {
   `);
 }
 
-function getMigrationFiles(): string[] {
-  const migrationsDir = path.join(process.cwd(), "src/server/db/migrations");
-
+function getMigrationFiles(migrationsDir: string): string[] {
   if (!fs.existsSync(migrationsDir)) {
+    console.log("[db] migrations dir does not exist:", migrationsDir);
     return [];
   }
 
-  return fs
+  const files = fs
     .readdirSync(migrationsDir)
     .filter((file) => file.endsWith(".sql"))
     .sort((a, b) => a.localeCompare(b));
+
+  console.log("[db] migration files:", files);
+
+  return files;
 }
 
 function getAppliedMigrationIds(db: Database.Database): Set<string> {
@@ -34,21 +37,32 @@ function getAppliedMigrationIds(db: Database.Database): Set<string> {
     .prepare("SELECT id FROM schema_migrations ORDER BY id ASC")
     .all() as MigrationRow[];
 
+  console.log("[db] applied migrations:", rows);
+
   return new Set(rows.map((row) => row.id));
 }
 
 export function runMigrations(db: Database.Database) {
   ensureMigrationsTable(db);
 
-  const migrationsDir = path.join(process.cwd(), "src/server/db/migrations");
-  const files = getMigrationFiles();
+  const migrationsDir = path.join(process.cwd(), "src/db/migrations");
+  console.log("[db] cwd:", process.cwd());
+  console.log("[db] migrations dir:", migrationsDir);
+
+  const files = getMigrationFiles(migrationsDir);
   const appliedIds = getAppliedMigrationIds(db);
 
   for (const file of files) {
-    if (appliedIds.has(file)) continue;
+    if (appliedIds.has(file)) {
+      console.log("[db] skip already applied:", file);
+      continue;
+    }
 
     const fullPath = path.join(migrationsDir, file);
     const sql = fs.readFileSync(fullPath, "utf8");
+
+    console.log("[db] applying migration:", file);
+    console.log("[db] sql preview:", sql.slice(0, 200));
 
     const trx = db.transaction(() => {
       db.exec(sql);
@@ -62,6 +76,7 @@ export function runMigrations(db: Database.Database) {
     });
 
     trx();
-    console.log(`[db] applied migration: ${file}`);
+
+    console.log("[db] applied migration:", file);
   }
 }

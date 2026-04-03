@@ -1,4 +1,4 @@
-CREATE TABLE security_asset_tls (
+CREATE TABLE IF NOT EXISTS security_asset_tls (
   asset_id TEXT PRIMARY KEY
     REFERENCES security_assets(id)
     ON DELETE CASCADE,

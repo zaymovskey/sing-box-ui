@@ -165,10 +165,12 @@ export function withRoute<
         });
       }
 
+      const message = e instanceof Error ? e.message : "Unexpected error";
+
       return errorJson(500, {
         error: {
           code: "INTERNAL_ERROR",
-          message: "Unexpected server error",
+          message: message,
         },
       });
     }

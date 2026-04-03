@@ -1,62 +1,20 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-
 import { z } from "zod";
 
 import {
+  deleteSecurityAssetById,
+  getSecurityAssetById,
+  updateSecurityAsset,
+} from "@/db/security-assets/repository";
+import {
   OkResponseSchema,
   type SecurityAsset,
-  type SecurityAssets,
   SecurityAssetSchema,
-  SecurityAssetsSchema,
 } from "@/shared/api/contracts";
-import { getServerEnv, ServerApiError, withRoute } from "@/shared/lib/server";
+import { ServerApiError, withRoute } from "@/shared/lib/server";
 
 const idParamsSchema = z.object({
   id: z.string().min(1),
 });
-
-async function readSecurityAssetsFile(): Promise<SecurityAssets> {
-  const serverEnv = getServerEnv();
-  const securityAssetsPath = serverEnv.SECURITY_ASSETS_PATH;
-
-  try {
-    const content = await fs.readFile(securityAssetsPath, "utf-8");
-    const raw = JSON.parse(content) as unknown;
-
-    const parseResult = SecurityAssetsSchema.safeParse(raw);
-
-    if (!parseResult.success) {
-      throw new Error(
-        `Invalid TLS / Realitys content: ${JSON.stringify(parseResult.error.issues)}`,
-      );
-    }
-
-    return parseResult.data;
-  } catch (error) {
-    // файл ещё не существует считаем пустым
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return [];
-    }
-
-    throw error;
-  }
-}
-
-async function writeSecurityAssetsFile(
-  securityAssets: SecurityAssets,
-): Promise<void> {
-  const serverEnv = getServerEnv();
-  const securityAssetsPath = serverEnv.SECURITY_ASSETS_PATH;
-
-  await fs.mkdir(path.dirname(securityAssetsPath), { recursive: true });
-
-  await fs.writeFile(
-    securityAssetsPath,
-    JSON.stringify(securityAssets, null, 2),
-    "utf-8",
-  );
-}
 
 export const PUT = withRoute({
   auth: true,
@@ -66,9 +24,7 @@ export const PUT = withRoute({
   handler: async ({ body, params }) => {
     const { id } = params;
 
-    const securityAssets = await readSecurityAssetsFile();
-
-    const currentAsset = securityAssets.find((asset) => asset.id === id);
+    const currentAsset = getSecurityAssetById(id);
 
     if (!currentAsset) {
       throw new ServerApiError(404, "NOT_FOUND", "TLS / Reality not found");
@@ -81,13 +37,18 @@ export const PUT = withRoute({
       updatedAt: new Date().toISOString(),
     };
 
-    const nextSecurityAssets = securityAssets.map((asset) =>
-      asset.id === id ? updatedAsset : asset,
-    );
+    try {
+      return updateSecurityAsset(updatedAsset);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "SECURITY_ASSET_NOT_FOUND"
+      ) {
+        throw new ServerApiError(404, "NOT_FOUND", "TLS / Reality not found");
+      }
 
-    await writeSecurityAssetsFile(nextSecurityAssets);
-
-    return updatedAsset;
+      throw error;
+    }
   },
 });
 
@@ -98,19 +59,11 @@ export const DELETE = withRoute({
   handler: async ({ params }) => {
     const { id } = params;
 
-    const securityAssets = await readSecurityAssetsFile();
+    const deleted = deleteSecurityAssetById(id);
 
-    const hasAsset = securityAssets.some((asset) => asset.id === id);
-
-    if (!hasAsset) {
+    if (!deleted) {
       throw new ServerApiError(404, "NOT_FOUND", "TLS / Reality not found");
     }
-
-    const nextSecurityAssets = securityAssets.filter(
-      (asset) => asset.id !== id,
-    );
-
-    await writeSecurityAssetsFile(nextSecurityAssets);
 
     return { ok: true };
   },

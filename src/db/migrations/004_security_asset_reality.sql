@@ -1,4 +1,4 @@
-CREATE TABLE security_asset_reality (
+CREATE TABLE IF NOT EXISTS security_asset_reality (
   asset_id TEXT PRIMARY KEY
     REFERENCES security_assets(id)
     ON DELETE CASCADE,
@@ -9,5 +9,6 @@ CREATE TABLE security_asset_reality (
   spider_x TEXT,
   handshake_server TEXT NOT NULL,
   handshake_server_port INTEGER NOT NULL,
-  public_key TEXT
+  max_time_difference TEXT,
+  public_key TEXT NOT NULL
 );
