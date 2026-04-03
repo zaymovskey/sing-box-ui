@@ -2,6 +2,7 @@ import { generateShortId } from "@/shared/lib";
 import {
   ControlledInputWithSelectField,
   ControlledSelectField,
+  type SelectFieldItem,
   Separator,
   SubsectionTitle,
   UncontrolledInputWithGenerateField,
@@ -20,12 +21,47 @@ const fingerprintItems = [
   { label: "Random", value: "random" },
 ];
 
-const durationOptions = [
-  { label: "ms", value: "ms" },
-  { label: "s", value: "s" },
-  { label: "m", value: "m" },
-  { label: "h", value: "h" },
+type DurationUnit = "ms" | "s" | "m" | "h";
+
+const durationOptions: SelectFieldItem<DurationUnit>[] = [
+  { value: "ms", label: "ms" },
+  { value: "s", label: "s" },
+  { value: "m", label: "m" },
+  { value: "h", label: "h" },
 ];
+
+function parseDuration(
+  rawValue: string,
+  defaultSelectValue: DurationUnit,
+): {
+  inputValue: string;
+  selectValue: DurationUnit;
+} {
+  const match = rawValue.match(/^(\d+)(ms|s|m|h)$/);
+
+  if (!match) {
+    return {
+      inputValue: "",
+      selectValue: defaultSelectValue,
+    };
+  }
+
+  return {
+    inputValue: match[1],
+    selectValue: match[2] as DurationUnit,
+  };
+}
+
+function formatDuration(
+  inputValue: string,
+  selectValue: DurationUnit,
+): string | undefined {
+  if (!inputValue) {
+    return undefined;
+  }
+
+  return `${inputValue}${selectValue}`;
+}
 
 export function SecurityAssetFormRealityFields() {
   return (
@@ -93,10 +129,13 @@ export function SecurityAssetFormRealityFields() {
           />
 
           <div className="md:col-span-2">
-            <ControlledInputWithSelectField<SecurityAssetFormValues>
+            <ControlledInputWithSelectField
+              defaultSelectValue="ms"
+              formatValue={formatDuration}
               label="Max time difference"
-              name="maxTimeDifference"
-              placeholder="Оставьте пустым, если не нужно"
+              name="tls.reality.max_time_difference"
+              parseValue={parseDuration}
+              placeholder="Например, 500ms"
               selectOptions={durationOptions}
             />
           </div>

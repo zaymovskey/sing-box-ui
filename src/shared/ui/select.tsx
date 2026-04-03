@@ -9,8 +9,8 @@ import * as React from "react";
 
 import { cn } from "../lib";
 
-export type SelectFieldItem = {
-  value: string;
+export type SelectFieldItem<T extends string = string> = {
+  value: T;
   label: string;
 };
 

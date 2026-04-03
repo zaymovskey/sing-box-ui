@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import {
   type FieldValues,
   type Path,
@@ -8,38 +9,52 @@ import {
 } from "react-hook-form";
 
 import { InputWithSelect } from "../../InputWithSelect";
-import { type SelectFieldItem } from "../../select";
 import { FormControl, FormField, FormItem, FormLabel } from "../form";
 
-type InputWithSelectProps<T extends FieldValues> = {
-  name: Path<T>;
+export type SelectFieldItem<T extends string> = {
+  value: T;
+  label: string;
+};
+
+type ParsedInputWithSelectValue<SelectValue extends string> = {
+  inputValue: string;
+  selectValue: SelectValue;
+};
+
+type InputWithSelectProps<
+  TFormValues extends FieldValues,
+  SelectValue extends string,
+> = {
+  name: Path<TFormValues>;
   label: string;
   placeholder?: string;
   disabled?: boolean;
-  selectOptions: SelectFieldItem[];
+  selectOptions: SelectFieldItem<SelectValue>[];
+  defaultSelectValue: SelectValue;
+  parseValue: (
+    rawValue: string,
+    defaultSelectValue: SelectValue,
+  ) => ParsedInputWithSelectValue<SelectValue>;
+  formatValue: (
+    inputValue: string,
+    selectValue: SelectValue,
+  ) => string | undefined;
 };
 
-function parseDuration(value: string) {
-  const match = value.match(/^(\d+)(ms|s|m|h)$/);
-
-  if (!match) {
-    return { inputValue: "", selectValue: "ms" };
-  }
-
-  return {
-    inputValue: match[1],
-    selectValue: match[2],
-  };
-}
-
-export function ControlledInputWithSelectField<T extends FieldValues>({
+export function ControlledInputWithSelectField<
+  TFormValues extends FieldValues,
+  SelectValue extends string,
+>({
   name,
   label,
   placeholder,
   disabled = false,
   selectOptions,
-}: InputWithSelectProps<T>) {
-  const form = useFormContext<T>();
+  defaultSelectValue,
+  parseValue,
+  formatValue,
+}: InputWithSelectProps<TFormValues, SelectValue>) {
+  const form = useFormContext<TFormValues>();
   const error = form.getFieldState(name, form.formState).error;
 
   const formValue = useWatch({
@@ -47,18 +62,36 @@ export function ControlledInputWithSelectField<T extends FieldValues>({
     name,
   });
 
-  const { inputValue, selectValue } = parseDuration(String(formValue ?? ""));
+  const parsed = useMemo(
+    () => parseValue(String(formValue ?? ""), defaultSelectValue),
+    [defaultSelectValue, formValue, parseValue],
+  );
+
+  const [selectedValue, setSelectedValue] = useState<SelectValue>(
+    parsed.selectValue,
+  );
+
+  useEffect(() => {
+    if (parsed.inputValue) {
+      setSelectedValue(parsed.selectValue);
+    }
+  }, [parsed.inputValue, parsed.selectValue]);
 
   const onInputChange = (value: string) => {
-    form.setValue(name, `${value}${selectValue}` as never, {
+    const nextValue = formatValue(value.trim(), selectedValue);
+
+    form.setValue(name, nextValue as never, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
   };
 
-  const onSelectChange = (value: string) => {
-    const nextValue = inputValue ? `${inputValue}${value}` : "";
+  const onSelectChange = (value: SelectValue) => {
+    setSelectedValue(value);
+
+    const nextValue = formatValue(parsed.inputValue.trim(), value);
+
     form.setValue(name, nextValue as never, {
       shouldDirty: true,
       shouldTouch: true,
@@ -79,10 +112,10 @@ export function ControlledInputWithSelectField<T extends FieldValues>({
           <FormControl>
             <InputWithSelect
               inputDisabled={disabled}
-              inputValue={inputValue}
+              inputValue={parsed.inputValue}
               selectDisabled={disabled}
               selectOptions={selectOptions}
-              selectValue={selectValue}
+              selectValue={selectedValue}
               onInputChange={onInputChange}
               onSelectChange={onSelectChange}
             />
