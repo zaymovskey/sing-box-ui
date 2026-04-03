@@ -11,12 +11,13 @@ dist/
 .env.*.local
 coverage/
 
-docker/data/sing-box/certs/*
-docker/data/sing-box/config.json
-docker/data/sing-box/config.draft.json
-docker/data/sing-box/history/*
-
 tsconfig.tsbuildinfo
 
-data/
-!data/.gitkeep
+docker/data/**
+!docker/data/.gitkeep
+!docker/data/sing-box/
+!docker/data/sing-box/.gitkeep
+!docker/data/sing-box/certs/
+!docker/data/sing-box/certs/.gitkeep
+!docker/data/sing-box-state/
+!docker/data/sing-box-state/.gitkeep
