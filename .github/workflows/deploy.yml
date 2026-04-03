@@ -58,4 +58,7 @@ jobs:
             docker compose pull ui
             docker compose up -d --force-recreate --remove-orphans ui
 
+            echo "DEPLOY_ENV=${{ inputs.environment }}"
+            echo "DEPLOY_PATH=${{ steps.vars.outputs.deploy_path }}"
+            echo "IMAGE_TAG=$IMAGE_TAG"
             docker inspect sing-box-ui --format '{{.Config.Image}}'
