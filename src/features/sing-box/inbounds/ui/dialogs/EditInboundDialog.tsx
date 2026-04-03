@@ -7,9 +7,11 @@ import { useForm } from "react-hook-form";
 import {
   InboundFormSchema,
   type InboundFormValues,
-  useConfigQuery,
 } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import {
+  type DraftInbound,
+  type InboundsListResponse,
+} from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -26,10 +28,17 @@ import {
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
+import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
 import { InboundForm } from "../InboundForm/InboundForm";
 
 const FORM_ID = "edit-inbound-form";
+
+function getRawInbounds(
+  response: InboundsListResponse | undefined,
+): DraftInbound[] {
+  return Array.isArray(response?.list) ? response.list : [];
+}
 
 interface EditInboundDialogProps {
   inbound: DraftInbound;
@@ -37,26 +46,16 @@ interface EditInboundDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
-  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
-    return [];
-  }
-
-  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
-
-  return Array.isArray(maybeInbounds) ? (maybeInbounds as DraftInbound[]) : [];
-}
-
 export function EditInboundDialog({
   inbound,
   open,
   onOpenChange,
 }: EditInboundDialogProps) {
-  const { data: rawDraftConfig } = useConfigQuery();
+  const { data: inboundsListResponse } = useInboundsListQuery();
 
   const rawInbounds = useMemo(
-    () => getRawInbounds(rawDraftConfig),
-    [rawDraftConfig],
+    () => getRawInbounds(inboundsListResponse),
+    [inboundsListResponse],
   );
 
   const initialValues = useMemo(() => {
@@ -109,14 +108,6 @@ export function EditInboundDialog({
   });
 
   const handleSubmit = async (values: InboundFormValues) => {
-    if (rawDraftConfig === undefined) {
-      serverToast.error("Конфиг не загружен", {
-        id: "edit-inbound",
-        duration: 2000,
-      });
-      return;
-    }
-
     form.clearErrors("root");
 
     if (!checkTagUniqueAndSetFormError()) {

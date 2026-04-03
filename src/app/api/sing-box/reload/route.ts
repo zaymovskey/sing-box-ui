@@ -2,14 +2,10 @@ import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import { promisify } from "node:util";
 
+import { OkResponseSchema, RuntimeConfigSchema } from "@/shared/api/contracts";
 import {
-  OkResponseSchema,
-  RuntimeConfigSchema,
-  stripDraftFields,
-} from "@/shared/api/contracts";
-import {
+  buildRuntimeConfigFromDraft,
   getServerEnv,
-  resolveSecurityAssets,
   ServerApiError,
   withRoute,
 } from "@/shared/lib/server";
@@ -23,22 +19,9 @@ export const POST = withRoute({
     const serverEnv = getServerEnv();
 
     const configPath = serverEnv.SINGBOX_CONFIG_PATH;
-    const draftPath = serverEnv.SINGBOX_DRAFT_CONFIG_PATH;
-    const assetsPath = serverEnv.SECURITY_ASSETS_PATH;
     const containerName = serverEnv.SINGBOX_CONTAINER_NAME;
 
-    const draftContent = await fs.readFile(draftPath, "utf-8");
-    const rawDraftConfig = JSON.parse(draftContent) as Record<string, unknown>;
-
-    const assetsContent = await fs.readFile(assetsPath, "utf-8");
-    const securityAssets = JSON.parse(assetsContent);
-
-    const resolvedConfig = resolveSecurityAssets(
-      rawDraftConfig,
-      securityAssets,
-    );
-
-    const runtimeConfig = stripDraftFields(resolvedConfig);
+    const runtimeConfig = await buildRuntimeConfigFromDraft();
 
     const parseResult = RuntimeConfigSchema.safeParse(runtimeConfig);
 

@@ -15,7 +15,6 @@ const serverEnvSchema = z.object({
   SINGBOX_CERTS_DIR: z.string().min(1),
   SINGBOX_CONTAINER_NAME: z.string().min(1),
   USE_HTTPS: z.enum(["true", "false"]).default("false"),
-  SECURITY_ASSETS_PATH: z.string().min(1),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -35,7 +34,6 @@ function getBuildSafeEnv(source: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
     SINGBOX_CONTAINER_NAME:
       source.SINGBOX_CONTAINER_NAME ?? "build-placeholder",
     USE_HTTPS: source.USE_HTTPS ?? "false",
-    SECURITY_ASSETS_PATH: source.SECURITY_ASSETS_PATH ?? "/tmp/security-assets",
     SQLITE_DB_PATH: source.SQLITE_DB_PATH ?? "/data/app.db",
   };
 }
@@ -46,7 +44,6 @@ function normalizeServerEnv(env: ServerEnv): ServerEnv {
     SINGBOX_DRAFT_CONFIG_PATH: path.resolve(env.SINGBOX_DRAFT_CONFIG_PATH),
     SINGBOX_CONFIG_PATH: path.resolve(env.SINGBOX_CONFIG_PATH),
     SINGBOX_CERTS_DIR: path.resolve(env.SINGBOX_CERTS_DIR),
-    SECURITY_ASSETS_PATH: path.resolve(env.SECURITY_ASSETS_PATH),
   };
 }
 
