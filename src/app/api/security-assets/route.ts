@@ -1,49 +1,18 @@
 import { randomUUID } from "node:crypto";
-import fs from "node:fs/promises";
-import path from "node:path";
 
 import z from "zod";
 
 import {
+  createSecurityAsset,
+  getSecurityAssets,
+} from "@/db/security-assets/repository";
+import {
   type SecurityAsset,
-  type SecurityAssets,
   SecurityAssetSchema,
   SecurityAssetsSchema,
   SecurityAssetTypeSchema,
 } from "@/shared/api/contracts";
-import { getServerEnv, withRoute } from "@/shared/lib/server";
-
-async function readSecurityAssetsFile(): Promise<SecurityAssets> {
-  const serverEnv = getServerEnv();
-  const securityAssetsPath = serverEnv.SECURITY_ASSETS_PATH;
-
-  const content = await fs.readFile(securityAssetsPath, "utf-8");
-  const raw = JSON.parse(content) as unknown;
-
-  const parseResult = SecurityAssetsSchema.safeParse(raw);
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Invalid TLS / Realitys content: ${JSON.stringify(parseResult.error.issues)}`,
-    );
-  }
-
-  return parseResult.data;
-}
-
-async function writeSecurityAssetsFile(
-  securityAssets: SecurityAssets,
-): Promise<void> {
-  const serverEnv = getServerEnv();
-  const securityAssetsPath = serverEnv.SECURITY_ASSETS_PATH;
-
-  await fs.mkdir(path.dirname(securityAssetsPath), { recursive: true });
-  await fs.writeFile(
-    securityAssetsPath,
-    JSON.stringify(securityAssets, null, 2),
-    "utf-8",
-  );
-}
+import { withRoute } from "@/shared/lib/server";
 
 export const GET = withRoute({
   auth: true,
@@ -53,15 +22,11 @@ export const GET = withRoute({
   }),
   handler: async ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type");
+    const rawType = searchParams.get("type");
 
-    const assets = await readSecurityAssetsFile();
+    const type = rawType ? SecurityAssetTypeSchema.parse(rawType) : undefined;
 
-    if (type) {
-      return assets.filter((asset) => asset.type === type);
-    }
-
-    return assets;
+    return getSecurityAssets(type);
   },
 });
 
@@ -70,20 +35,16 @@ export const POST = withRoute({
   requestSchema: SecurityAssetSchema,
   responseSchema: SecurityAssetSchema,
   handler: async ({ body }) => {
-    const securityAssets = await readSecurityAssetsFile();
-
     const now = new Date().toISOString();
 
-    const newAsset: SecurityAsset = {
+    const creatingAsset: SecurityAsset = {
       ...body,
       id: randomUUID(),
       createdAt: now,
       updatedAt: now,
     };
 
-    const nextSecurityAssets = [...securityAssets, newAsset];
-
-    await writeSecurityAssetsFile(nextSecurityAssets);
+    const newAsset = createSecurityAsset(creatingAsset);
 
     return newAsset;
   },

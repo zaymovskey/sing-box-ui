@@ -8,12 +8,13 @@ import { useForm } from "react-hook-form";
 import {
   InboundFormSchema,
   type InboundFormValues,
-  useConfigQuery,
 } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import {
+  type DraftInbound,
+  type InboundsListResponse,
+} from "@/shared/api/contracts";
 import {
   Button,
-  clientToast,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -29,31 +30,28 @@ import {
   useCreateInbound,
 } from "../../model/commands/inbound-create.command";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
+import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 
 const FORM_ID = "create-inbound-form";
+
+function getRawInbounds(
+  response: InboundsListResponse | undefined,
+): DraftInbound[] {
+  return Array.isArray(response?.list) ? response.list : [];
+}
 
 interface CreateInboundDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-function getRawInbounds(rawDraftConfig: unknown): DraftInbound[] {
-  if (!rawDraftConfig || typeof rawDraftConfig !== "object") {
-    return [];
-  }
-
-  const maybeInbounds = (rawDraftConfig as { inbounds?: unknown }).inbounds;
-
-  return Array.isArray(maybeInbounds) ? (maybeInbounds as DraftInbound[]) : [];
-}
-
 export function CreateInboundDialog({
   open,
   onOpenChange,
 }: CreateInboundDialogProps) {
-  const { data: rawDraftConfig } = useConfigQuery();
+  const { data: inboundsListResponse } = useInboundsListQuery();
 
   const initialValues = defaultsByType.vless;
 
@@ -64,8 +62,8 @@ export function CreateInboundDialog({
   });
 
   const rawInbounds = useMemo(
-    () => getRawInbounds(rawDraftConfig),
-    [rawDraftConfig],
+    () => getRawInbounds(inboundsListResponse),
+    [inboundsListResponse],
   );
 
   const tags = useMemo(() => {
@@ -84,13 +82,6 @@ export function CreateInboundDialog({
   const { createInbound, isPending } = useCreateInbound();
 
   const handleSubmit = async (values: InboundFormValues) => {
-    if (rawDraftConfig === undefined) {
-      clientToast.error("Конфиг не загружен", {
-        duration: 2000,
-      });
-      return;
-    }
-
     form.clearErrors("root");
 
     if (!checkTagUniqueAndSetFormError()) {

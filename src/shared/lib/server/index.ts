@@ -17,6 +17,7 @@ export type { SessionPayload } from "./auth/jwt";
 export { signSession, verifySession } from "./auth/jwt";
 export { withSession } from "./auth/with-session";
 export { sha256 } from "./crypto/sha256";
+export { getDb } from "./db";
 export { getServerEnv } from "./env-server";
 export { checkFilePresence } from "./filesystem/check-file-presence";
 export { resolveHostCertPath } from "./filesystem/resolve-host-cert-path";
