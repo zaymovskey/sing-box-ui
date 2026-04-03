@@ -52,5 +52,10 @@ jobs:
 
             export IMAGE_TAG="${{ inputs.image_tag }}"
 
-            docker compose pull
-            docker compose up -d
+            echo "IMAGE_TAG=$IMAGE_TAG"
+            docker compose config | grep image:
+
+            docker compose pull ui
+            docker compose up -d --force-recreate --remove-orphans ui
+
+            docker inspect sing-box-ui --format '{{.Config.Image}}'
