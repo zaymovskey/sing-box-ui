@@ -36,6 +36,19 @@ services:
     depends_on:
       - sing-box
 
+  worker:
+    build:
+      context: .
+    container_name: singbox-ui-worker
+    command: npm run worker:start
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data
+    depends_on:
+      - sing-box
+    restart: unless-stopped
+
 volumes:
   node_modules:
   next_cache:

@@ -4,7 +4,7 @@ import {
   deleteSecurityAssetById,
   getSecurityAssetById,
   updateSecurityAsset,
-} from "@/db/security-assets/repository";
+} from "@/server/db/security-assets/repository";
 import {
   OkResponseSchema,
   type SecurityAsset,

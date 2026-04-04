@@ -3,7 +3,7 @@ import z from "zod";
 import {
   deleteDraftInboundByTag,
   updateDraftInboundByTag,
-} from "@/db/sing-box/inbounds/repository";
+} from "@/server/db/sing-box/inbounds/repository";
 import { DraftInboundSchema, OkResponseSchema } from "@/shared/api/contracts";
 import { ServerApiError, withRoute } from "@/shared/lib/server";
 

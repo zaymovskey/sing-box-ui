@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 
-import { runMigrations } from "@/db/migrate";
+import { runMigrations } from "@/server/db/migrate";
 
 const dbPath = process.env.SQLITE_DB_PATH ?? "/data/app.db";
 

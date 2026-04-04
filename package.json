@@ -25,7 +25,8 @@
     "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix --config stylelint.config.mjs",
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "worker:start": "tsx src/server/traffic-monitor/worker.ts"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs,cjs}": [

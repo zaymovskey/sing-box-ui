@@ -6,7 +6,7 @@ import {
   type DraftInboundUser,
   type SecurityAsset,
 } from "@/shared/api/contracts";
-import { clientEnv, copyText } from "@/shared/lib";
+import { copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
 
 import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
@@ -27,12 +27,10 @@ export function InboundUserRow({
 
   const name = getInboundUserName(inbound.type, user);
 
-  const link = buildInboundShareLink(
-    inbound,
-    user,
-    securityAssets ?? [],
-    clientEnv.NEXT_PUBLIC_HOST_IP || "UNKNOWN_HOST",
-  );
+  const host =
+    typeof window !== "undefined" ? window.location.hostname : "UNKNOWN_HOST";
+
+  const link = buildInboundShareLink(inbound, user, securityAssets ?? [], host);
 
   const handleCopy = async () => {
     if (!link) {

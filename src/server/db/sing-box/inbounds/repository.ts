@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { getSecurityAssets } from "@/db/security-assets/repository";
+import { getSecurityAssets } from "@/server/db/security-assets/repository";
 import {
   type DraftHysteria2Inbound,
   type DraftInbound,
