@@ -1,0 +1,4 @@
+### GET Status
+GET {{baseUrl}}{{apiPrefix}}/sing-box/status
+
+###

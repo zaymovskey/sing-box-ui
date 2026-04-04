@@ -1,0 +1,37 @@
+import { useCallback } from "react";
+
+import { type InboundFormValues } from "@/features/sing-box/config-core";
+import { DraftInboundSchema } from "@/shared/api/contracts";
+
+import { mapFormToInbound } from "../mappers/inbound.form-mapper";
+import { useEditInboundMutation } from "../mutations/edit-inbound.mutation";
+
+export const CONFIG_INVALID_AFTER_MAPPING = "CONFIG_INVALID_AFTER_MAPPING";
+
+export function useEditInbound() {
+  const editInboundMutation = useEditInboundMutation();
+
+  const editInbound = useCallback(
+    async (originalTag: string, updatedInbound: InboundFormValues) => {
+      const parsedEditedInbound = mapFormToInbound(updatedInbound);
+
+      const inboundParseResult =
+        DraftInboundSchema.safeParse(parsedEditedInbound);
+
+      if (!inboundParseResult.success) {
+        throw new Error(CONFIG_INVALID_AFTER_MAPPING);
+      }
+
+      return editInboundMutation.mutateAsync({
+        originalTag,
+        inbound: inboundParseResult.data,
+      });
+    },
+    [editInboundMutation],
+  );
+
+  return {
+    editInbound,
+    isPending: editInboundMutation.isPending,
+  };
+}

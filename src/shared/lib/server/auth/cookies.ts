@@ -1,0 +1,43 @@
+import "server-only";
+
+import { cookies } from "next/headers";
+
+import { getServerEnv } from "../env-server";
+
+export function getAuthCookieName() {
+  const serverEnv = getServerEnv();
+  return serverEnv.AUTH_COOKIE_NAME;
+}
+
+export async function setSessionCookie(token: string) {
+  const name = getAuthCookieName();
+  const jar = await cookies();
+  const serverEnv = getServerEnv();
+
+  jar.set(name, token, {
+    httpOnly: true,
+    secure:
+      serverEnv.NODE_ENV === "production" && serverEnv.USE_HTTPS === "true",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+}
+
+export async function readSessionCookie(): Promise<string | null> {
+  const name = getAuthCookieName();
+  const jar = await cookies();
+
+  return jar.get(name)?.value ?? null;
+}
+
+export async function clearSessionCookie() {
+  const name = getAuthCookieName();
+  const jar = await cookies();
+
+  jar.set(name, "", {
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+  });
+}

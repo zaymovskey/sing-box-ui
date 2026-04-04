@@ -1,0 +1,27 @@
+services:
+  sing-box:
+    image: bi4nbn/sing-box:v1.11.15
+    container_name: sing-box
+    restart: unless-stopped
+    command: ["run", "-c", "/etc/sing-box/config.json"]
+    volumes:
+      - ./data/sing-box:/etc/sing-box:ro
+      - ./data/sing-box-state:/var/lib/sing-box
+    network_mode: host
+    env_file:
+      - .env
+
+  ui:
+    image: ghcr.io/zaymovskey/sing-box-ui:${IMAGE_TAG:-latest}
+    container_name: sing-box-ui
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data/sing-box:/etc/sing-box
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - sing-box

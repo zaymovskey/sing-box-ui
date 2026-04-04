@@ -1,0 +1,43 @@
+@baseUrl = {{$shared local.baseUrl}}
+@apiPrefix = {{$shared apiPrefix}}
+@json = {{$shared json}}
+
+##################################################
+#                    AUTH
+##################################################
+
+### Login (если нет cookie)
+# @name login
+POST {{baseUrl}}{{apiPrefix}}/auth/login
+Content-Type: {{json}}
+
+{
+  "email": "demo@example.com",
+  "password": "demo"
+}
+
+##################################################
+#                  STATUS
+##################################################
+
+### Get sing-box status
+# @name getStatus
+GET {{baseUrl}}{{apiPrefix}}/sing-box/status
+
+##################################################
+#                  RELOAD
+##################################################
+
+### Reload sing-box
+# @name reload
+POST {{baseUrl}}{{apiPrefix}}/sing-box/reload
+Content-Type: {{json}}
+
+{}
+
+##################################################
+#        CHECK AFTER RELOAD (очень удобно)
+##################################################
+
+### Status after reload
+GET {{baseUrl}}{{apiPrefix}}/sing-box/status

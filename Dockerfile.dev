@@ -1,0 +1,23 @@
+FROM ghcr.io/sagernet/sing-box:v1.13.3 AS singbox
+
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl
+RUN apk add --no-cache docker-cli
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+
+RUN npm ci
+
+EXPOSE 3000
+
+COPY --from=singbox /usr/local/bin/sing-box /usr/local/bin/sing-box
+
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+ENV NODE_ENV=development
+
+CMD ["npm", "run", "dev:docker"]

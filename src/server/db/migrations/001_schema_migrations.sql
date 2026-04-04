@@ -1,0 +1,2 @@
+-- reserved initial migration
+-- schema_migrations table is created by migrate.ts bootstrap
