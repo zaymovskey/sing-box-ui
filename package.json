@@ -26,7 +26,7 @@
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
     "type-check": "tsc --noEmit",
-    "worker:start": "tsx src/server/traffic-monitor/worker.ts"
+    "build:worker": "tsc -p tsconfig.worker.json"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs,cjs}": [

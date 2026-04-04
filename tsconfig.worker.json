@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".worker-dist",
+    "rootDir": "src",
+    "module": "commonjs",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "isolatedModules": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/server/workers/**/*.ts",
+    "src/server/db/**/*.ts",
+    "src/db/**/*.ts",
+    "src/shared/**/*.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

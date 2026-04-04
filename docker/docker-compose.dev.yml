@@ -38,16 +38,16 @@ services:
 
   worker:
     build:
-      context: .
-    container_name: singbox-ui-worker
-    command: npm run worker:start
+      context: ..
+      dockerfile: Dockerfile
+      target: worker-runner
     env_file:
       - .env
     volumes:
       - ./data:/data
+    restart: unless-stopped
     depends_on:
       - sing-box
-    restart: unless-stopped
 
 volumes:
   node_modules:
