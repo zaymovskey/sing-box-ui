@@ -65,4 +65,4 @@ RUN apk add --no-cache openssl
 COPY --from=builder /app/.worker-dist ./.worker-dist
 COPY --from=deps /app/node_modules ./node_modules
 
-CMD ["node", ".worker-dist/server/workers/index.js"]
+CMD ["node", ".worker-dist/server/worker/main.js"]

@@ -23,6 +23,7 @@ services:
     restart: unless-stopped
     depends_on:
       - sing-box
+    network_mode: host
 
   ui:
     image: ghcr.io/zaymovskey/sing-box-ui:${IMAGE_TAG:-latest}

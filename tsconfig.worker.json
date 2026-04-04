@@ -16,7 +16,7 @@
     }
   },
   "include": [
-    "src/server/workers/**/*.ts",
+    "src/server/worker/**/*.ts",
     "src/server/db/**/*.ts",
     "src/db/**/*.ts",
     "src/shared/**/*.ts"
