@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 
+import { getDb } from "@/server/db/client";
 import { getSecurityAssets } from "@/server/db/security-assets/repository";
 import {
   type DraftHysteria2Inbound,
@@ -11,7 +12,6 @@ import {
   InboundVlessRowSchema,
   type SecurityAsset,
 } from "@/shared/api/contracts";
-import { getDb } from "@/shared/lib/server";
 
 const sql = String.raw;
 

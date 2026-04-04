@@ -43,9 +43,10 @@ function getAppliedMigrationIds(db: Database.Database): Set<string> {
 }
 
 export function runMigrations(db: Database.Database) {
+  console.log("[db] running migrations");
   ensureMigrationsTable(db);
 
-  const migrationsDir = path.join(process.cwd(), "src/db/migrations");
+  const migrationsDir = path.join(process.cwd(), "src/server/db/migrations");
   console.log("[db] cwd:", process.cwd());
   console.log("[db] migrations dir:", migrationsDir);
 

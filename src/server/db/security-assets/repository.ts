@@ -1,8 +1,8 @@
+import { getDb } from "@/server/db/client";
 import {
   type SecurityAsset,
   type SecurityAssetType,
 } from "@/shared/api/contracts";
-import { getDb } from "@/shared/lib/server";
 
 const sql = String.raw;
 

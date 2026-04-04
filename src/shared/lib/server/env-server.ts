@@ -15,6 +15,7 @@ const serverEnvSchema = z.object({
   SINGBOX_CERTS_DIR: z.string().min(1),
   SINGBOX_CONTAINER_NAME: z.string().min(1),
   USE_HTTPS: z.enum(["true", "false"]).default("false"),
+  SQLITE_DB_PATH: z.string().min(1),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;
