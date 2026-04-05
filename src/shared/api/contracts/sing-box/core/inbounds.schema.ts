@@ -169,9 +169,20 @@ function addHysteria2CrossFieldValidation(
   }
 }
 
+export const SingBoxVlessUserSchema = z.object({
+  name: NonEmptyStringSchema,
+  uuid: NonEmptyStringSchema,
+  flow: VlessFlowSchema.optional(),
+});
+
+export const SingBoxHysteria2UserSchema = z.object({
+  name: NonEmptyStringSchema,
+  password: NonEmptyStringSchema,
+});
+
 export const SingBoxVlessInboundSchema = BaseInboundSchema.extend({
   type: z.literal("vless"),
-  users: z.array(VlessUserSchema).min(1),
+  users: z.array(SingBoxVlessUserSchema).min(1),
   tls: SingBoxVlessTlsSchema.optional(),
 });
 
@@ -196,9 +207,9 @@ export const SingBoxHysteria2InboundSchema = BaseInboundSchema.extend({
   up_mbps: Hysteria2BandwidthSchema.optional(),
   down_mbps: Hysteria2BandwidthSchema.optional(),
   ignore_client_bandwidth: z.boolean().optional(),
-  users: z.array(Hysteria2UserSchema).min(1),
+  users: z.array(SingBoxHysteria2UserSchema).min(1),
   obfs: Hysteria2ObfsSchema.optional(),
-  tls: SingBoxHysteria2TlsSchema,
+  tls: SingBoxHysteria2TlsSchema.optional(),
   masquerade: Hysteria2MasqueradeSchema.optional(),
   bbr_profile: z.string().optional(),
   brutal_debug: z.boolean().optional(),
@@ -290,3 +301,6 @@ export type SaveHysteria2Inbound = z.infer<typeof SaveHysteria2InboundSchema>;
 export type SingBoxInbound = z.infer<typeof SingBoxInboundSchema>;
 export type StoredInbound = z.infer<typeof StoredInboundSchema>;
 export type SaveInboundInput = z.infer<typeof SaveInboundInputSchema>;
+
+export type SingBoxVlessUser = z.infer<typeof SingBoxVlessUserSchema>;
+export type SingBoxHysteria2User = z.infer<typeof SingBoxHysteria2UserSchema>;
