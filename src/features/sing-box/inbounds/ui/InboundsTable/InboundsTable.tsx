@@ -68,7 +68,7 @@ export function InboundsTable({
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => {
               const inbound = row.original.inbound;
-              const isExpanded = !!expandedRowTags[inbound.tag!];
+              const isExpanded = !!expandedRowTags[inbound.display_tag!];
 
               const hasUsers =
                 "users" in inbound &&

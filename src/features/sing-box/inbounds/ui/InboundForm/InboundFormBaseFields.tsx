@@ -19,7 +19,7 @@ export function InboundFormBaseFields() {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledTextField<InboundFormValues>
             label="Tag"
-            name="tag"
+            name="display_tag"
             placeholder="in-01"
           />
 

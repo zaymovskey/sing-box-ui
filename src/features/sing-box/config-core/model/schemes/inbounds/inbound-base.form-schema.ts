@@ -2,7 +2,7 @@ import z from "zod";
 
 export const BaseInboundFormSchema = z.object({
   type: z.enum(["vless", "hysteria2"]),
-  tag: z.string().trim().min(1, "Tag обязателен"),
+  display_tag: z.string().trim().min(1, "Нужен tag"),
   listen_port: z
     .number()
     .positive()

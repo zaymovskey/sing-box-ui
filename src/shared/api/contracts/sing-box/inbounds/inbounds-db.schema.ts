@@ -23,7 +23,8 @@ export type InboundUserKind = z.infer<typeof InboundUserKindSchema>;
  */
 export const InboundRowSchema = z.object({
   id: DbIdSchema,
-  tag: NullableStringSchema,
+  display_tag: NullableStringSchema,
+  internal_tag: NullableStringSchema,
   type: InboundDbTypeSchema,
 
   listen: NullableStringSchema,

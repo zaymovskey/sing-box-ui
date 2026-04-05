@@ -10,7 +10,7 @@ export const defaultsByType = {
   vless: {
     type: "vless",
     listen: "::",
-    tag: "",
+    display_tag: "",
     listen_port: 443,
     sniff: true,
     sniff_override_destination: true,
@@ -21,7 +21,7 @@ export const defaultsByType = {
   hysteria2: {
     type: "hysteria2",
     listen: "::",
-    tag: "",
+    display_tag: "",
     listen_port: 443,
     users: [{ display_name: "", password: "" }],
     sniff: true,

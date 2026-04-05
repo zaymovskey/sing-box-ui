@@ -19,7 +19,7 @@ export function mapInboundToFormValues(
   inbound: StoredInbound,
 ): InboundFormValues {
   const baseFields = {
-    tag: inbound.tag ?? "",
+    display_tag: inbound.display_tag ?? "",
     listen: inbound.listen ?? "",
     listen_port: inbound.listen_port ?? 443,
     sniff: inbound.sniff ?? false,

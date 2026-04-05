@@ -80,8 +80,8 @@ export {
   InboundsListResponseSchema,
 } from "./sing-box/inbounds/list.schema";
 export {
-  type InboundUserConntectionStatusResponse,
-  InboundUserConntectionStatusResponseSchema,
+  type InboundUserConnectionStatusResponse,
+  InboundUserConnectionStatusResponseSchema,
 } from "./sing-box/inbounds/users/connection-status.schema";
 export {
   type SingBoxStatusCheck,

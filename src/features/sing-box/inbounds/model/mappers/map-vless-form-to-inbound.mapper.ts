@@ -6,7 +6,7 @@ export function mapVlessFormToInbound(
 ): SaveVlessInbound {
   return {
     type: "vless",
-    tag: values.tag,
+    display_tag: values.display_tag,
     listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,

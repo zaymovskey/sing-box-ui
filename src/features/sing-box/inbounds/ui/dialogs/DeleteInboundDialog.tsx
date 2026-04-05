@@ -28,7 +28,7 @@ export function DeleteInboundDialog({
     serverToast.loading("Удаление...", { id: "delete-inbound" });
 
     try {
-      await deleteInbound(inbound.tag as string);
+      await deleteInbound(inbound.internal_tag as string);
       serverToast.success("Инбаунд успешно удален", {
         id: "delete-inbound",
         duration: 3000,
@@ -58,7 +58,7 @@ export function DeleteInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          Вы уверены, что хотите удалить инбаунд {inbound.tag}?
+          Вы уверены, что хотите удалить инбаунд {inbound.display_tag}?
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

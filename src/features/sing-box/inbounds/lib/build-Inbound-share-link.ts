@@ -68,7 +68,7 @@ export function buildInboundShareLink(
       }
     }
 
-    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.tag ?? "")}`;
+    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.internal_tag ?? "")}`;
   }
 
   if (inbound.type === "hysteria2") {
@@ -105,7 +105,7 @@ export function buildInboundShareLink(
       params.set("obfs-password", hy2Inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.tag ?? "")}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.internal_tag ?? "")}`;
   }
 
   return null;

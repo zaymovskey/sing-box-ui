@@ -13,7 +13,7 @@ export function mapInboundsToRows(config: DraftConfig): InboundRow[] {
   const inbounds = config.inbounds ?? [];
 
   return inbounds.map((inb) => {
-    const tag = inb.tag ?? null;
+    const tag = inb.display_tag ?? null;
     const type = inb.type ?? null;
     const listen_port = inb.listen_port ?? null;
     const usersCount = getUsersCount(inb);

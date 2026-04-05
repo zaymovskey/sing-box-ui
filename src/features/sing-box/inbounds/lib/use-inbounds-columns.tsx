@@ -34,7 +34,7 @@ export function useInboundsColumns() {
       id: "expand",
       header: "",
       cell: ({ row }) => {
-        const isExpanded = !!expandedRowTags[row.original.inbound.tag!];
+        const isExpanded = !!expandedRowTags[row.original.inbound.display_tag!];
 
         if (row.original.usersCount === 0) {
           return null;
@@ -45,7 +45,7 @@ export function useInboundsColumns() {
             size="icon"
             type="button"
             variant="ghost"
-            onClick={() => toggleExpandedRow(row.original.inbound.tag!)}
+            onClick={() => toggleExpandedRow(row.original.inbound.display_tag!)}
           >
             {isExpanded ? (
               <ChevronDown className="size-4" />

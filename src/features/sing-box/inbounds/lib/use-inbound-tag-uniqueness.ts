@@ -3,41 +3,43 @@ import { type UseFormReturn, useWatch } from "react-hook-form";
 
 import {
   type InboundFormValues,
-  isUniqueInboundTag,
+  isUniqueInboundDisplayTag,
 } from "@/features/sing-box/config-core";
 
-export function useInboundTagUniqueness(
+export function useInboundDisplayTagUniqueness(
   form: UseFormReturn<InboundFormValues>,
-  tags: string[],
-  excludeTag?: string,
+  displayTags: string[],
+  excludeDisplayTag?: string,
 ) {
-  const currentTag = useWatch({
+  const currentDisplayTag = useWatch({
     control: form.control,
-    name: "tag",
+    name: "display_tag",
   });
 
   const {
     formState: { submitCount, errors },
   } = form;
 
-  const checkTagUniqueAndSetFormError = useCallback(() => {
-    if (!currentTag?.trim()) {
+  const displayTagError = errors.display_tag;
+
+  const checkDisplayTagUniqueAndSetFormError = useCallback(() => {
+    if (!currentDisplayTag?.trim()) {
       return true;
     }
 
-    const isTagUnique = isUniqueInboundTag({
-      tag: currentTag,
-      tags,
-      excludeTag,
+    const isDisplayTagUnique = isUniqueInboundDisplayTag({
+      tag: currentDisplayTag,
+      tags: displayTags,
+      excludeTag: excludeDisplayTag,
     });
 
-    if (!isTagUnique) {
+    if (!isDisplayTagUnique) {
       const hasSameCustomError =
-        errors.tag?.type === "custom" &&
-        errors.tag.message === "Тег должен быть уникальным";
+        displayTagError?.type === "custom" &&
+        displayTagError.message === "Тег должен быть уникальным";
 
       if (!hasSameCustomError) {
-        form.setError("tag", {
+        form.setError("display_tag", {
           type: "custom",
           message: "Тег должен быть уникальным",
         });
@@ -46,20 +48,26 @@ export function useInboundTagUniqueness(
       return false;
     }
 
-    if (errors.tag?.type === "custom") {
-      form.clearErrors("tag");
+    if (displayTagError?.type === "custom") {
+      form.clearErrors("display_tag");
     }
 
     return true;
-  }, [currentTag, errors.tag, form, tags, excludeTag]);
+  }, [
+    currentDisplayTag,
+    displayTags,
+    excludeDisplayTag,
+    displayTagError,
+    form,
+  ]);
 
   useEffect(() => {
     if (submitCount === 0) {
       return;
     }
 
-    void checkTagUniqueAndSetFormError();
-  }, [submitCount, checkTagUniqueAndSetFormError]);
+    void checkDisplayTagUniqueAndSetFormError();
+  }, [submitCount, checkDisplayTagUniqueAndSetFormError]);
 
-  return checkTagUniqueAndSetFormError;
+  return checkDisplayTagUniqueAndSetFormError;
 }

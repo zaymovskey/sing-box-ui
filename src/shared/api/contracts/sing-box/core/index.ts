@@ -22,7 +22,6 @@ export {
   StoredVlessInboundSchema,
 } from "./inbounds.schema";
 export {
-  BaseInboundSchema,
   type Hysteria2User,
   Hysteria2UserSchema,
   type StoredInboundUser,

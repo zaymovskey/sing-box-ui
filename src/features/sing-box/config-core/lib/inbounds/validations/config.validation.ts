@@ -47,7 +47,7 @@ const uniqueInboundTagsValidation = (config: DraftConfig): IssueLike[] => {
 
   // Считаем количество инбаундов с каждым тегом
   inbounds.forEach((inbound) => {
-    const tag = inbound.tag;
+    const tag = inbound.internal_tag;
     if (!tag) return;
 
     tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
@@ -57,7 +57,7 @@ const uniqueInboundTagsValidation = (config: DraftConfig): IssueLike[] => {
 
   // Проверяем, есть ли теги, которые используются более одного раза
   inbounds.forEach((inbound, index) => {
-    const tag = inbound.tag;
+    const tag = inbound.internal_tag;
     if (!tag) return;
 
     if ((tagCount.get(tag) ?? 0) > 1) {

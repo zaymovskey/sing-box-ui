@@ -27,7 +27,7 @@ SELECT
   inbound_id,
   kind,
   sort_order,
-  internal_name,
+  'user_' || id AS internal_name,
   display_name,
   uuid,
   flow,
@@ -37,3 +37,6 @@ FROM inbound_users;
 DROP TABLE inbound_users;
 
 ALTER TABLE inbound_users_new RENAME TO inbound_users;
+
+CREATE UNIQUE INDEX idx_inbound_users_internal_name
+  ON inbound_users(internal_name);

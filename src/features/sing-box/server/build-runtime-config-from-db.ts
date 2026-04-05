@@ -15,6 +15,26 @@ import { stripDraftFields } from "../../../shared/api/contracts/sing-box/core/st
 import { getServerEnv } from "../../../shared/lib/server/env-server";
 import { resolveSecurityAssets } from "./resolve-security-assets";
 
+type V2RayApiStatsConfig = {
+  enabled?: boolean;
+  inbounds?: string[];
+  outbounds?: string[];
+  users?: string[];
+};
+
+type V2RayApiConfig = {
+  listen?: string;
+  stats?: V2RayApiStatsConfig;
+};
+
+type ExperimentalConfig = {
+  v2ray_api?: V2RayApiConfig;
+};
+
+function uniq(values: string[]): string[] {
+  return [...new Set(values)];
+}
+
 export async function buildRuntimeConfigFromDb(): Promise<
   Record<string, unknown>
 > {
@@ -28,11 +48,39 @@ export async function buildRuntimeConfigFromDb(): Promise<
 
   const dbInbounds = getStoredInbounds();
   const runtimeInbounds = mapStoredInboundsToSingBox(dbInbounds);
+  const statsConfig = buildV2RayStatsFromStoredInbounds(dbInbounds);
   const dbSecurityAssets = getSecurityAssets();
+
+  const rawExperimental =
+    typeof rawDraft.experimental === "object" && rawDraft.experimental !== null
+      ? (rawDraft.experimental as ExperimentalConfig)
+      : undefined;
+
+  const rawV2RayApi =
+    rawExperimental && typeof rawExperimental.v2ray_api === "object"
+      ? rawExperimental.v2ray_api
+      : undefined;
+
+  const rawStats =
+    rawV2RayApi && typeof rawV2RayApi.stats === "object"
+      ? rawV2RayApi.stats
+      : undefined;
 
   const draftWithDbSources: Record<string, unknown> = {
     ...rawDraft,
     inbounds: runtimeInbounds,
+    experimental: {
+      ...(rawExperimental ?? {}),
+      v2ray_api: {
+        ...(rawV2RayApi ?? {}),
+        stats: {
+          ...(rawStats ?? {}),
+          enabled: true,
+          inbounds: statsConfig.inbounds,
+          users: statsConfig.users,
+        },
+      },
+    },
   };
 
   const resolvedDraft = resolveSecurityAssets(
@@ -52,7 +100,7 @@ export function mapStoredInboundsToSingBox(
 
       const runtime: SingBoxVlessInbound = {
         type: "vless",
-        tag: stored.tag,
+        tag: stored.internal_tag,
         listen: stored.listen,
         listen_port: stored.listen_port,
         sniff: stored.sniff,
@@ -86,7 +134,7 @@ export function mapStoredInboundsToSingBox(
 
     const runtime: SingBoxHysteria2Inbound = {
       type: "hysteria2",
-      tag: stored.tag,
+      tag: stored.internal_tag,
       listen: stored.listen,
       listen_port: stored.listen_port,
       sniff: stored.sniff,
@@ -116,4 +164,25 @@ export function mapStoredInboundsToSingBox(
 
     return runtime;
   });
+}
+
+export function buildV2RayStatsFromStoredInbounds(inbounds: StoredInbound[]): {
+  inbounds: string[];
+  users: string[];
+} {
+  const inboundTags: string[] = [];
+  const userNames: string[] = [];
+
+  for (const inbound of inbounds) {
+    inboundTags.push(inbound.internal_tag);
+
+    for (const user of inbound.users) {
+      userNames.push(user.internal_name);
+    }
+  }
+
+  return {
+    inbounds: uniq(inboundTags),
+    users: uniq(userNames),
+  };
 }

@@ -1,33 +1,33 @@
 import { randomUUID } from "node:crypto";
 
 import { getDb } from "@/server/db/client";
-import {
-  type SaveInboundInput,
-  type StoredHysteria2Inbound,
-  type StoredInbound,
-  type StoredVlessInbound,
-} from "@/shared/api/contracts";
+import { type SaveInboundInput } from "@/shared/api/contracts";
 
-import {
-  booleanToSqliteBool,
-  ensureInternalNames,
-  mapMasqueradeToRow,
-} from "../../helpers";
+import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
 
 const sql = String.raw;
+
+function makeInternalTag(inboundId: string): string {
+  return `inbound_${inboundId}`;
+}
+
+function makeInternalUserName(userId: string): string {
+  return `user_${userId}`;
+}
 
 export function createStoredInbound(input: SaveInboundInput): { ok: true } {
   const db = getDb();
   const now = new Date().toISOString();
   const inboundId = randomUUID();
-  const stored = ensureInternalNames(input);
+  const internalTag = input.internal_tag ?? makeInternalTag(inboundId);
 
-  const trx = db.transaction((normalized: StoredInbound) => {
+  const trx = db.transaction((saveInput: SaveInboundInput) => {
     db.prepare(
       sql`
         INSERT INTO inbounds (
           id,
-          tag,
+          display_tag,
+          internal_tag,
           type,
           listen,
           listen_port,
@@ -37,24 +37,23 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
           created_at,
           updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
     ).run(
       inboundId,
-      normalized.tag ?? null,
-      normalized.type,
-      normalized.listen ?? null,
-      normalized.listen_port ?? null,
-      booleanToSqliteBool(normalized.sniff),
-      booleanToSqliteBool(normalized.sniff_override_destination),
-      normalized._security_asset_id ?? null,
+      saveInput.display_tag,
+      internalTag,
+      saveInput.type,
+      saveInput.listen ?? null,
+      saveInput.listen_port ?? null,
+      booleanToSqliteBool(saveInput.sniff),
+      booleanToSqliteBool(saveInput.sniff_override_destination),
+      saveInput._security_asset_id ?? null,
       now,
       now,
     );
 
-    if (normalized.type === "vless") {
-      const vlessStored: StoredVlessInbound = normalized;
-
+    if (saveInput.type === "vless") {
       db.prepare(
         sql`
           INSERT INTO inbound_vless (
@@ -66,11 +65,14 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
         `,
       ).run(
         inboundId,
-        booleanToSqliteBool(vlessStored._tls_enabled),
-        vlessStored.tls?.reality?._reality_public_key ?? null,
+        booleanToSqliteBool(saveInput._tls_enabled),
+        saveInput.tls?.reality?._reality_public_key ?? null,
       );
 
-      vlessStored.users.forEach((user, index) => {
+      saveInput.users.forEach((user, index) => {
+        const userId = randomUUID();
+        const internalName = user.internal_name ?? makeInternalUserName(userId);
+
         db.prepare(
           sql`
             INSERT INTO inbound_users (
@@ -87,11 +89,11 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
         ).run(
-          randomUUID(),
+          userId,
           inboundId,
           "vless",
           index,
-          user.internal_name,
+          internalName,
           user.display_name,
           user.uuid,
           user.flow ?? null,
@@ -102,8 +104,7 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
       return { ok: true } as const;
     }
 
-    const hysteria2Stored: StoredHysteria2Inbound = normalized;
-    const masqueradeRow = mapMasqueradeToRow(hysteria2Stored.masquerade);
+    const masqueradeRow = mapMasqueradeToRow(saveInput.masquerade);
 
     db.prepare(
       sql`
@@ -126,21 +127,24 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
       `,
     ).run(
       inboundId,
-      hysteria2Stored.up_mbps ?? null,
-      hysteria2Stored.down_mbps ?? null,
-      booleanToSqliteBool(hysteria2Stored.ignore_client_bandwidth),
-      hysteria2Stored.obfs?.type ?? null,
-      hysteria2Stored.obfs?.password ?? null,
+      saveInput.up_mbps ?? null,
+      saveInput.down_mbps ?? null,
+      booleanToSqliteBool(saveInput.ignore_client_bandwidth),
+      saveInput.obfs?.type ?? null,
+      saveInput.obfs?.password ?? null,
       masqueradeRow.masquerade_string,
       masqueradeRow.masquerade_type,
       masqueradeRow.masquerade_file,
       masqueradeRow.masquerade_directory,
       masqueradeRow.masquerade_url,
-      hysteria2Stored.bbr_profile ?? null,
-      booleanToSqliteBool(hysteria2Stored.brutal_debug),
+      saveInput.bbr_profile ?? null,
+      booleanToSqliteBool(saveInput.brutal_debug),
     );
 
-    hysteria2Stored.users.forEach((user, index) => {
+    saveInput.users.forEach((user, index) => {
+      const userId = randomUUID();
+      const internalName = user.internal_name ?? makeInternalUserName(userId);
+
       db.prepare(
         sql`
           INSERT INTO inbound_users (
@@ -157,11 +161,11 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
       ).run(
-        randomUUID(),
+        userId,
         inboundId,
         "hysteria2",
         index,
-        user.internal_name,
+        internalName,
         user.display_name,
         null,
         null,
@@ -172,5 +176,5 @@ export function createStoredInbound(input: SaveInboundInput): { ok: true } {
     return { ok: true } as const;
   });
 
-  return trx(stored);
+  return trx(input);
 }

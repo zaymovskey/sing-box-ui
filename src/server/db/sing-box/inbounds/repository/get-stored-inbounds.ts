@@ -28,7 +28,8 @@ export function getStoredInbounds(): StoredInbound[] {
       sql`
         SELECT
           id,
-          tag,
+          display_tag,
+          internal_tag,
           type,
           listen,
           listen_port,
@@ -113,6 +114,7 @@ export function getStoredInbounds(): StoredInbound[] {
   );
 
   const usersByInboundId = new Map<string, typeof userRows>();
+
   for (const user of userRows) {
     const current = usersByInboundId.get(user.inbound_id) ?? [];
     current.push(user);
@@ -138,7 +140,8 @@ export function getStoredInbounds(): StoredInbound[] {
 
       const inbound: StoredVlessInbound = {
         type: "vless",
-        tag: row.tag ?? undefined,
+        display_tag: row.display_tag ?? "",
+        internal_tag: row.internal_tag ?? "",
         listen: row.listen ?? undefined,
         listen_port: row.listen_port ?? undefined,
         sniff: sqliteBoolToBoolean(row.sniff),
@@ -170,7 +173,8 @@ export function getStoredInbounds(): StoredInbound[] {
 
     const inbound: StoredHysteria2Inbound = {
       type: "hysteria2",
-      tag: row.tag ?? undefined,
+      display_tag: row.display_tag ?? "",
+      internal_tag: row.internal_tag ?? "",
       listen: row.listen ?? undefined,
       listen_port: row.listen_port ?? undefined,
       sniff: sqliteBoolToBoolean(row.sniff),

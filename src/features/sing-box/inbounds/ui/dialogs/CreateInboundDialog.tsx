@@ -24,7 +24,7 @@ import {
 } from "@/shared/ui";
 
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
-import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
+import { useInboundDisplayTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
@@ -68,11 +68,14 @@ export function CreateInboundDialog({
 
   const tags = useMemo(() => {
     return rawInbounds
-      .map((inbound) => inbound.tag)
+      .map((inbound) => inbound.display_tag)
       .filter((tag): tag is string => Boolean(tag));
   }, [rawInbounds]);
 
-  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+  const checkTagUniqueAndSetFormError = useInboundDisplayTagUniqueness(
+    form,
+    tags,
+  );
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,

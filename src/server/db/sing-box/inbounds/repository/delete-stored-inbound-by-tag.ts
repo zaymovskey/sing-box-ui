@@ -2,17 +2,17 @@ import { getDb } from "@/server/db/client";
 
 const sql = String.raw;
 
-export function deleteStoredInboundByTag(tag: string): boolean {
+export function deleteStoredInboundByTag(internalTag: string): boolean {
   const db = getDb();
 
   const result = db
     .prepare(
       sql`
         DELETE FROM inbounds
-        WHERE tag = ?
+        WHERE internal_tag = ?
       `,
     )
-    .run(tag);
+    .run(internalTag);
 
   return result.changes > 0;
 }

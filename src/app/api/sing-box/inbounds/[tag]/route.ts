@@ -2,7 +2,7 @@ import z from "zod";
 
 import {
   deleteStoredInboundByTag,
-  updateStoredInboundByTag,
+  updateStoredInboundByDisplayTag,
 } from "@/server/db/sing-box/inbounds";
 import {
   OkResponseSchema,
@@ -22,7 +22,7 @@ export const PUT = withRoute({
   handler: async ({ body, params }) => {
     const { tag } = params;
 
-    const updated = updateStoredInboundByTag(tag, body);
+    const updated = updateStoredInboundByDisplayTag(tag, body);
 
     if (!updated) {
       throw new ServerApiError(404, "INBOUND_NOT_FOUND", "Inbound not found");

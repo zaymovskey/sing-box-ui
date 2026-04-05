@@ -22,7 +22,7 @@ import {
 } from "@/shared/ui";
 
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
-import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
+import { useInboundDisplayTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
@@ -64,7 +64,7 @@ export function EditInboundDialog({
 
   const [currentInboundTag, setCurrentInboundTag] = useState<
     string | undefined
-  >(inbound.tag);
+  >(inbound.display_tag);
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -77,7 +77,7 @@ export function EditInboundDialog({
       return;
     }
 
-    setCurrentInboundTag(inbound.tag);
+    setCurrentInboundTag(inbound.display_tag);
     form.reset(initialValues, {
       keepDirty: false,
       keepTouched: false,
@@ -85,17 +85,17 @@ export function EditInboundDialog({
       keepSubmitCount: false,
       keepIsSubmitted: false,
     });
-  }, [open, inbound.tag, initialValues, form]);
+  }, [open, inbound.display_tag, initialValues, form]);
 
   const { editInbound, isPending } = useEditInbound();
 
   const tags = useMemo(() => {
     return rawInbounds
-      .map((item) => item.tag)
+      .map((item) => item.display_tag)
       .filter((tag): tag is string => Boolean(tag));
   }, [rawInbounds]);
 
-  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
+  const checkTagUniqueAndSetFormError = useInboundDisplayTagUniqueness(
     form,
     tags,
     currentInboundTag,
@@ -136,7 +136,7 @@ export function EditInboundDialog({
         duration: 3000,
       });
 
-      setCurrentInboundTag(values.tag);
+      setCurrentInboundTag(values.display_tag);
 
       form.clearErrors();
       form.reset(values, {

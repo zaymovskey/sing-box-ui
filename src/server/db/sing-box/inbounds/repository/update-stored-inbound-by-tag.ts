@@ -2,17 +2,12 @@ import { randomUUID } from "node:crypto";
 
 import { getDb } from "@/server/db/client";
 import {
+  type SaveHysteria2Inbound,
   type SaveInboundInput,
-  type StoredHysteria2Inbound,
-  type StoredInbound,
-  type StoredVlessInbound,
+  type SaveVlessInbound,
 } from "@/shared/api/contracts";
 
-import {
-  booleanToSqliteBool,
-  ensureInternalNames,
-  mapMasqueradeToRow,
-} from "../../helpers";
+import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
 
 const sql = String.raw;
 
@@ -21,10 +16,20 @@ type ExistingInboundUserRow = {
   internal_name: string;
 };
 
+type ExistingInboundRow = {
+  id: string;
+  type: "vless" | "hysteria2";
+  internal_tag: string;
+};
+
+function makeInternalUserName(userId: string): string {
+  return `user_${userId}`;
+}
+
 function syncVlessUsers(
   db: ReturnType<typeof getDb>,
   inboundId: string,
-  users: StoredVlessInbound["users"],
+  users: SaveVlessInbound["users"],
 ) {
   const existingRows = db
     .prepare(
@@ -43,11 +48,15 @@ function syncVlessUsers(
   );
 
   const incomingInternalNames = new Set(
-    users.map((user) => user.internal_name),
+    users
+      .map((user) => user.internal_name)
+      .filter((value): value is string => Boolean(value)),
   );
 
   for (const [index, user] of users.entries()) {
-    const existing = existingByInternalName.get(user.internal_name);
+    const existing = user.internal_name
+      ? existingByInternalName.get(user.internal_name)
+      : undefined;
 
     if (existing) {
       db.prepare(
@@ -75,6 +84,9 @@ function syncVlessUsers(
       continue;
     }
 
+    const userId = randomUUID();
+    const internalName = makeInternalUserName(userId);
+
     db.prepare(
       sql`
         INSERT INTO inbound_users (
@@ -91,11 +103,11 @@ function syncVlessUsers(
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
     ).run(
-      randomUUID(),
+      userId,
       inboundId,
       "vless",
       index,
-      user.internal_name,
+      internalName,
       user.display_name,
       user.uuid,
       user.flow ?? null,
@@ -120,7 +132,7 @@ function syncVlessUsers(
 function syncHysteria2Users(
   db: ReturnType<typeof getDb>,
   inboundId: string,
-  users: StoredHysteria2Inbound["users"],
+  users: SaveHysteria2Inbound["users"],
 ) {
   const existingRows = db
     .prepare(
@@ -139,11 +151,15 @@ function syncHysteria2Users(
   );
 
   const incomingInternalNames = new Set(
-    users.map((user) => user.internal_name),
+    users
+      .map((user) => user.internal_name)
+      .filter((value): value is string => Boolean(value)),
   );
 
   for (const [index, user] of users.entries()) {
-    const existing = existingByInternalName.get(user.internal_name);
+    const existing = user.internal_name
+      ? existingByInternalName.get(user.internal_name)
+      : undefined;
 
     if (existing) {
       db.prepare(
@@ -171,6 +187,9 @@ function syncHysteria2Users(
       continue;
     }
 
+    const userId = randomUUID();
+    const internalName = makeInternalUserName(userId);
+
     db.prepare(
       sql`
         INSERT INTO inbound_users (
@@ -187,11 +206,11 @@ function syncHysteria2Users(
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
     ).run(
-      randomUUID(),
+      userId,
       inboundId,
       "hysteria2",
       index,
-      user.internal_name,
+      internalName,
       user.display_name,
       null,
       null,
@@ -213,210 +232,212 @@ function syncHysteria2Users(
   }
 }
 
-export function updateStoredInboundByTag(
-  tag: string,
+export function updateStoredInboundByDisplayTag(
+  displayTag: string,
   input: SaveInboundInput,
 ): boolean {
   const db = getDb();
   const now = new Date().toISOString();
-  const stored = ensureInternalNames(input);
 
-  const trx = db.transaction((currentTag: string, stored: StoredInbound) => {
-    const existing = db
-      .prepare(
-        sql`
-          SELECT id, type
-          FROM inbounds
-          WHERE tag = ?
-        `,
-      )
-      .get(currentTag) as
-      | { id: string; type: "vless" | "hysteria2" }
-      | undefined;
+  const trx = db.transaction(
+    (currentDisplayTag: string, saveInput: SaveInboundInput) => {
+      const existing = db
+        .prepare(
+          sql`
+            SELECT
+              id,
+              type,
+              internal_tag
+            FROM inbounds
+            WHERE display_tag = ?
+          `,
+        )
+        .get(currentDisplayTag) as ExistingInboundRow | undefined;
 
-    if (!existing) {
-      return false;
-    }
+      if (!existing) {
+        return false;
+      }
 
-    const inboundId = existing.id;
-
-    db.prepare(
-      sql`
-        UPDATE inbounds
-        SET
-          tag = ?,
-          type = ?,
-          listen = ?,
-          listen_port = ?,
-          sniff = ?,
-          sniff_override_destination = ?,
-          security_asset_id = ?,
-          updated_at = ?
-        WHERE id = ?
-      `,
-    ).run(
-      stored.tag ?? null,
-      stored.type,
-      stored.listen ?? null,
-      stored.listen_port ?? null,
-      booleanToSqliteBool(stored.sniff),
-      booleanToSqliteBool(stored.sniff_override_destination),
-      stored._security_asset_id ?? null,
-      now,
-      inboundId,
-    );
-
-    if (stored.type === "vless") {
-      const vlessStored = stored as StoredVlessInbound;
+      const inboundId = existing.id;
+      const internalTag = saveInput.internal_tag ?? existing.internal_tag;
 
       db.prepare(
         sql`
-          DELETE FROM inbound_hysteria2
+          UPDATE inbounds
+          SET
+            display_tag = ?,
+            internal_tag = ?,
+            type = ?,
+            listen = ?,
+            listen_port = ?,
+            sniff = ?,
+            sniff_override_destination = ?,
+            security_asset_id = ?,
+            updated_at = ?
+          WHERE id = ?
+        `,
+      ).run(
+        saveInput.display_tag,
+        internalTag,
+        saveInput.type,
+        saveInput.listen ?? null,
+        saveInput.listen_port ?? null,
+        booleanToSqliteBool(saveInput.sniff),
+        booleanToSqliteBool(saveInput.sniff_override_destination),
+        saveInput._security_asset_id ?? null,
+        now,
+        inboundId,
+      );
+
+      if (saveInput.type === "vless") {
+        db.prepare(
+          sql`
+            DELETE FROM inbound_hysteria2
+            WHERE inbound_id = ?
+          `,
+        ).run(inboundId);
+
+        const existingVless = db
+          .prepare(
+            sql`
+              SELECT inbound_id
+              FROM inbound_vless
+              WHERE inbound_id = ?
+            `,
+          )
+          .get(inboundId) as { inbound_id: string } | undefined;
+
+        if (existingVless) {
+          db.prepare(
+            sql`
+              UPDATE inbound_vless
+              SET
+                tls_enabled = ?,
+                reality_public_key = ?
+              WHERE inbound_id = ?
+            `,
+          ).run(
+            booleanToSqliteBool(saveInput._tls_enabled),
+            saveInput.tls?.reality?._reality_public_key ?? null,
+            inboundId,
+          );
+        } else {
+          db.prepare(
+            sql`
+              INSERT INTO inbound_vless (
+                inbound_id,
+                tls_enabled,
+                reality_public_key
+              )
+              VALUES (?, ?, ?)
+            `,
+          ).run(
+            inboundId,
+            booleanToSqliteBool(saveInput._tls_enabled),
+            saveInput.tls?.reality?._reality_public_key ?? null,
+          );
+        }
+
+        syncVlessUsers(db, inboundId, saveInput.users);
+
+        return true;
+      }
+
+      const masqueradeRow = mapMasqueradeToRow(saveInput.masquerade);
+
+      db.prepare(
+        sql`
+          DELETE FROM inbound_vless
           WHERE inbound_id = ?
         `,
       ).run(inboundId);
 
-      const existingVless = db
+      const existingHy2 = db
         .prepare(
           sql`
             SELECT inbound_id
-            FROM inbound_vless
+            FROM inbound_hysteria2
             WHERE inbound_id = ?
           `,
         )
         .get(inboundId) as { inbound_id: string } | undefined;
 
-      if (existingVless) {
+      if (existingHy2) {
         db.prepare(
           sql`
-            UPDATE inbound_vless
+            UPDATE inbound_hysteria2
             SET
-              tls_enabled = ?,
-              reality_public_key = ?
+              up_mbps = ?,
+              down_mbps = ?,
+              ignore_client_bandwidth = ?,
+              obfs_type = ?,
+              obfs_password = ?,
+              masquerade_string = ?,
+              masquerade_type = ?,
+              masquerade_file = ?,
+              masquerade_directory = ?,
+              masquerade_url = ?,
+              bbr_profile = ?,
+              brutal_debug = ?
             WHERE inbound_id = ?
           `,
         ).run(
-          booleanToSqliteBool(vlessStored._tls_enabled),
-          vlessStored.tls?.reality?._reality_public_key ?? null,
+          saveInput.up_mbps ?? null,
+          saveInput.down_mbps ?? null,
+          booleanToSqliteBool(saveInput.ignore_client_bandwidth),
+          saveInput.obfs?.type ?? null,
+          saveInput.obfs?.password ?? null,
+          masqueradeRow.masquerade_string,
+          masqueradeRow.masquerade_type,
+          masqueradeRow.masquerade_file,
+          masqueradeRow.masquerade_directory,
+          masqueradeRow.masquerade_url,
+          saveInput.bbr_profile ?? null,
+          booleanToSqliteBool(saveInput.brutal_debug),
           inboundId,
         );
       } else {
         db.prepare(
           sql`
-            INSERT INTO inbound_vless (
+            INSERT INTO inbound_hysteria2 (
               inbound_id,
-              tls_enabled,
-              reality_public_key
+              up_mbps,
+              down_mbps,
+              ignore_client_bandwidth,
+              obfs_type,
+              obfs_password,
+              masquerade_string,
+              masquerade_type,
+              masquerade_file,
+              masquerade_directory,
+              masquerade_url,
+              bbr_profile,
+              brutal_debug
             )
-            VALUES (?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
         ).run(
           inboundId,
-          booleanToSqliteBool(vlessStored._tls_enabled),
-          vlessStored.tls?.reality?._reality_public_key ?? null,
+          saveInput.up_mbps ?? null,
+          saveInput.down_mbps ?? null,
+          booleanToSqliteBool(saveInput.ignore_client_bandwidth),
+          saveInput.obfs?.type ?? null,
+          saveInput.obfs?.password ?? null,
+          masqueradeRow.masquerade_string,
+          masqueradeRow.masquerade_type,
+          masqueradeRow.masquerade_file,
+          masqueradeRow.masquerade_directory,
+          masqueradeRow.masquerade_url,
+          saveInput.bbr_profile ?? null,
+          booleanToSqliteBool(saveInput.brutal_debug),
         );
       }
 
-      syncVlessUsers(db, inboundId, vlessStored.users);
+      syncHysteria2Users(db, inboundId, saveInput.users);
 
       return true;
-    }
+    },
+  );
 
-    const hysteria2Stored = stored as StoredHysteria2Inbound;
-    const masqueradeRow = mapMasqueradeToRow(hysteria2Stored.masquerade);
-
-    db.prepare(
-      sql`
-        DELETE FROM inbound_vless
-        WHERE inbound_id = ?
-      `,
-    ).run(inboundId);
-
-    const existingHy2 = db
-      .prepare(
-        sql`
-          SELECT inbound_id
-          FROM inbound_hysteria2
-          WHERE inbound_id = ?
-        `,
-      )
-      .get(inboundId) as { inbound_id: string } | undefined;
-
-    if (existingHy2) {
-      db.prepare(
-        sql`
-          UPDATE inbound_hysteria2
-          SET
-            up_mbps = ?,
-            down_mbps = ?,
-            ignore_client_bandwidth = ?,
-            obfs_type = ?,
-            obfs_password = ?,
-            masquerade_string = ?,
-            masquerade_type = ?,
-            masquerade_file = ?,
-            masquerade_directory = ?,
-            masquerade_url = ?,
-            bbr_profile = ?,
-            brutal_debug = ?
-          WHERE inbound_id = ?
-        `,
-      ).run(
-        hysteria2Stored.up_mbps ?? null,
-        hysteria2Stored.down_mbps ?? null,
-        booleanToSqliteBool(hysteria2Stored.ignore_client_bandwidth),
-        hysteria2Stored.obfs?.type ?? null,
-        hysteria2Stored.obfs?.password ?? null,
-        masqueradeRow.masquerade_string,
-        masqueradeRow.masquerade_type,
-        masqueradeRow.masquerade_file,
-        masqueradeRow.masquerade_directory,
-        masqueradeRow.masquerade_url,
-        hysteria2Stored.bbr_profile ?? null,
-        booleanToSqliteBool(hysteria2Stored.brutal_debug),
-        inboundId,
-      );
-    } else {
-      db.prepare(
-        sql`
-          INSERT INTO inbound_hysteria2 (
-            inbound_id,
-            up_mbps,
-            down_mbps,
-            ignore_client_bandwidth,
-            obfs_type,
-            obfs_password,
-            masquerade_string,
-            masquerade_type,
-            masquerade_file,
-            masquerade_directory,
-            masquerade_url,
-            bbr_profile,
-            brutal_debug
-          )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `,
-      ).run(
-        inboundId,
-        hysteria2Stored.up_mbps ?? null,
-        hysteria2Stored.down_mbps ?? null,
-        booleanToSqliteBool(hysteria2Stored.ignore_client_bandwidth),
-        hysteria2Stored.obfs?.type ?? null,
-        hysteria2Stored.obfs?.password ?? null,
-        masqueradeRow.masquerade_string,
-        masqueradeRow.masquerade_type,
-        masqueradeRow.masquerade_file,
-        masqueradeRow.masquerade_directory,
-        masqueradeRow.masquerade_url,
-        hysteria2Stored.bbr_profile ?? null,
-        booleanToSqliteBool(hysteria2Stored.brutal_debug),
-      );
-    }
-
-    syncHysteria2Users(db, inboundId, hysteria2Stored.users);
-
-    return true;
-  });
-
-  return trx(tag, stored);
+  return trx(displayTag, input);
 }
