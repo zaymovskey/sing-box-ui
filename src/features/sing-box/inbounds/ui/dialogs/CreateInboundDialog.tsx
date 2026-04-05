@@ -156,7 +156,12 @@ export function CreateInboundDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
+      <DialogContent
+        className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Создать инбаунд</DialogTitle>
         </DialogHeader>

@@ -36,7 +36,7 @@ export function mapInboundToFormValues(
         uuid: user.uuid ?? "",
         flow: user.flow === "xtls-rprx-vision" ? "xtls-rprx-vision" : undefined,
       })) ?? [{ name: "", uuid: "", flow: undefined }],
-      _security_asset_id: inbound._security_asset_id ?? "",
+      _security_asset_id: inbound._security_asset_id ?? undefined,
     };
   }
 
@@ -51,7 +51,7 @@ export function mapInboundToFormValues(
         display_name: user.display_name ?? "",
         password: user.password ?? "",
       })) ?? [{ name: "", password: "" }],
-      _security_asset_id: inbound._security_asset_id ?? "",
+      _security_asset_id: inbound._security_asset_id ?? undefined,
       obfs_enabled: Boolean(inbound.obfs?.type || inbound.obfs?.password),
       obfs_password: inbound.obfs?.password ?? "",
     };
