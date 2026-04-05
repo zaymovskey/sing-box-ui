@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 
-import { getSecurityAssets } from "@/server/db/security-assets/repository";
-import { getStoredInbounds } from "@/server/db/sing-box/inbounds/repository";
+import { getSecurityAssets } from "@/server/db/security-assets";
+import { getStoredInbounds } from "@/server/db/sing-box/inbounds";
 
 import { stripDraftFields } from "../../../api/contracts/sing-box/core/strip-draft-fields.mapper";
 import { getServerEnv } from "../../server/env-server";

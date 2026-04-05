@@ -93,7 +93,8 @@ export const InboundUserRowSchema = z.object({
   kind: InboundUserKindSchema,
   sort_order: z.number().int().nonnegative(),
 
-  name: NullableStringSchema,
+  internal_name: NullableStringSchema,
+  display_name: NullableStringSchema,
 
   uuid: NullableStringSchema,
   flow: NullableStringSchema,

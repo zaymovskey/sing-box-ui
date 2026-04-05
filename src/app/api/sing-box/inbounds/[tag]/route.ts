@@ -3,8 +3,11 @@ import z from "zod";
 import {
   deleteStoredInboundByTag,
   updateStoredInboundByTag,
-} from "@/server/db/sing-box/inbounds/repository";
-import { OkResponseSchema, StoredInboundSchema } from "@/shared/api/contracts";
+} from "@/server/db/sing-box/inbounds";
+import {
+  OkResponseSchema,
+  SaveInboundInputSchema,
+} from "@/shared/api/contracts";
 import { ServerApiError, withRoute } from "@/shared/lib/server";
 
 const TagParamsSchema = z.object({
@@ -13,7 +16,7 @@ const TagParamsSchema = z.object({
 
 export const PUT = withRoute({
   auth: true,
-  requestSchema: StoredInboundSchema,
+  requestSchema: SaveInboundInputSchema,
   paramsSchema: TagParamsSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body, params }) => {

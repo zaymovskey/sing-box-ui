@@ -119,18 +119,21 @@ const uniqueHy2UsersNameValidation = (config: DraftConfig): IssueLike[] => {
     const uuidCount = new Map<string, number>();
 
     inbound.users.forEach((user) => {
-      if (!user || typeof user.name !== "string") return;
+      if (!user || typeof user.display_name !== "string") return;
 
-      uuidCount.set(user.name, (uuidCount.get(user.name) ?? 0) + 1);
+      uuidCount.set(
+        user.display_name,
+        (uuidCount.get(user.display_name) ?? 0) + 1,
+      );
     });
 
     inbound.users.forEach((user, userIndex) => {
-      if (!user || typeof user.name !== "string") return;
+      if (!user || typeof user.display_name !== "string") return;
 
-      if ((uuidCount.get(user.name) ?? 0) > 1) {
+      if ((uuidCount.get(user.display_name) ?? 0) > 1) {
         issues.push({
           code: "custom",
-          path: ["inbounds", inboundIndex, "users", userIndex, "name"],
+          path: ["inbounds", inboundIndex, "users", userIndex, "display_name"],
           message: "name должен быть уникальным внутри inbound",
         });
       }

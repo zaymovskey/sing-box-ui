@@ -14,12 +14,12 @@ export function getInboundUserName(
 
   if (inboundType === "vless") {
     const vlessUser = user as VlessUser;
-    return vlessUser.name ?? vlessUser.uuid;
+    return vlessUser.display_name ?? vlessUser.uuid;
   }
 
   if (inboundType === "hysteria2") {
     const hysteria2User = user as Hysteria2User;
-    return hysteria2User.name ?? "Без имени";
+    return hysteria2User.display_name ?? "Без имени";
   }
 
   return "Без имени";

@@ -1,9 +1,9 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type StoredInbound } from "@/shared/api/contracts";
+import { type SaveHysteria2Inbound } from "@/shared/api/contracts";
 
 export function mapHy2FormToInbound(
   values: Extract<InboundFormValues, { type: "hysteria2" }>,
-): StoredInbound {
+): SaveHysteria2Inbound {
   return {
     type: "hysteria2",
     tag: values.tag,
@@ -15,7 +15,7 @@ export function mapHy2FormToInbound(
     down_mbps: values.ignore_client_bandwidth ? undefined : values.down_mbps,
     ignore_client_bandwidth: values.ignore_client_bandwidth,
     users: values.users.map((user) => ({
-      name: user.name,
+      display_name: user.display_name,
       password: user.password,
     })),
     _security_asset_id: values._security_asset_id,

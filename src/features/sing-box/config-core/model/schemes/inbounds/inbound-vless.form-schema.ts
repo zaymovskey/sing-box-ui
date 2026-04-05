@@ -4,15 +4,15 @@ import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
 const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
 
-const VlessUserSchema = z.object({
-  name: z.string().trim().min(1, "Нужен user_name"),
+const VlessUserFormSchema = z.object({
+  display_name: z.string().trim().min(1, "Нужен user_name"),
   uuid: z.uuid("Нужен UUID"),
   flow: VlessFlowSchema.optional(),
 });
 
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
-  users: z.array(VlessUserSchema).min(1, "Нужен хотя бы один пользователь"),
+  users: z.array(VlessUserFormSchema).min(1, "Нужен хотя бы один пользователь"),
   _security_asset_id: z.string().trim().min(1).optional(),
   _tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {

@@ -39,10 +39,6 @@ export {
   type SecurityAssetType,
   SecurityAssetTypeSchema,
 } from "./security-assets/security-assets.schema";
-export type {
-  StoredHysteria2Inbound,
-  StoredVlessInbound,
-} from "./sing-box/core";
 export {
   type DraftConfig,
   DraftConfigSchema,
@@ -50,15 +46,21 @@ export {
   Hysteria2UserSchema,
   type RuntimeConfig,
   RuntimeConfigSchema,
+  type SaveHysteria2Inbound,
+  type SaveInboundInput,
+  SaveInboundInputSchema,
+  type SaveVlessInbound,
+  SaveVlessInboundSchema,
+  type SaveVlessUser,
+  type StoredHysteria2Inbound,
   type StoredInbound,
   StoredInboundSchema,
+  type StoredInboundUser,
+  StoredInboundUserSchema,
+  type StoredVlessInbound,
   stripDraftFields,
   type VlessUser,
   VlessUserSchema,
-} from "./sing-box/core";
-export {
-  type StoredInboundUser,
-  StoredInboundUserSchema,
 } from "./sing-box/core";
 export {
   InboundHysteria2RowSchema,

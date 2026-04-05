@@ -1,5 +1,11 @@
 export { type DraftConfig, DraftConfigSchema } from "./draft-config.schema";
 export {
+  type SaveHysteria2Inbound,
+  type SaveInboundInput,
+  SaveInboundInputSchema,
+  type SaveVlessInbound,
+  SaveVlessInboundSchema,
+  type SaveVlessUser,
   type SingBoxHysteria2Inbound,
   SingBoxHysteria2InboundSchema,
   type SingBoxInbound,
