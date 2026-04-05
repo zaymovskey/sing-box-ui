@@ -1,9 +1,9 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 
 export function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,
-): DraftInbound {
+): StoredInbound {
   return {
     type: "vless",
     tag: values.tag,

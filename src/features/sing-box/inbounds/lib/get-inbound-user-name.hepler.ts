@@ -1,11 +1,11 @@
 import {
-  type DraftInbound,
   type Hysteria2User,
+  type StoredInbound,
   type VlessUser,
 } from "@/shared/api/contracts";
 
 export function getInboundUserName(
-  inboundType: DraftInbound["type"],
+  inboundType: StoredInbound["type"],
   user: unknown,
 ) {
   if (!user || typeof user !== "object") {

@@ -1,5 +1,5 @@
 import { type SecurityAsset } from "../../../api/contracts/security-assets/security-assets.schema";
-import { type DraftInbound } from "../../../api/contracts/sing-box/core";
+import { type StoredInbound } from "../../../api/contracts/sing-box/core";
 
 export function resolveSecurityAssets(
   config: Record<string, unknown>,
@@ -10,7 +10,7 @@ export function resolveSecurityAssets(
   const nextInbounds = config.inbounds.map((inbound) => {
     if (!inbound || typeof inbound !== "object") return inbound;
 
-    const i = inbound as DraftInbound & {
+    const i = inbound as StoredInbound & {
       _security_asset_id?: string;
       _tls_enabled?: boolean;
     };

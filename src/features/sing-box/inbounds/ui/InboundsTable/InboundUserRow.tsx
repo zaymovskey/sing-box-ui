@@ -2,9 +2,9 @@ import { Check, Copy, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 
 import {
-  type DraftInbound,
-  type DraftInboundUser,
   type SecurityAsset,
+  type StoredInbound,
+  type StoredInboundUser,
 } from "@/shared/api/contracts";
 import { copyText } from "@/shared/lib";
 import { Button, clientToast } from "@/shared/ui";
@@ -18,8 +18,8 @@ export function InboundUserRow({
   user,
   securityAssets,
 }: {
-  inbound: DraftInbound;
-  user: DraftInboundUser;
+  inbound: StoredInbound;
+  user: StoredInboundUser;
   securityAssets: SecurityAsset[];
 }) {
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);

@@ -5,7 +5,6 @@ import Database from "better-sqlite3";
 import { runMigrations } from "./migrate";
 
 const dbPath = process.env.SQLITE_DB_PATH ?? "/data/app.db";
-console.log("dbPath:", dbPath);
 
 let db: Database.Database | null = null;
 

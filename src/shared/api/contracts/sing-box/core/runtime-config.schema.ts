@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { DraftExperimentalSchema } from "./experimental.schema";
-import { RuntimeInboundSchema } from "./inbounds.schema";
+import { SingBoxInboundSchema } from "./inbounds.schema";
 import { RuntimeOutboundSchema } from "./outbounds.schema";
 
 const LogLevelSchema = z.enum([
@@ -30,7 +30,7 @@ export const RouteSchema = z
 
 export const RuntimeConfigSchema = z.object({
   log: LogSchema,
-  inbounds: z.array(RuntimeInboundSchema).optional(),
+  inbounds: z.array(SingBoxInboundSchema).optional(),
   outbounds: z.array(RuntimeOutboundSchema).optional(),
   route: RouteSchema,
   experimental: DraftExperimentalSchema,

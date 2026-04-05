@@ -3,14 +3,14 @@ import { randomUUID } from "node:crypto";
 import { getDb } from "@/server/db/client";
 import { getSecurityAssets } from "@/server/db/security-assets/repository";
 import {
-  type DraftHysteria2Inbound,
-  type DraftInbound,
-  type DraftVlessInbound,
   InboundHysteria2RowSchema,
   InboundRowSchema,
   InboundUserRowSchema,
   InboundVlessRowSchema,
   type SecurityAsset,
+  type StoredHysteria2Inbound,
+  type StoredInbound,
+  type StoredVlessInbound,
 } from "@/shared/api/contracts";
 
 const sql = String.raw;
@@ -29,7 +29,7 @@ function mapMasqueradeFromRow(row: {
   masquerade_file: string | null;
   masquerade_directory: string | null;
   masquerade_url: string | null;
-}): DraftHysteria2Inbound["masquerade"] | undefined {
+}): StoredHysteria2Inbound["masquerade"] | undefined {
   if (row.masquerade_string) {
     return row.masquerade_string;
   }
@@ -56,7 +56,7 @@ function mapTlsFromSecurityAssetForVless(
   asset: SecurityAsset | undefined,
   tlsEnabled: boolean | undefined,
   realityPublicKey: string | null,
-): DraftVlessInbound["tls"] | undefined {
+): StoredVlessInbound["tls"] | undefined {
   if (!tlsEnabled) {
     return undefined;
   }
@@ -89,7 +89,7 @@ function mapTlsFromSecurityAssetForVless(
 
 function mapTlsFromSecurityAssetForHy2(
   asset: SecurityAsset | undefined,
-): DraftHysteria2Inbound["tls"] | undefined {
+): StoredHysteria2Inbound["tls"] | undefined {
   if (!asset || asset.type !== "tls") {
     return undefined;
   }
@@ -111,7 +111,7 @@ function mapTlsFromSecurityAssetForHy2(
   };
 }
 
-export function getDraftInbounds(): DraftInbound[] {
+export function getStoredInbounds(): StoredInbound[] {
   const db = getDb();
 
   const inboundRows = db
@@ -218,7 +218,7 @@ export function getDraftInbounds(): DraftInbound[] {
     if (row.type === "vless") {
       const vlessRow = vlessByInboundId.get(row.id);
 
-      const vlessUsers: DraftVlessInbound["users"] = (
+      const vlessUsers: StoredVlessInbound["users"] = (
         usersByInboundId.get(row.id) ?? []
       ).map((user) => ({
         name: user.name ?? undefined,
@@ -226,7 +226,7 @@ export function getDraftInbounds(): DraftInbound[] {
         flow: user.flow === "xtls-rprx-vision" ? "xtls-rprx-vision" : undefined,
       }));
 
-      const inbound: DraftVlessInbound = {
+      const inbound: StoredVlessInbound = {
         type: "vless",
         tag: row.tag ?? undefined,
         listen: row.listen ?? undefined,
@@ -250,14 +250,14 @@ export function getDraftInbounds(): DraftInbound[] {
 
     const hysteria2Row = hysteria2ByInboundId.get(row.id);
 
-    const hysteria2Users: DraftHysteria2Inbound["users"] = (
+    const hysteria2Users: StoredHysteria2Inbound["users"] = (
       usersByInboundId.get(row.id) ?? []
     ).map((user) => ({
       name: user.name ?? undefined,
       password: user.password ?? "",
     }));
 
-    const inbound: DraftHysteria2Inbound = {
+    const inbound: StoredHysteria2Inbound = {
       type: "hysteria2",
       tag: row.tag ?? undefined,
       listen: row.listen ?? undefined,
@@ -301,7 +301,7 @@ function booleanToSqliteBool(value: boolean | undefined): 0 | 1 | null {
   return value ? 1 : 0;
 }
 
-function mapMasqueradeToRow(masquerade: DraftHysteria2Inbound["masquerade"]): {
+function mapMasqueradeToRow(masquerade: StoredHysteria2Inbound["masquerade"]): {
   masquerade_string: string | null;
   masquerade_type: string | null;
   masquerade_file: string | null;
@@ -337,12 +337,12 @@ function mapMasqueradeToRow(masquerade: DraftHysteria2Inbound["masquerade"]): {
   };
 }
 
-export function createDraftInbound(input: DraftInbound): { ok: true } {
+export function createStoredInbound(input: StoredInbound): { ok: true } {
   const db = getDb();
   const now = new Date().toISOString();
   const inboundId = randomUUID();
 
-  const trx = db.transaction((draft: DraftInbound) => {
+  const trx = db.transaction((draft: StoredInbound) => {
     db.prepare(
       sql`
         INSERT INTO inbounds (
@@ -373,7 +373,7 @@ export function createDraftInbound(input: DraftInbound): { ok: true } {
     );
 
     if (draft.type === "vless") {
-      const vlessDraft: DraftVlessInbound = draft;
+      const vlessDraft: StoredVlessInbound = draft;
 
       db.prepare(
         sql`
@@ -420,7 +420,7 @@ export function createDraftInbound(input: DraftInbound): { ok: true } {
       return { ok: true } as const;
     }
 
-    const hysteria2Draft: DraftHysteria2Inbound = draft;
+    const hysteria2Draft: StoredHysteria2Inbound = draft;
     const masqueradeRow = mapMasqueradeToRow(hysteria2Draft.masquerade);
 
     db.prepare(
@@ -491,7 +491,7 @@ export function createDraftInbound(input: DraftInbound): { ok: true } {
   return trx(input);
 }
 
-export function deleteDraftInboundByTag(tag: string): boolean {
+export function deleteStoredInboundByTag(tag: string): boolean {
   const db = getDb();
 
   const result = db
@@ -506,14 +506,14 @@ export function deleteDraftInboundByTag(tag: string): boolean {
   return result.changes > 0;
 }
 
-export function updateDraftInboundByTag(
+export function updateStoredInboundByTag(
   tag: string,
-  input: DraftInbound,
+  input: StoredInbound,
 ): boolean {
   const db = getDb();
   const now = new Date().toISOString();
 
-  const trx = db.transaction((currentTag: string, draft: DraftInbound) => {
+  const trx = db.transaction((currentTag: string, draft: StoredInbound) => {
     const existing = db
       .prepare(
         sql`
@@ -578,7 +578,7 @@ export function updateDraftInboundByTag(
     ).run(inboundId);
 
     if (draft.type === "vless") {
-      const vlessDraft: DraftVlessInbound = draft;
+      const vlessDraft: StoredVlessInbound = draft;
 
       db.prepare(
         sql`
@@ -625,7 +625,7 @@ export function updateDraftInboundByTag(
       return true;
     }
 
-    const hysteria2Draft: DraftHysteria2Inbound = draft;
+    const hysteria2Draft: StoredHysteria2Inbound = draft;
     const masqueradeRow = mapMasqueradeToRow(hysteria2Draft.masquerade);
 
     db.prepare(

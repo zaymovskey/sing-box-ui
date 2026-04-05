@@ -1,4 +1,4 @@
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -12,7 +12,7 @@ import {
 import { useDeleteInbound } from "../../model/commands/inbound-delete.command";
 
 interface DeleteInboundDialogProps {
-  inbound: DraftInbound;
+  inbound: StoredInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

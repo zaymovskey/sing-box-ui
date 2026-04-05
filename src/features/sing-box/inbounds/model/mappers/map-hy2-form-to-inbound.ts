@@ -1,9 +1,9 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 
 export function mapHy2FormToInbound(
   values: Extract<InboundFormValues, { type: "hysteria2" }>,
-): DraftInbound {
+): StoredInbound {
   return {
     type: "hysteria2",
     tag: values.tag,

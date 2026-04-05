@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 
 import { getSecurityAssets } from "@/server/db/security-assets/repository";
-import { getDraftInbounds } from "@/server/db/sing-box/inbounds/repository";
+import { getStoredInbounds } from "@/server/db/sing-box/inbounds/repository";
 
 import { stripDraftFields } from "../../../api/contracts/sing-box/core/strip-draft-fields.mapper";
 import { getServerEnv } from "../../server/env-server";
@@ -18,7 +18,7 @@ export async function buildRuntimeConfigFromDraft(): Promise<
     unknown
   >;
 
-  const dbInbounds = getDraftInbounds();
+  const dbInbounds = getStoredInbounds();
   const dbSecurityAssets = getSecurityAssets();
 
   const draftWithDbSources: Record<string, unknown> = {

@@ -9,8 +9,8 @@ import {
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
 import {
-  type DraftInbound,
   type InboundsListResponse,
+  type StoredInbound,
 } from "@/shared/api/contracts";
 import {
   Button,
@@ -36,12 +36,12 @@ const FORM_ID = "edit-inbound-form";
 
 function getRawInbounds(
   response: InboundsListResponse | undefined,
-): DraftInbound[] {
+): StoredInbound[] {
   return Array.isArray(response?.list) ? response.list : [];
 }
 
 interface EditInboundDialogProps {
-  inbound: DraftInbound;
+  inbound: StoredInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

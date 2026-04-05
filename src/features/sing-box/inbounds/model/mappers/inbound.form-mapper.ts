@@ -1,10 +1,10 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 
 import { mapHy2FormToInbound } from "./map-hy2-form-to-inbound";
 import { mapVlessFormToInbound } from "./map-vless-form-to-inbound.mapper";
 
-export function mapFormToInbound(values: InboundFormValues): DraftInbound {
+export function mapFormToInbound(values: InboundFormValues): StoredInbound {
   if (values.type === "vless") {
     return mapVlessFormToInbound(values);
   }
@@ -13,7 +13,7 @@ export function mapFormToInbound(values: InboundFormValues): DraftInbound {
 }
 
 export function mapInboundToFormValues(
-  inbound: DraftInbound,
+  inbound: StoredInbound,
 ): InboundFormValues {
   const baseFields = {
     tag: inbound.tag ?? "",

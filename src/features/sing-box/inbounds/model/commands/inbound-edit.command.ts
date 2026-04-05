@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { DraftInboundSchema } from "@/shared/api/contracts";
+import { StoredInboundSchema } from "@/shared/api/contracts";
 
 import { mapFormToInbound } from "../mappers/inbound.form-mapper";
 import { useEditInboundMutation } from "../mutations/edit-inbound.mutation";
@@ -16,7 +16,7 @@ export function useEditInbound() {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inboundParseResult =
-        DraftInboundSchema.safeParse(parsedEditedInbound);
+        StoredInboundSchema.safeParse(parsedEditedInbound);
 
       if (!inboundParseResult.success) {
         throw new Error(CONFIG_INVALID_AFTER_MAPPING);

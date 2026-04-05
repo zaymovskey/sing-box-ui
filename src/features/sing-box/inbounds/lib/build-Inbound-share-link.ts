@@ -1,7 +1,7 @@
-import { type DraftInbound, type SecurityAsset } from "@/shared/api/contracts";
+import { type SecurityAsset, type StoredInbound } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
-  inbound: DraftInbound,
+  inbound: StoredInbound,
   user: unknown,
   securityAssets: SecurityAsset[],
   host: string,
@@ -11,7 +11,7 @@ export function buildInboundShareLink(
   }
 
   if (inbound.type === "vless") {
-    const vlessInbound = inbound as Extract<DraftInbound, { type: "vless" }>;
+    const vlessInbound = inbound as Extract<StoredInbound, { type: "vless" }>;
     const vlessUser = user as {
       uuid: string;
       flow?: string;
@@ -70,7 +70,7 @@ export function buildInboundShareLink(
   }
 
   if (inbound.type === "hysteria2") {
-    const hy2Inbound = inbound as Extract<DraftInbound, { type: "hysteria2" }>;
+    const hy2Inbound = inbound as Extract<StoredInbound, { type: "hysteria2" }>;
     const hyUser = user as {
       password: string;
     };

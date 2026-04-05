@@ -2,11 +2,11 @@ import z from "zod";
 
 import {
   BaseInboundSchema,
-  DraftInboundUserSchema,
+  StoredInboundUserSchema,
 } from "../../core/inbounds.schema";
 
 export const InboundUserConnectionStatusUserItem = z.object({
-  user: DraftInboundUserSchema,
+  user: StoredInboundUserSchema,
   connected: z.boolean(),
 });
 

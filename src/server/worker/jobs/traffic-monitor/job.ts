@@ -1,4 +1,4 @@
-import { getDb } from "@/server/db/client";
+// import { getDb } from "@/server/db/client";
 
 import { queryStats } from "./test-v2ray-api";
 
@@ -6,10 +6,10 @@ interface TrafficStats {
   stat: { name: string; value: string }[];
 }
 
-const sql = String.raw;
+// const sql = String.raw;
 
 export function startTrafficMonitor() {
-  const db = getDb();
+  // const db = getDb();
 
   setInterval(async () => {
     queryStats()
@@ -41,13 +41,13 @@ export function startTrafficMonitor() {
           //       );
           //     }
         }
-        console.log("[traffic] stats:");
-        console.dir(res, { depth: null });
+        // console.log("[traffic] stats:");
+        // console.dir(res, { depth: null });
       })
       .catch((err) => {
         console.error("[traffic] query stats error:");
         console.error(err);
       });
-    console.log("[traffic] tick 9999");
+    // console.log("[traffic] tick 9999");
   }, 5000);
 }

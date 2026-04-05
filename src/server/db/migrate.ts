@@ -18,7 +18,6 @@ function ensureMigrationsTable(db: Database.Database) {
 
 function getMigrationFiles(migrationsDir: string): string[] {
   if (!fs.existsSync(migrationsDir)) {
-    console.log("[db] migrations dir does not exist:", migrationsDir);
     return [];
   }
 
@@ -26,8 +25,6 @@ function getMigrationFiles(migrationsDir: string): string[] {
     .readdirSync(migrationsDir)
     .filter((file) => file.endsWith(".sql"))
     .sort((a, b) => a.localeCompare(b));
-
-  console.log("[db] migration files:", files);
 
   return files;
 }
@@ -37,25 +34,19 @@ function getAppliedMigrationIds(db: Database.Database): Set<string> {
     .prepare("SELECT id FROM schema_migrations ORDER BY id ASC")
     .all() as MigrationRow[];
 
-  console.log("[db] applied migrations:", rows);
-
   return new Set(rows.map((row) => row.id));
 }
 
 export function runMigrations(db: Database.Database) {
-  console.log("[db] running migrations");
   ensureMigrationsTable(db);
 
   const migrationsDir = path.join(process.cwd(), "src/server/db/migrations");
-  console.log("[db] cwd:", process.cwd());
-  console.log("[db] migrations dir:", migrationsDir);
 
   const files = getMigrationFiles(migrationsDir);
   const appliedIds = getAppliedMigrationIds(db);
 
   for (const file of files) {
     if (appliedIds.has(file)) {
-      console.log("[db] skip already applied:", file);
       continue;
     }
 
