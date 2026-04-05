@@ -63,7 +63,9 @@ export function buildInboundShareLink(
         params.set("spx", realityAsset.spiderX);
       }
     } else {
-      params.set("security", "none");
+      if (host !== "localhost") {
+        params.set("security", "none");
+      }
     }
 
     return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.tag ?? "")}`;

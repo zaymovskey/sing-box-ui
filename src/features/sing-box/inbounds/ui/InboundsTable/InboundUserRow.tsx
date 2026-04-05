@@ -46,6 +46,14 @@ export function InboundUserRow({
       clientToast.success("Ссылка скопирована в буфер обмена", {
         duration: 3000,
       });
+      if (host === "localhost") {
+        clientToast.error(
+          "Не забудьте заменить localhost на реальный IP-адрес в вашей сети. А также не используйте стандартные порты типа 443, 80, 22, установите более специфичный, например 2001",
+          {
+            duration: 5000,
+          },
+        );
+      }
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1000);
       return;
