@@ -27,19 +27,11 @@ ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
 ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 
-RUN rm -rf .worker-dist \
-  && echo "=== tsconfig.worker.json effective config ===" \
-  && npx tsc -p tsconfig.worker.json --showConfig > /tmp/tsconfig-worker.effective.json \
-  && sed -n '1,240p' /tmp/tsconfig-worker.effective.json \
-  && echo "=== source folders ===" \
-  && ls -R src/server/worker || true \
-  && ls -R src/server/db || true \
-  && ls -R src/features/sing-box/server || true \
-  && echo "=== emitted files ===" \
-  && npx tsc -p tsconfig.worker.json --listFiles --listEmittedFiles \
-  && npx tsc-alias -p tsconfig.worker.json \
-  && echo "=== .worker-dist ===" \
-  && find .worker-dist -type f | sort || true
+RUN rm -rf .worker-dist tsconfig.worker.tsbuildinfo \
+  && npm run build:worker \
+  && test -f .worker-dist/server/worker/main.js \
+  && find .worker-dist -type f | sort
+
 RUN npm run build
 
 # ---------- 4 Production runtime ----------
