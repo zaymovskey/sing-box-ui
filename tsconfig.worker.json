@@ -16,9 +16,8 @@
     }
   },
   "include": [
-    "src/server/worker/**/*.ts",
-    "src/server/db/**/*.ts",
-    "src/features/sing-box/server/**/*.ts",
+    "src/server/**/*.ts",
+    "src/features/**/*.ts",
     "src/shared/**/*.ts"
   ],
   "exclude": ["node_modules", ".next"]

@@ -11,6 +11,7 @@ dist/
 coverage/
 
 tsconfig.tsbuildinfo
+tsconfig.worker.tsbuildinfo
 
 docker/data/**
 !docker/data/.gitkeep
