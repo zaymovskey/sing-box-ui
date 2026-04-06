@@ -68,7 +68,7 @@ export function buildInboundShareLink(
       }
     }
 
-    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.internal_tag ?? "")}`;
+    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.display_tag ?? "")}`;
   }
 
   if (inbound.type === "hysteria2") {
