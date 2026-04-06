@@ -95,7 +95,7 @@ export function InboundFormHy2Fields() {
 
   const handleAddUser = () => {
     append({
-      name: "",
+      display_name: "",
       password: "",
     });
   };
@@ -128,7 +128,7 @@ export function InboundFormHy2Fields() {
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <UncontrolledTextField<InboundFormValues>
                   label="User name"
-                  name={`users.${index}.name`}
+                  name={`users.${index}.display_name`}
                   placeholder="user"
                 />
 

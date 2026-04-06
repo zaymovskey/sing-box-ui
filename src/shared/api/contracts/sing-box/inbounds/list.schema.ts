@@ -1,9 +1,9 @@
 import z from "zod";
 
-import { DraftInboundSchema } from "../core/inbounds.schema";
+import { StoredInboundSchema } from "../core/inbounds.schema";
 
 export const InboundsListResponseSchema = z.object({
-  list: DraftInboundSchema.array(),
+  list: StoredInboundSchema.array(),
 });
 
 export type InboundsListResponse = z.infer<typeof InboundsListResponseSchema>;

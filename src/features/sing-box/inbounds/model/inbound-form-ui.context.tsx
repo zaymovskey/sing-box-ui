@@ -1,5 +1,7 @@
 import { createContext, type ReactNode, useContext } from "react";
 
+import { type InboundFormValues } from "@/features/sing-box/config-core";
+
 const InboundFormContext = createContext<InboundFormContextValue | undefined>(
   undefined,
 );
@@ -16,6 +18,7 @@ export const useInboundFormContext = () => {
 
 interface InboundFormContextValue {
   mode: "edit" | "create";
+  initialValues?: InboundFormValues;
 }
 
 interface InboundFormProviderProps {
@@ -25,12 +28,13 @@ interface InboundFormProviderProps {
 
 export const InboundFormProvider = ({
   children,
-  contextValue: { mode },
+  contextValue: { mode, initialValues },
 }: InboundFormProviderProps) => {
   return (
     <InboundFormContext.Provider
       value={{
         mode,
+        initialValues,
       }}
     >
       {children}

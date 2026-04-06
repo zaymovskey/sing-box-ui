@@ -39,24 +39,38 @@ export {
   type SecurityAssetType,
   SecurityAssetTypeSchema,
 } from "./security-assets/security-assets.schema";
-export type { DraftHysteria2Inbound, DraftVlessInbound } from "./sing-box/core";
 export {
   type DraftConfig,
   DraftConfigSchema,
-  type DraftInbound,
-  DraftInboundSchema,
   type Hysteria2User,
   Hysteria2UserSchema,
   type RuntimeConfig,
   RuntimeConfigSchema,
+  type SaveHysteria2Inbound,
+  type SaveInboundInput,
+  SaveInboundInputSchema,
+  type SaveVlessInbound,
+  SaveVlessInboundSchema,
+  type SaveVlessUser,
+  type SingBoxHysteria2Inbound,
+  type SingBoxHysteria2User,
+  type SingBoxInbound,
+  type SingBoxVlessInbound,
+  type SingBoxVlessUser,
+  type StoredHysteria2Inbound,
+  type StoredInbound,
+  StoredInboundSchema,
+  type StoredInboundUser,
+  StoredInboundUserSchema,
+  type StoredVlessInbound,
   stripDraftFields,
   type VlessUser,
   VlessUserSchema,
 } from "./sing-box/core";
-export { type DraftInboundUser, DraftInboundUserSchema } from "./sing-box/core";
 export {
   InboundHysteria2RowSchema,
   InboundRowSchema,
+  type InboundUserRow,
   InboundUserRowSchema,
   type InboundVlessRow,
   type InboundVlessRows,
@@ -67,8 +81,8 @@ export {
   InboundsListResponseSchema,
 } from "./sing-box/inbounds/list.schema";
 export {
-  type InboundUserConntectionStatusResponse,
-  InboundUserConntectionStatusResponseSchema,
+  type InboundUserConnectionStatusResponse,
+  InboundUserConnectionStatusResponseSchema,
 } from "./sing-box/inbounds/users/connection-status.schema";
 export {
   type SingBoxStatusCheck,

@@ -1,7 +1,7 @@
-import { type DraftInbound, type SecurityAsset } from "@/shared/api/contracts";
+import { type SecurityAsset, type StoredInbound } from "@/shared/api/contracts";
 
 export function buildInboundShareLink(
-  inbound: DraftInbound,
+  inbound: StoredInbound,
   user: unknown,
   securityAssets: SecurityAsset[],
   host: string,
@@ -11,7 +11,7 @@ export function buildInboundShareLink(
   }
 
   if (inbound.type === "vless") {
-    const vlessInbound = inbound as Extract<DraftInbound, { type: "vless" }>;
+    const vlessInbound = inbound as Extract<StoredInbound, { type: "vless" }>;
     const vlessUser = user as {
       uuid: string;
       flow?: string;
@@ -63,14 +63,16 @@ export function buildInboundShareLink(
         params.set("spx", realityAsset.spiderX);
       }
     } else {
-      params.set("security", "none");
+      if (host !== "localhost") {
+        params.set("security", "none");
+      }
     }
 
-    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.tag ?? "")}`;
+    return `vless://${vlessUser.uuid}@${host}:${port}?${params.toString()}#${encodeURIComponent(vlessInbound.internal_tag ?? "")}`;
   }
 
   if (inbound.type === "hysteria2") {
-    const hy2Inbound = inbound as Extract<DraftInbound, { type: "hysteria2" }>;
+    const hy2Inbound = inbound as Extract<StoredInbound, { type: "hysteria2" }>;
     const hyUser = user as {
       password: string;
     };
@@ -103,7 +105,7 @@ export function buildInboundShareLink(
       params.set("obfs-password", hy2Inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.tag ?? "")}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.internal_tag ?? "")}`;
   }
 
   return null;

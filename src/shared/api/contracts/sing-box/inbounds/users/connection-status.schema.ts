@@ -1,24 +1,23 @@
-import z from "zod";
+import { z } from "zod";
 
-import {
-  BaseInboundSchema,
-  DraftInboundUserSchema,
-} from "../../core/inbounds.schema";
+import { StoredInboundUserSchema } from "../../core/inbounds.schema";
+
+const InternalTagSchema = z.string().min(1);
 
 export const InboundUserConnectionStatusUserItem = z.object({
-  user: DraftInboundUserSchema,
+  user: StoredInboundUserSchema,
   connected: z.boolean(),
 });
 
-export const InboundUserConntectionStatusItem = z.object({
-  inboundTag: BaseInboundSchema.shape.tag,
+export const InboundUserConnectionStatusItem = z.object({
+  inboundTag: InternalTagSchema,
   users: InboundUserConnectionStatusUserItem.array(),
 });
 
-export const InboundUserConntectionStatusResponseSchema = z.object({
-  inbounds: InboundUserConntectionStatusItem.array(),
+export const InboundUserConnectionStatusResponseSchema = z.object({
+  inbounds: InboundUserConnectionStatusItem.array(),
 });
 
-export type InboundUserConntectionStatusResponse = z.infer<
-  typeof InboundUserConntectionStatusResponseSchema
+export type InboundUserConnectionStatusResponse = z.infer<
+  typeof InboundUserConnectionStatusResponseSchema
 >;

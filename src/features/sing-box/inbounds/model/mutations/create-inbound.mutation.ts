@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { singBoxQueryKeys } from "@/features/sing-box/config-core";
-import { type DraftInbound, type OkResponse } from "@/shared/api/contracts";
+import { type OkResponse, type SaveInboundInput } from "@/shared/api/contracts";
 import { type ApiError } from "@/shared/lib";
 
 import { createInbound } from "../../api/create-inbound.api";
@@ -9,7 +9,7 @@ import { createInbound } from "../../api/create-inbound.api";
 export function useCreateInboundMutation() {
   const qc = useQueryClient();
 
-  return useMutation<OkResponse, ApiError, DraftInbound>({
+  return useMutation<OkResponse, ApiError, SaveInboundInput>({
     mutationFn: (config) => createInbound(config),
     onSuccess: async () => {
       void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });

@@ -1,18 +1,18 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type SaveVlessInbound } from "@/shared/api/contracts";
 
 export function mapVlessFormToInbound(
   values: Extract<InboundFormValues, { type: "vless" }>,
-): DraftInbound {
+): SaveVlessInbound {
   return {
     type: "vless",
-    tag: values.tag,
+    display_tag: values.display_tag,
     listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,
     sniff_override_destination: values.sniff_override_destination,
     users: values.users.map((user) => ({
-      name: user.name,
+      display_name: user.display_name,
       uuid: user.uuid,
       flow: user.flow,
     })),

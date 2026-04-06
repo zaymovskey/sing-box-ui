@@ -1,7 +1,7 @@
 // import fs from "node:fs/promises";
 
 // import {
-//   type DraftInbound,
+//   type StoredInbound,
 //   InboundUserConntectionStatusResponseSchema,
 // } from "@/shared/api/contracts";
 // import { getServerEnv, withRoute } from "@/shared/lib/server";
@@ -17,7 +17,7 @@
 //     const rawDraftContent = JSON.parse(draftContent);
 
 //     const rawDraftConfig = JSON.parse(draftContent) as {
-//       inbounds?: DraftInbound[];
+//       inbounds?: StoredInbound[];
 //     };
 //   },
 // });

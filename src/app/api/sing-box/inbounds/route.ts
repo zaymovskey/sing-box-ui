@@ -1,18 +1,21 @@
 import z from "zod";
 
 import {
-  createDraftInbound,
-  getDraftInbounds,
-} from "@/server/db/sing-box/inbounds/repository";
-import { DraftInboundSchema, OkResponseSchema } from "@/shared/api/contracts";
+  createStoredInbound,
+  getStoredInbounds,
+} from "@/server/db/sing-box/inbounds";
+import {
+  OkResponseSchema,
+  SaveInboundInputSchema,
+} from "@/shared/api/contracts";
 import { withRoute } from "@/shared/lib/server";
 
 export const POST = withRoute({
   auth: true,
-  requestSchema: DraftInboundSchema,
+  requestSchema: SaveInboundInputSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
-    return createDraftInbound(body);
+    return createStoredInbound(body);
   },
 });
 
@@ -20,7 +23,7 @@ export const GET = withRoute({
   auth: true,
   responseSchema: z.unknown(),
   handler: async () => {
-    const inbounds = getDraftInbounds();
+    const inbounds = getStoredInbounds();
 
     return {
       list: inbounds,

@@ -9,8 +9,8 @@ import {
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
 import {
-  type DraftInbound,
   type InboundsListResponse,
+  type StoredInbound,
 } from "@/shared/api/contracts";
 import {
   Button,
@@ -22,7 +22,7 @@ import {
 } from "@/shared/ui";
 
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
-import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
+import { useInboundDisplayTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
@@ -36,12 +36,12 @@ const FORM_ID = "edit-inbound-form";
 
 function getRawInbounds(
   response: InboundsListResponse | undefined,
-): DraftInbound[] {
+): StoredInbound[] {
   return Array.isArray(response?.list) ? response.list : [];
 }
 
 interface EditInboundDialogProps {
-  inbound: DraftInbound;
+  inbound: StoredInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -64,7 +64,7 @@ export function EditInboundDialog({
 
   const [currentInboundTag, setCurrentInboundTag] = useState<
     string | undefined
-  >(inbound.tag);
+  >(inbound.display_tag);
 
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
@@ -77,7 +77,7 @@ export function EditInboundDialog({
       return;
     }
 
-    setCurrentInboundTag(inbound.tag);
+    setCurrentInboundTag(inbound.display_tag);
     form.reset(initialValues, {
       keepDirty: false,
       keepTouched: false,
@@ -85,17 +85,17 @@ export function EditInboundDialog({
       keepSubmitCount: false,
       keepIsSubmitted: false,
     });
-  }, [open, inbound.tag, initialValues, form]);
+  }, [open, inbound.display_tag, initialValues, form]);
 
   const { editInbound, isPending } = useEditInbound();
 
   const tags = useMemo(() => {
     return rawInbounds
-      .map((item) => item.tag)
+      .map((item) => item.display_tag)
       .filter((tag): tag is string => Boolean(tag));
   }, [rawInbounds]);
 
-  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(
+  const checkTagUniqueAndSetFormError = useInboundDisplayTagUniqueness(
     form,
     tags,
     currentInboundTag,
@@ -136,7 +136,7 @@ export function EditInboundDialog({
         duration: 3000,
       });
 
-      setCurrentInboundTag(values.tag);
+      setCurrentInboundTag(values.display_tag);
 
       form.clearErrors();
       form.reset(values, {
@@ -179,13 +179,18 @@ export function EditInboundDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
+      <DialogContent
+        className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Редактировать инбаунд</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundFormProvider contextValue={{ mode: "edit" }}>
+          <InboundFormProvider contextValue={{ mode: "edit", initialValues }}>
             <InboundForm
               form={form}
               formId={FORM_ID}

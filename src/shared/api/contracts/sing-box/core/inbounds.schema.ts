@@ -12,24 +12,70 @@ const ListenPortSchema = z
 const SniffSchema = z.boolean().optional();
 const SniffOverrideDestinationSchema = z.boolean().optional();
 
-export const BaseInboundSchema = z.object({
-  tag: NonEmptyStringSchema.optional(),
+const SingBoxBaseInboundSchema = z.object({
+  tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
   sniff: SniffSchema,
   sniff_override_destination: SniffOverrideDestinationSchema,
 });
 
+const StoredBaseInboundSchema = z.object({
+  display_tag: NonEmptyStringSchema,
+  internal_tag: NonEmptyStringSchema,
+  listen: ListenSchema.optional(),
+  listen_port: ListenPortSchema.optional(),
+  sniff: SniffSchema,
+  sniff_override_destination: SniffOverrideDestinationSchema,
+});
+
+const SaveBaseInboundSchema = z.object({
+  display_tag: NonEmptyStringSchema,
+  internal_tag: NonEmptyStringSchema.optional(),
+  listen: ListenSchema.optional(),
+  listen_port: ListenPortSchema.optional(),
+  sniff: SniffSchema,
+  sniff_override_destination: SniffOverrideDestinationSchema,
+});
+
+const StoredBaseInboundUserSchema = z.object({
+  internal_name: NonEmptyStringSchema,
+  display_name: NonEmptyStringSchema,
+});
+
+const SaveBaseInboundUserSchema = z.object({
+  internal_name: NonEmptyStringSchema.optional(),
+  display_name: NonEmptyStringSchema,
+});
+
 const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
 
-export const VlessUserSchema = z.object({
-  name: NonEmptyStringSchema.optional(),
+export const SingBoxVlessUserSchema = z.object({
+  name: NonEmptyStringSchema,
   uuid: NonEmptyStringSchema,
   flow: VlessFlowSchema.optional(),
 });
 
-export const Hysteria2UserSchema = z.object({
-  name: NonEmptyStringSchema.optional(),
+export const SingBoxHysteria2UserSchema = z.object({
+  name: NonEmptyStringSchema,
+  password: NonEmptyStringSchema,
+});
+
+export const VlessUserSchema = StoredBaseInboundUserSchema.extend({
+  uuid: NonEmptyStringSchema,
+  flow: VlessFlowSchema.optional(),
+});
+
+export const Hysteria2UserSchema = StoredBaseInboundUserSchema.extend({
+  password: NonEmptyStringSchema,
+});
+
+export const SaveVlessUserSchema = SaveBaseInboundUserSchema.extend({
+  uuid: NonEmptyStringSchema,
+  flow: VlessFlowSchema.optional(),
+});
+
+export const SaveHysteria2UserSchema = SaveBaseInboundUserSchema.extend({
   password: NonEmptyStringSchema,
 });
 
@@ -43,7 +89,7 @@ const ShortIdSchema = z.union([
   z.array(z.string().min(1)).min(1),
 ]);
 
-export const RuntimeVlessRealitySchema = z
+export const SingBoxVlessRealitySchema = z
   .object({
     enabled: z.boolean().optional(),
     handshake: VlessRealityHandshakeSchema.optional(),
@@ -81,18 +127,18 @@ export const RuntimeVlessRealitySchema = z
     }
   });
 
-export const DraftVlessRealitySchema = RuntimeVlessRealitySchema.extend({
+export const StoredVlessRealitySchema = SingBoxVlessRealitySchema.extend({
   _reality_public_key: z.string().optional(),
 });
 
-export const RuntimeVlessTlsSchema = z.object({
+export const SingBoxVlessTlsSchema = z.object({
   enabled: z.boolean().optional(),
   server_name: z.string().optional(),
-  reality: RuntimeVlessRealitySchema.optional(),
+  reality: SingBoxVlessRealitySchema.optional(),
 });
 
-export const DraftVlessTlsSchema = RuntimeVlessTlsSchema.extend({
-  reality: DraftVlessRealitySchema.optional(),
+export const StoredVlessTlsSchema = SingBoxVlessTlsSchema.extend({
+  reality: StoredVlessRealitySchema.optional(),
 });
 
 export const Hysteria2ObfsSchema = z.object({
@@ -100,7 +146,7 @@ export const Hysteria2ObfsSchema = z.object({
   password: z.string().optional(),
 });
 
-export const RuntimeHysteria2TlsSchema = z.object({
+export const SingBoxHysteria2TlsSchema = z.object({
   enabled: z.boolean().optional(),
   server_name: z.string().optional(),
   certificate: z.string().optional(),
@@ -109,21 +155,7 @@ export const RuntimeHysteria2TlsSchema = z.object({
   key_path: z.string().optional(),
 });
 
-export const DraftHysteria2TlsSchema = RuntimeHysteria2TlsSchema;
-
-export const RuntimeVlessInboundSchema = BaseInboundSchema.extend({
-  type: z.literal("vless"),
-  users: z.array(VlessUserSchema).min(1),
-  tls: RuntimeVlessTlsSchema.optional(),
-});
-
-export const DraftVlessInboundSchema = BaseInboundSchema.extend({
-  type: z.literal("vless"),
-  users: z.array(VlessUserSchema).min(1),
-  tls: DraftVlessTlsSchema.optional(),
-  _security_asset_id: z.string().optional(),
-  _tls_enabled: z.boolean().optional(),
-});
+export const StoredHysteria2TlsSchema = SingBoxHysteria2TlsSchema;
 
 const Hysteria2BandwidthSchema = z.number().nonnegative();
 
@@ -137,18 +169,15 @@ const Hysteria2MasqueradeSchema = z.union([
   }),
 ]);
 
-export const RuntimeHysteria2InboundSchema = BaseInboundSchema.extend({
-  type: z.literal("hysteria2"),
-  up_mbps: Hysteria2BandwidthSchema.optional(),
-  down_mbps: Hysteria2BandwidthSchema.optional(),
-  ignore_client_bandwidth: z.boolean().optional(),
-  users: z.array(Hysteria2UserSchema).min(1),
-  obfs: Hysteria2ObfsSchema.optional(),
-  tls: RuntimeHysteria2TlsSchema,
-  masquerade: Hysteria2MasqueradeSchema.optional(),
-  bbr_profile: z.string().optional(),
-  brutal_debug: z.boolean().optional(),
-}).superRefine((data, ctx) => {
+function addHysteria2CrossFieldValidation(
+  data: {
+    ignore_client_bandwidth?: boolean;
+    up_mbps?: number;
+    down_mbps?: number;
+    obfs?: { type?: "salamander"; password?: string };
+  },
+  ctx: z.RefinementCtx,
+) {
   if (
     data.ignore_client_bandwidth === true &&
     (data.up_mbps !== undefined || data.down_mbps !== undefined)
@@ -167,74 +196,129 @@ export const RuntimeHysteria2InboundSchema = BaseInboundSchema.extend({
       message: "Obfs type is required when obfs password is set",
     });
   }
+}
+
+export const SingBoxVlessInboundSchema = SingBoxBaseInboundSchema.extend({
+  type: z.literal("vless"),
+  users: z.array(SingBoxVlessUserSchema).min(1),
+  tls: SingBoxVlessTlsSchema.optional(),
 });
 
-export const DraftHysteria2InboundSchema = BaseInboundSchema.extend({
+export const StoredVlessInboundSchema = StoredBaseInboundSchema.extend({
+  type: z.literal("vless"),
+  users: z.array(VlessUserSchema).min(1),
+  tls: StoredVlessTlsSchema.optional(),
+  _security_asset_id: z.string().optional(),
+  _tls_enabled: z.boolean().optional(),
+});
+
+export const SaveVlessInboundSchema = SaveBaseInboundSchema.extend({
+  type: z.literal("vless"),
+  users: z.array(SaveVlessUserSchema).min(1),
+  tls: StoredVlessTlsSchema.optional(),
+  _security_asset_id: z.string().optional(),
+  _tls_enabled: z.boolean().optional(),
+});
+
+export const SingBoxHysteria2InboundSchema = SingBoxBaseInboundSchema.extend({
+  type: z.literal("hysteria2"),
+  up_mbps: Hysteria2BandwidthSchema.optional(),
+  down_mbps: Hysteria2BandwidthSchema.optional(),
+  ignore_client_bandwidth: z.boolean().optional(),
+  users: z.array(SingBoxHysteria2UserSchema).min(1),
+  obfs: Hysteria2ObfsSchema.optional(),
+  tls: SingBoxHysteria2TlsSchema.optional(),
+  masquerade: Hysteria2MasqueradeSchema.optional(),
+  bbr_profile: z.string().optional(),
+  brutal_debug: z.boolean().optional(),
+}).superRefine(addHysteria2CrossFieldValidation);
+
+export const StoredHysteria2InboundSchema = StoredBaseInboundSchema.extend({
   type: z.literal("hysteria2"),
   up_mbps: Hysteria2BandwidthSchema.optional(),
   down_mbps: Hysteria2BandwidthSchema.optional(),
   ignore_client_bandwidth: z.boolean().optional(),
   users: z.array(Hysteria2UserSchema).min(1),
   obfs: Hysteria2ObfsSchema.optional(),
-  tls: DraftHysteria2TlsSchema.optional(),
+  tls: StoredHysteria2TlsSchema.optional(),
   masquerade: Hysteria2MasqueradeSchema.optional(),
   bbr_profile: z.string().optional(),
   brutal_debug: z.boolean().optional(),
   _security_asset_id: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (
-    data.ignore_client_bandwidth === true &&
-    (data.up_mbps !== undefined || data.down_mbps !== undefined)
-  ) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["ignore_client_bandwidth"],
-      message: "ignore_client_bandwidth conflicts with up_mbps/down_mbps",
-    });
-  }
+}).superRefine(addHysteria2CrossFieldValidation);
 
-  if (data.obfs?.password && !data.obfs.type) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["obfs", "type"],
-      message: "Obfs type is required when obfs password is set",
-    });
-  }
-});
+export const SaveHysteria2InboundSchema = SaveBaseInboundSchema.extend({
+  type: z.literal("hysteria2"),
+  up_mbps: Hysteria2BandwidthSchema.optional(),
+  down_mbps: Hysteria2BandwidthSchema.optional(),
+  ignore_client_bandwidth: z.boolean().optional(),
+  users: z.array(SaveHysteria2UserSchema).min(1),
+  obfs: Hysteria2ObfsSchema.optional(),
+  tls: StoredHysteria2TlsSchema.optional(),
+  masquerade: Hysteria2MasqueradeSchema.optional(),
+  bbr_profile: z.string().optional(),
+  brutal_debug: z.boolean().optional(),
+  _security_asset_id: z.string().optional(),
+}).superRefine(addHysteria2CrossFieldValidation);
 
-export const RuntimeInboundSchema = z.discriminatedUnion("type", [
-  RuntimeVlessInboundSchema,
-  RuntimeHysteria2InboundSchema,
+export const SingBoxInboundSchema = z.discriminatedUnion("type", [
+  SingBoxVlessInboundSchema,
+  SingBoxHysteria2InboundSchema,
 ]);
 
-export const DraftInboundSchema = z.discriminatedUnion("type", [
-  DraftVlessInboundSchema,
-  DraftHysteria2InboundSchema,
+export const StoredInboundSchema = z.discriminatedUnion("type", [
+  StoredVlessInboundSchema,
+  StoredHysteria2InboundSchema,
 ]);
 
-export const DraftInboundUserSchema = z.union([
+export const SaveInboundInputSchema = z.discriminatedUnion("type", [
+  SaveVlessInboundSchema,
+  SaveHysteria2InboundSchema,
+]);
+
+export const StoredInboundUserSchema = z.union([
   VlessUserSchema,
   Hysteria2UserSchema,
 ]);
 
+export const SaveInboundUserSchema = z.union([
+  SaveVlessUserSchema,
+  SaveHysteria2UserSchema,
+]);
+
+export type SingBoxVlessUser = z.infer<typeof SingBoxVlessUserSchema>;
+export type SingBoxHysteria2User = z.infer<typeof SingBoxHysteria2UserSchema>;
+
 export type Hysteria2User = z.infer<typeof Hysteria2UserSchema>;
 export type VlessUser = z.infer<typeof VlessUserSchema>;
 
-export type DraftInboundUser = z.infer<typeof DraftInboundUserSchema>;
+export type SaveHysteria2User = z.infer<typeof SaveHysteria2UserSchema>;
+export type SaveVlessUser = z.infer<typeof SaveVlessUserSchema>;
 
-export type RuntimeVlessReality = z.infer<typeof RuntimeVlessRealitySchema>;
-export type DraftVlessReality = z.infer<typeof DraftVlessRealitySchema>;
-export type RuntimeVlessTls = z.infer<typeof RuntimeVlessTlsSchema>;
-export type DraftVlessTls = z.infer<typeof DraftVlessTlsSchema>;
-export type RuntimeHysteria2Tls = z.infer<typeof RuntimeHysteria2TlsSchema>;
-export type DraftHysteria2Tls = z.infer<typeof DraftHysteria2TlsSchema>;
+export type StoredInboundUser = z.infer<typeof StoredInboundUserSchema>;
+export type SaveInboundUser = z.infer<typeof SaveInboundUserSchema>;
 
-export type RuntimeVlessInbound = z.infer<typeof RuntimeVlessInboundSchema>;
-export type DraftVlessInbound = z.infer<typeof DraftVlessInboundSchema>;
-export type RuntimeHysteria2Inbound = z.infer<
-  typeof RuntimeHysteria2InboundSchema
+export type SingBoxVlessReality = z.infer<typeof SingBoxVlessRealitySchema>;
+export type StoredVlessReality = z.infer<typeof StoredVlessRealitySchema>;
+
+export type SingBoxVlessTls = z.infer<typeof SingBoxVlessTlsSchema>;
+export type StoredVlessTls = z.infer<typeof StoredVlessTlsSchema>;
+
+export type SingBoxHysteria2Tls = z.infer<typeof SingBoxHysteria2TlsSchema>;
+export type StoredHysteria2Tls = z.infer<typeof StoredHysteria2TlsSchema>;
+
+export type SingBoxVlessInbound = z.infer<typeof SingBoxVlessInboundSchema>;
+export type StoredVlessInbound = z.infer<typeof StoredVlessInboundSchema>;
+export type SaveVlessInbound = z.infer<typeof SaveVlessInboundSchema>;
+
+export type SingBoxHysteria2Inbound = z.infer<
+  typeof SingBoxHysteria2InboundSchema
 >;
-export type DraftHysteria2Inbound = z.infer<typeof DraftHysteria2InboundSchema>;
+export type StoredHysteria2Inbound = z.infer<
+  typeof StoredHysteria2InboundSchema
+>;
+export type SaveHysteria2Inbound = z.infer<typeof SaveHysteria2InboundSchema>;
 
-export type RuntimeInbound = z.infer<typeof RuntimeInboundSchema>;
-export type DraftInbound = z.infer<typeof DraftInboundSchema>;
+export type SingBoxInbound = z.infer<typeof SingBoxInboundSchema>;
+export type StoredInbound = z.infer<typeof StoredInboundSchema>;
+export type SaveInboundInput = z.infer<typeof SaveInboundInputSchema>;

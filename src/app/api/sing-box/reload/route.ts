@@ -4,7 +4,7 @@ import { promisify } from "node:util";
 
 import { OkResponseSchema, RuntimeConfigSchema } from "@/shared/api/contracts";
 import {
-  buildRuntimeConfigFromDraft,
+  buildRuntimeConfigFromDb,
   getServerEnv,
   ServerApiError,
   withRoute,
@@ -21,7 +21,7 @@ export const POST = withRoute({
     const configPath = serverEnv.SINGBOX_CONFIG_PATH;
     const containerName = serverEnv.SINGBOX_CONTAINER_NAME;
 
-    const runtimeConfig = await buildRuntimeConfigFromDraft();
+    const runtimeConfig = await buildRuntimeConfigFromDb();
 
     const parseResult = RuntimeConfigSchema.safeParse(runtimeConfig);
 

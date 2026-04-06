@@ -27,6 +27,7 @@ ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
 ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 RUN npm run build
+RUN npm run build:worker
 
 # ---------- 4 Production runtime ----------
 FROM node:20-alpine AS runner
@@ -50,3 +51,18 @@ COPY --from=builder /app/public ./public
 EXPOSE 3000
 
 CMD ["node", "server.js"]
+
+# ---------- 5 Worker runtime ----------
+FROM node:20-alpine AS worker-runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl
+
+COPY --from=builder /app/.worker-dist ./.worker-dist
+COPY --from=deps /app/node_modules ./node_modules
+
+CMD ["node", ".worker-dist/server/worker/main.js"]

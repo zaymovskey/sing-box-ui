@@ -1,4 +1,4 @@
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 import {
   Button,
   Dialog,
@@ -12,7 +12,7 @@ import {
 import { useDeleteInbound } from "../../model/commands/inbound-delete.command";
 
 interface DeleteInboundDialogProps {
-  inbound: DraftInbound;
+  inbound: StoredInbound;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -28,7 +28,7 @@ export function DeleteInboundDialog({
     serverToast.loading("Удаление...", { id: "delete-inbound" });
 
     try {
-      await deleteInbound(inbound.tag as string);
+      await deleteInbound(inbound.internal_tag as string);
       serverToast.success("Инбаунд успешно удален", {
         id: "delete-inbound",
         duration: 3000,
@@ -47,13 +47,18 @@ export function DeleteInboundDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0">
+      <DialogContent
+        className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Подтвердите удаление инбаунда</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          Вы уверены, что хотите удалить инбаунд {inbound.tag}?
+          Вы уверены, что хотите удалить инбаунд {inbound.display_tag}?
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

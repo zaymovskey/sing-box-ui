@@ -81,7 +81,7 @@ export function InboundFormVlessFields() {
 
   const handleAddUser = () => {
     append({
-      name: "",
+      display_name: "",
       uuid: "",
       flow: undefined,
     });
@@ -115,7 +115,7 @@ export function InboundFormVlessFields() {
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <UncontrolledTextField<InboundFormValues>
                   label="User name"
-                  name={`users.${index}.name`}
+                  name={`users.${index}.display_name`}
                   placeholder="user"
                 />
 

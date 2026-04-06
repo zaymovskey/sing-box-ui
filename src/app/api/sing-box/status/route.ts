@@ -8,7 +8,7 @@ import {
   SingBoxStatusResponseSchema,
 } from "@/shared/api/contracts";
 import {
-  buildRuntimeConfigFromDraft,
+  buildRuntimeConfigFromDb,
   getServerEnv,
   ServerApiError,
   withRoute,
@@ -203,7 +203,7 @@ const checkDraftApplied = async (): Promise<CheckResult> => {
 
   try {
     const expectedRuntime = stripUndefinedDeep(
-      await buildRuntimeConfigFromDraft(),
+      await buildRuntimeConfigFromDb(),
     );
     const real = JSON.parse(await fs.readFile(configPath, "utf-8"));
 

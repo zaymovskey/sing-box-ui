@@ -5,7 +5,7 @@ import z from "zod";
 import {
   createSecurityAsset,
   getSecurityAssets,
-} from "@/server/db/security-assets/repository";
+} from "@/server/db/security-assets";
 import {
   type SecurityAsset,
   SecurityAssetSchema,

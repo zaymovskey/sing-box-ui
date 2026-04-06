@@ -7,6 +7,8 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
+import { InboundFormListenField } from "./InboundFormListenField";
+
 export function InboundFormBaseFields() {
   return (
     <div className="space-y-6">
@@ -19,7 +21,7 @@ export function InboundFormBaseFields() {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledTextField<InboundFormValues>
             label="Tag"
-            name="tag"
+            name="display_tag"
             placeholder="in-01"
           />
 
@@ -28,12 +30,12 @@ export function InboundFormBaseFields() {
             name="listen_port"
             placeholder="8443"
           />
-
-          <UncontrolledTextField<InboundFormValues>
+          <InboundFormListenField />
+          {/* <UncontrolledTextField<InboundFormValues>
             label="Listen"
             name="listen"
             placeholder="::"
-          />
+          /> */}
         </div>
       </div>
 

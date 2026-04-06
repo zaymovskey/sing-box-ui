@@ -4,7 +4,7 @@ type IsUniqueInboundTagParams = {
   excludeTag?: string;
 };
 
-export function isUniqueInboundTag({
+export function isUniqueInboundDisplayTag({
   tag,
   tags,
   excludeTag,

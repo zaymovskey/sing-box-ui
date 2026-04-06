@@ -10,8 +10,8 @@ import {
   type InboundFormValues,
 } from "@/features/sing-box/config-core";
 import {
-  type DraftInbound,
   type InboundsListResponse,
+  type StoredInbound,
 } from "@/shared/api/contracts";
 import {
   Button,
@@ -24,7 +24,7 @@ import {
 } from "@/shared/ui";
 
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
-import { useInboundTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
+import { useInboundDisplayTagUniqueness } from "../../lib/use-inbound-tag-uniqueness";
 import {
   CONFIG_INVALID_AFTER_MAPPING,
   useCreateInbound,
@@ -38,7 +38,7 @@ const FORM_ID = "create-inbound-form";
 
 function getRawInbounds(
   response: InboundsListResponse | undefined,
-): DraftInbound[] {
+): StoredInbound[] {
   return Array.isArray(response?.list) ? response.list : [];
 }
 
@@ -68,11 +68,14 @@ export function CreateInboundDialog({
 
   const tags = useMemo(() => {
     return rawInbounds
-      .map((inbound) => inbound.tag)
+      .map((inbound) => inbound.display_tag)
       .filter((tag): tag is string => Boolean(tag));
   }, [rawInbounds]);
 
-  const checkTagUniqueAndSetFormError = useInboundTagUniqueness(form, tags);
+  const checkTagUniqueAndSetFormError = useInboundDisplayTagUniqueness(
+    form,
+    tags,
+  );
 
   const checkBindUniqueAndSetError = useInboundBindUniqueness({
     form,
@@ -156,7 +159,12 @@ export function CreateInboundDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl">
+      <DialogContent
+        className="bg-card flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-3xl"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>Создать инбаунд</DialogTitle>
         </DialogHeader>

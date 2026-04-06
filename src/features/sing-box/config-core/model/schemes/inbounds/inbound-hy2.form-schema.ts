@@ -3,7 +3,7 @@ import z from "zod";
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
 const Hy2UserSchema = z.object({
-  name: z.string().trim().min(1, "Нужен user_name"),
+  display_name: z.string().trim().min(1, "Нужен user_name"),
   password: z.string().trim().min(1, "Нужен password"),
 });
 
@@ -73,7 +73,7 @@ const usersValidate = (
   const duplicates = new Set<number>();
 
   data.users.forEach((user, index) => {
-    const name = user.name.trim().toLowerCase();
+    const name = user.display_name.trim().toLowerCase();
 
     if (!name) return;
 
@@ -91,7 +91,7 @@ const usersValidate = (
   for (const index of duplicates) {
     ctx.addIssue({
       code: "custom",
-      path: ["users", index, "name"],
+      path: ["users", index, "display_name"],
       message: "Имя пользователя должно быть уникальным",
     });
   }

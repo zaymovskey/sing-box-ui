@@ -1,9 +1,9 @@
-import { type DraftInbound, type OkResponse } from "@/shared/api/contracts";
+import { type OkResponse, type SaveInboundInput } from "@/shared/api/contracts";
 import { apiFetch, apiRoutes } from "@/shared/lib";
 
 export async function editInbound(
   originalTag: string,
-  body: DraftInbound,
+  body: SaveInboundInput,
 ): Promise<OkResponse> {
   return apiFetch(apiRoutes.singBox.inbounds.edit(originalTag), {
     method: "PUT",

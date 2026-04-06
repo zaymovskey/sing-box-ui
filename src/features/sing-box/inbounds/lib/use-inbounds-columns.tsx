@@ -2,7 +2,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { type DraftInbound } from "@/shared/api/contracts";
+import { type StoredInbound } from "@/shared/api/contracts";
 import { Badge, Button } from "@/shared/ui";
 
 import { type InboundRow } from "../model/inbound-row.type";
@@ -22,10 +22,10 @@ export function useInboundsColumns() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const [editingInbound, setEditingInbound] = useState<DraftInbound | null>(
+  const [editingInbound, setEditingInbound] = useState<StoredInbound | null>(
     null,
   );
-  const [deletingInbound, setDeletingInbound] = useState<DraftInbound | null>(
+  const [deletingInbound, setDeletingInbound] = useState<StoredInbound | null>(
     null,
   );
 
@@ -34,7 +34,7 @@ export function useInboundsColumns() {
       id: "expand",
       header: "",
       cell: ({ row }) => {
-        const isExpanded = !!expandedRowTags[row.original.inbound.tag!];
+        const isExpanded = !!expandedRowTags[row.original.inbound.display_tag!];
 
         if (row.original.usersCount === 0) {
           return null;
@@ -45,7 +45,7 @@ export function useInboundsColumns() {
             size="icon"
             type="button"
             variant="ghost"
-            onClick={() => toggleExpandedRow(row.original.inbound.tag!)}
+            onClick={() => toggleExpandedRow(row.original.inbound.display_tag!)}
           >
             {isExpanded ? (
               <ChevronDown className="size-4" />

@@ -23,7 +23,8 @@ export type InboundUserKind = z.infer<typeof InboundUserKindSchema>;
  */
 export const InboundRowSchema = z.object({
   id: DbIdSchema,
-  tag: NullableStringSchema,
+  display_tag: NullableStringSchema,
+  internal_tag: NullableStringSchema,
   type: InboundDbTypeSchema,
 
   listen: NullableStringSchema,
@@ -93,12 +94,22 @@ export const InboundUserRowSchema = z.object({
   kind: InboundUserKindSchema,
   sort_order: z.number().int().nonnegative(),
 
-  name: NullableStringSchema,
+  internal_name: NullableStringSchema,
+  display_name: NullableStringSchema,
 
   uuid: NullableStringSchema,
   flow: NullableStringSchema,
 
   password: NullableStringSchema,
+
+  up_traffic_total: z.number().int().nonnegative(),
+  down_traffic_total: z.number().int().nonnegative(),
+
+  last_seen_up_counter: z.number().int().nonnegative(),
+  last_seen_down_counter: z.number().int().nonnegative(),
+
+  last_up_traffic_at: z.iso.datetime().nullable(),
+  last_down_traffic_at: z.iso.datetime().nullable(),
 });
 
 export const InboundUserRowsSchema = z.array(InboundUserRowSchema);

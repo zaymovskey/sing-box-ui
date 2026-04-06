@@ -1,10 +1,13 @@
 import z from "zod";
 
 import {
-  deleteDraftInboundByTag,
-  updateDraftInboundByTag,
-} from "@/server/db/sing-box/inbounds/repository";
-import { DraftInboundSchema, OkResponseSchema } from "@/shared/api/contracts";
+  deleteStoredInboundByTag,
+  updateStoredInboundByDisplayTag,
+} from "@/server/db/sing-box/inbounds";
+import {
+  OkResponseSchema,
+  SaveInboundInputSchema,
+} from "@/shared/api/contracts";
 import { ServerApiError, withRoute } from "@/shared/lib/server";
 
 const TagParamsSchema = z.object({
@@ -13,13 +16,13 @@ const TagParamsSchema = z.object({
 
 export const PUT = withRoute({
   auth: true,
-  requestSchema: DraftInboundSchema,
+  requestSchema: SaveInboundInputSchema,
   paramsSchema: TagParamsSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body, params }) => {
     const { tag } = params;
 
-    const updated = updateDraftInboundByTag(tag, body);
+    const updated = updateStoredInboundByDisplayTag(tag, body);
 
     if (!updated) {
       throw new ServerApiError(404, "INBOUND_NOT_FOUND", "Inbound not found");
@@ -36,7 +39,7 @@ export const DELETE = withRoute({
   handler: async ({ params }) => {
     const { tag } = params;
 
-    const deleted = deleteDraftInboundByTag(tag);
+    const deleted = deleteStoredInboundByTag(tag);
 
     if (!deleted) {
       throw new ServerApiError(404, "INBOUND_NOT_FOUND", "Inbound not found");
