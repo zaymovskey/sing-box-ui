@@ -17,8 +17,8 @@
   },
   "include": [
     "src/server/**/*.ts",
-    "src/features/**/*.ts",
-    "src/shared/**/*.ts"
+    "src/shared/**/*.ts",
+    "src/features/**/server/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next"]
+  "exclude": ["node_modules", ".next", "src/**/*.tsx", "src/**/ui/**"]
 }
