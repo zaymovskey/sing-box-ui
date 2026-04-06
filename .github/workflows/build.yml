@@ -29,8 +29,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
+      - name: Extract UI Docker metadata
+        id: meta_ui
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/zaymovskey/sing-box-ui
@@ -38,17 +38,40 @@ jobs:
             type=raw,value=latest
             type=raw,value=sha-${{ steps.vars.outputs.short_sha }}
 
-      - name: Build and push image
+      - name: Build and push UI image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: true
           target: runner
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: ${{ steps.meta_ui.outputs.tags }}
+          labels: ${{ steps.meta_ui.outputs.labels }}
           build-args: |
             NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
 
-      - name: Show image tag
-        run: echo "IMAGE_TAG=sha-${GITHUB_SHA::7}"
+      - name: Extract Worker Docker metadata
+        id: meta_worker
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/zaymovskey/sing-box-ui-worker
+          tags: |
+            type=raw,value=latest
+            type=raw,value=sha-${{ steps.vars.outputs.short_sha }}
+
+      - name: Build and push Worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: worker-runner
+          push: true
+          tags: ${{ steps.meta_worker.outputs.tags }}
+          labels: ${{ steps.meta_worker.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
+
+      - name: Show image tags
+        run: |
+          echo "UI_IMAGE_TAG=sha-${GITHUB_SHA::7}"
+          echo "WORKER_IMAGE_TAG=sha-${GITHUB_SHA::7}"
