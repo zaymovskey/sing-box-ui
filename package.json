@@ -26,7 +26,7 @@
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
     "type-check": "tsc --noEmit",
-    "build:worker": "tsc -p tsconfig.worker.json",
+    "build:worker": "tsc -p tsconfig.worker.json && tsc-alias -p tsconfig.worker.json",
     "dev:worker": "nodemon -L --watch src/server --ext ts --exec \"tsx src/server/worker/main.ts\""
   },
   "lint-staged": {
@@ -108,6 +108,7 @@
     "stylelint-config-standard": "^39.0.1",
     "stylelint-order": "^7.0.0",
     "tailwindcss": "^4.1.17",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0"

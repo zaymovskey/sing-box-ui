@@ -19,8 +19,6 @@ export function getInboundUserByInternalName(
     return null;
   }
 
-  console.log("raw user from db:", user);
-
   const parsedRowUser = InboundUserRowSchema.parse(user);
 
   return parsedRowUser;
