@@ -26,7 +26,7 @@ ENV NODE_OPTIONS=--max-old-space-size=2048
 ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
 ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
-RUN npm run build
+
 RUN rm -rf .worker-dist \
   && echo "=== tsconfig.worker.json effective config ===" \
   && npx tsc -p tsconfig.worker.json --showConfig > /tmp/tsconfig-worker.effective.json \
@@ -40,6 +40,7 @@ RUN rm -rf .worker-dist \
   && npx tsc-alias -p tsconfig.worker.json \
   && echo "=== .worker-dist ===" \
   && find .worker-dist -type f | sort || true
+RUN npm run build
 
 # ---------- 4 Production runtime ----------
 FROM node:20-alpine AS runner
