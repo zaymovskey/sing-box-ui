@@ -28,8 +28,17 @@ ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 RUN npm run build
 RUN rm -rf .worker-dist \
-  && npm run build:worker \
-  && echo "--- after build:worker ---" \
+  && echo "=== tsconfig.worker.json effective config ===" \
+  && npx tsc -p tsconfig.worker.json --showConfig > /tmp/tsconfig-worker.effective.json \
+  && sed -n '1,240p' /tmp/tsconfig-worker.effective.json \
+  && echo "=== source folders ===" \
+  && ls -R src/server/worker || true \
+  && ls -R src/server/db || true \
+  && ls -R src/features/sing-box/server || true \
+  && echo "=== emitted files ===" \
+  && npx tsc -p tsconfig.worker.json --listFiles --listEmittedFiles \
+  && npx tsc-alias -p tsconfig.worker.json \
+  && echo "=== .worker-dist ===" \
   && find .worker-dist -type f | sort || true
 
 # ---------- 4 Production runtime ----------
