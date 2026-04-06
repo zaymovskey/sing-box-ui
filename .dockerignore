@@ -24,3 +24,5 @@ docker/data
 *.log
 
 .worker-dist
+
+*.tsbuildinfo

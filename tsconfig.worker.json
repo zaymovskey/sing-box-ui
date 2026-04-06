@@ -10,6 +10,7 @@
     "declaration": false,
     "sourceMap": false,
     "isolatedModules": false,
+    "incremental": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
