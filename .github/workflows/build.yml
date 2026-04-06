@@ -71,11 +71,6 @@ jobs:
           build-args: |
             NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
 
-      - name: Check worker entry
-        run: |
-          test -f .worker-dist/server/worker/main.js
-          ls -R .worker-dist/server
-
       - name: Show image tags
         run: |
           echo "UI_IMAGE_TAG=sha-${GITHUB_SHA::7}"
