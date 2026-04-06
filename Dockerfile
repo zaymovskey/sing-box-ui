@@ -27,7 +27,10 @@ ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
 ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 RUN npm run build
-RUN npm run build:worker
+RUN rm -rf .worker-dist \
+  && npm run build:worker \
+  && test -f .worker-dist/server/worker/main.js \
+  && ls -R .worker-dist
 
 # ---------- 4 Production runtime ----------
 FROM node:20-alpine AS runner
