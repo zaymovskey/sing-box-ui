@@ -12,10 +12,7 @@ services:
       - .env
 
   worker:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      target: worker-runner
+    image: ghcr.io/zaymovskey/sing-box-ui-worker:${IMAGE_TAG:-latest}
     env_file:
       - .env
     volumes:

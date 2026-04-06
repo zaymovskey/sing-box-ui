@@ -31,12 +31,7 @@ jobs:
     steps:
       - name: Resolve deploy path
         id: vars
-        run: |
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "deploy_path=/root/sing-box-ui/docker" >> "$GITHUB_OUTPUT"
-          else
-            echo "deploy_path=/root/sing-box-ui/docker" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "deploy_path=/root/sing-box-ui/docker" >> "$GITHUB_OUTPUT"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
@@ -55,8 +50,8 @@ jobs:
             echo "IMAGE_TAG=$IMAGE_TAG"
             docker compose config | grep image:
 
-            docker compose pull ui
-            docker compose up -d --force-recreate --remove-orphans ui
+            docker compose pull ui worker
+            docker compose up -d --force-recreate --remove-orphans ui worker
 
             echo "DEPLOY_ENV=${{ inputs.environment }}"
             echo "DEPLOY_PATH=${{ steps.vars.outputs.deploy_path }}"
