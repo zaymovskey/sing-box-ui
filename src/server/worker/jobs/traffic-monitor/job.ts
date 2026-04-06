@@ -1,4 +1,8 @@
-// import { getDb } from "@/server/db/client";
+import { getDb } from "@/server/db/client";
+import {
+  getInboundUserByInternalName,
+  updateInboundUserTraffic,
+} from "@/server/db/sing-box/inbounds";
 
 import { queryStats } from "./test-v2ray-api";
 
@@ -6,49 +10,76 @@ interface TrafficStats {
   stat: { name: string; value: string }[];
 }
 
-// const sql = String.raw;
-
 export function startTrafficMonitor() {
-  // const db = getDb();
+  const db = getDb();
 
   setInterval(async () => {
-    queryStats()
-      .then((res) => {
-        const stats: TrafficStats = res as TrafficStats;
+    try {
+      const res = await queryStats();
+      const stats: TrafficStats = res as TrafficStats;
+
+      const tx = db.transaction(() => {
         for (const statItem of stats.stat) {
           if (!statItem.name.startsWith("user>>>")) {
             continue;
-            //
           }
-          // const isUpLink = statItem.name.endsWith(">>>traffic>>>uplink");
 
-          //     if (!isUpLink) {
-          //       db.prepare(
-          //         sql`
-          //   UPDATE security_assets
-          //   SET
-          //     name = ?,
-          //     kind = ?,
-          //     server_name = ?,
-          //     updated_at = ?
-          //   WHERE name = ?
-          // `,
-          //       ).run(
-          //         input.name,
-          //         input.type,
-          //         input.serverName ?? null,
-          //         input.updatedAt,
-          //         input.id,
-          //       );
-          //     }
+          let linkType: "uplink" | "downlink";
+
+          if (statItem.name.endsWith(">>>traffic>>>uplink")) {
+            linkType = "uplink";
+          } else if (statItem.name.endsWith(">>>traffic>>>downlink")) {
+            linkType = "downlink";
+          } else {
+            continue;
+          }
+
+          const userInternalName = statItem.name.split(">>>")[1];
+          const trafficValue = Number.parseInt(statItem.value, 10);
+
+          if (Number.isNaN(trafficValue) || trafficValue < 0) {
+            console.warn(
+              `[traffic] invalid traffic value for ${statItem.name}: ${statItem.value}`,
+            );
+            continue;
+          }
+
+          const dbUser = getInboundUserByInternalName(userInternalName);
+
+          if (!dbUser) {
+            console.warn(
+              `[traffic] user with internal name ${userInternalName} not found in db`,
+            );
+            continue;
+          }
+
+          const prefix = linkType === "uplink" ? "up" : "down";
+          const delta = trafficValue - dbUser[`last_seen_${prefix}_counter`];
+
+          if (delta > 0) {
+            updateInboundUserTraffic(
+              prefix,
+              dbUser.id,
+              trafficValue,
+              dbUser[`${prefix}_traffic_total`] + delta,
+            );
+          } else if (delta === 0) {
+            continue;
+          } else {
+            updateInboundUserTraffic(
+              prefix,
+              dbUser.id,
+              trafficValue,
+              dbUser[`${prefix}_traffic_total`] + trafficValue,
+            );
+          }
         }
-        console.log("[traffic] stats:");
-        console.dir(res, { depth: null });
-      })
-      .catch((err) => {
-        console.error("[traffic] query stats error:");
-        console.error(err);
       });
-    // console.log("[traffic] tick 9999");
+
+      tx();
+    } catch (err) {
+      console.error("[traffic] query stats error:");
+      console.error(err);
+    }
   }, 5000);
 }

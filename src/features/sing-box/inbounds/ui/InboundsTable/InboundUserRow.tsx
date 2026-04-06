@@ -7,7 +7,12 @@ import {
   type StoredInboundUser,
 } from "@/shared/api/contracts";
 import { copyText } from "@/shared/lib";
-import { Button, clientToast } from "@/shared/ui";
+import {
+  Button,
+  clientToast,
+  Separator,
+  sonnerErrorCloseButton,
+} from "@/shared/ui";
 
 import { buildInboundShareLink } from "../../lib/build-Inbound-share-link";
 import { getInboundUserName } from "../../lib/get-inbound-user-name.hepler";
@@ -48,12 +53,22 @@ export function InboundUserRow({
       });
       if (host === "localhost") {
         clientToast.error(
-          `Не забудьте заменить localhost на реальный IP-адрес в вашей сети. Не используйте стандартные
-           порты типа 443, 80, 22, установите более специфичный, например 2001. Убедитесь,
-            что в инбаунде поле listen установлено в 0.0.0.0`,
-          {
-            duration: 5000,
-          },
+          <div className="flex flex-col gap-1">
+            <div>
+              1. Не забудьте заменить localhost на реальный IP-адрес в вашей
+              сети.
+            </div>
+            <Separator />
+            <div>
+              2. Не используйте стандартные порты типа 443, 80, 22, установите
+              более специфичный, например 2001.
+            </div>
+            <Separator />
+            <div>3. Убедитесь, что listen = 0.0.0.0</div>
+            <Separator />
+            <div>4. Убедитесь что порт открыт в firewall.</div>
+          </div>,
+          { ...sonnerErrorCloseButton },
         );
       }
       setIsCopied(true);

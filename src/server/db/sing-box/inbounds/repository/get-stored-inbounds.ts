@@ -86,14 +86,20 @@ export function getStoredInbounds(): StoredInbound[] {
       sql`
         SELECT
           id,
-          inbound_id,
-          kind,
-          sort_order,
-          internal_name,
-          display_name,
-          uuid,
-          flow,
-          password
+        inbound_id,
+        kind,
+        sort_order,
+        internal_name,
+        display_name,
+        uuid,
+        flow,
+        password,
+        up_traffic_total,
+        down_traffic_total,
+        last_seen_up_counter,
+        last_seen_down_counter,
+        last_up_traffic_at,
+        last_down_traffic_at
         FROM inbound_users
         ORDER BY sort_order ASC
       `,

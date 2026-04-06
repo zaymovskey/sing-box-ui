@@ -70,6 +70,7 @@ export {
 export {
   InboundHysteria2RowSchema,
   InboundRowSchema,
+  type InboundUserRow,
   InboundUserRowSchema,
   type InboundVlessRow,
   type InboundVlessRows,

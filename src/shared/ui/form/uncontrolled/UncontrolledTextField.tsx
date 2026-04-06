@@ -28,8 +28,6 @@ export function UncontrolledTextField<T extends FieldValues>({
   const inputId = `field_${safeName}`;
   const messageId = `${inputId}_message`;
 
-  console.log(label, "label");
-
   return (
     <FormItem className="gap-2">
       {label && (

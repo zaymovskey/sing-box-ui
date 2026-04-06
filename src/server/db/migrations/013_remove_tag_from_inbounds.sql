@@ -1,4 +1,3 @@
--- 1. создаём новую таблицу
 CREATE TABLE inbounds_new (
   id TEXT PRIMARY KEY,
 
@@ -20,7 +19,6 @@ CREATE TABLE inbounds_new (
   updated_at TEXT NOT NULL
 );
 
--- 2. переносим данные
 INSERT INTO inbounds_new (
   id,
   display_tag,
@@ -37,7 +35,7 @@ INSERT INTO inbounds_new (
 SELECT
   id,
   tag AS display_tag,
-  tag AS internal_tag, -- временно дублируем
+  tag AS internal_tag,
   type,
   listen,
   listen_port,
