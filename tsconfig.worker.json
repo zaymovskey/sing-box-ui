@@ -18,7 +18,7 @@
   "include": [
     "src/server/worker/**/*.ts",
     "src/server/db/**/*.ts",
-    "src/db/**/*.ts",
+    "src/features/sing-box/server/**/*.ts",
     "src/shared/**/*.ts"
   ],
   "exclude": ["node_modules", ".next"]
