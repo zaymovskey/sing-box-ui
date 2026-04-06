@@ -190,7 +190,7 @@ export function EditInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundFormProvider contextValue={{ mode: "edit" }}>
+          <InboundFormProvider contextValue={{ mode: "edit", initialValues }}>
             <InboundForm
               form={form}
               formId={FORM_ID}

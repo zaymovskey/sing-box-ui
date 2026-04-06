@@ -1,11 +1,9 @@
+import { type StoredInbound } from "@/shared/api/contracts";
+
 type IsUniqueInboundBindParams = {
   listen: string;
   listenPort: number;
-  inbounds: Array<{
-    listen?: string;
-    listen_port?: number;
-    tag?: string;
-  }>;
+  inbounds: StoredInbound[];
   excludeTag?: string;
 };
 
@@ -28,7 +26,7 @@ export function isUniqueInboundBind({
   const normalizedListen = normalizeListen(listen);
 
   return !inbounds.some((inbound) => {
-    if (excludeTag && inbound.tag === excludeTag) {
+    if (excludeTag && inbound.display_tag === excludeTag) {
       return false;
     }
 

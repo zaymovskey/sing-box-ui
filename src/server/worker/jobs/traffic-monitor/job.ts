@@ -18,6 +18,7 @@ export function startTrafficMonitor() {
         for (const statItem of stats.stat) {
           if (!statItem.name.startsWith("user>>>")) {
             continue;
+            //
           }
           // const isUpLink = statItem.name.endsWith(">>>traffic>>>uplink");
 
@@ -41,8 +42,8 @@ export function startTrafficMonitor() {
           //       );
           //     }
         }
-        // console.log("[traffic] stats:");
-        // console.dir(res, { depth: null });
+        console.log("[traffic] stats:");
+        console.dir(res, { depth: null });
       })
       .catch((err) => {
         console.error("[traffic] query stats error:");

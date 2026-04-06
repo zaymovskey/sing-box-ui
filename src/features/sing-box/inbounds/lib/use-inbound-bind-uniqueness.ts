@@ -5,14 +5,11 @@ import {
   type InboundFormValues,
   isUniqueInboundBind,
 } from "@/features/sing-box/config-core";
+import { type StoredInbound } from "@/shared/api/contracts";
 
 type Params = {
   form: UseFormReturn<InboundFormValues>;
-  inbounds: Array<{
-    listen?: string;
-    listen_port?: number;
-    tag?: string;
-  }>;
+  inbounds: StoredInbound[];
   excludeTag?: string;
 };
 

@@ -9,7 +9,7 @@ type InputProps = React.ComponentProps<typeof Input>;
 
 type Props<T extends FieldValues> = {
   name: Path<T>;
-  label: string;
+  label?: string;
   errorMessage?: boolean;
 } & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
 
@@ -28,14 +28,18 @@ export function UncontrolledTextField<T extends FieldValues>({
   const inputId = `field_${safeName}`;
   const messageId = `${inputId}_message`;
 
+  console.log(label, "label");
+
   return (
     <FormItem className="gap-2">
-      <FormLabel
-        className={error ? "text-destructive" : undefined}
-        htmlFor={inputId}
-      >
-        {label}
-      </FormLabel>
+      {label && (
+        <FormLabel
+          className={error ? "text-destructive" : undefined}
+          htmlFor={inputId}
+        >
+          {label}
+        </FormLabel>
+      )}
 
       <Input
         {...form.register(name)}
