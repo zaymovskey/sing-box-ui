@@ -49,7 +49,7 @@ export {
   type InboundVlessRow,
   type InboundVlessRows,
   InboundVlessRowSchema,
-} from "./sing-box/inbounds/inbounds-db.schema";
+} from "./sing-box/inbounds/db-row.schema";
 export {
   type InboundsListResponse,
   InboundsListResponseSchema,
