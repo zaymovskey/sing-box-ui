@@ -91,61 +91,23 @@ export function InboundUserRow({
   return (
     <>
       <div className="bg-background rounded-md border px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex">
-            <OnlineStatus
-              className="mr-10"
-              isOnline={userStats?.is_online ?? false}
-            />
-            <div className="flex justify-center gap-5">
-              <div className="min-w-0 space-y-1">
-                <div className="text-muted-foreground text-[10px] tracking-wide uppercase">
-                  Last Activity
-                </div>
+        <div className="flex items-start justify-between gap-6">
+          <div className="grid min-w-0 flex-1 grid-cols-5 gap-x-6 gap-y-3">
+            <OnlineStatus isOnline={userStats?.is_online ?? false} />
 
-                <div className="flex items-center gap-3">
-                  <span className="truncate text-sm font-medium">
-                    {userStats?.is_online
-                      ? "Now"
-                      : formatLastSeen(lastActivity)}
-                  </span>
-                </div>
-              </div>
+            <InfoField label="Last Activity">
+              {userStats?.is_online ? "Now" : formatLastSeen(lastActivity)}
+            </InfoField>
 
-              <div className="min-w-0 space-y-1">
-                <div className="text-muted-foreground text-[10px] tracking-wide uppercase">
-                  Name
-                </div>
+            <InfoField label="Name">{name}</InfoField>
 
-                <div className="flex items-center gap-3">
-                  <span className="truncate text-sm font-medium">{name}</span>
-                </div>
-              </div>
+            <InfoField label="Traffic up">
+              ↑ {formatBytes(userStats?.up_traffic_total)}
+            </InfoField>
 
-              <div className="min-w-0 space-y-1">
-                <div className="text-muted-foreground text-[10px] tracking-wide uppercase">
-                  Traffic up
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="truncate text-sm font-medium">
-                    ↑ {formatBytes(userStats?.up_traffic_total)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="min-w-0 space-y-1">
-                <div className="text-muted-foreground text-[10px] tracking-wide uppercase">
-                  Traffic down
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="truncate text-sm font-medium">
-                    ↓ {formatBytes(userStats?.down_traffic_total)}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <InfoField label="Traffic down">
+              ↓ {formatBytes(userStats?.down_traffic_total)}
+            </InfoField>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
@@ -174,6 +136,26 @@ export function InboundUserRow({
         />
       )}
     </>
+  );
+}
+
+function InfoField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <div className="text-muted-foreground text-[10px] tracking-wide uppercase">
+        {label}
+      </div>
+
+      <div className="text-sm font-medium wrap-break-word whitespace-normal">
+        {children}
+      </div>
+    </div>
   );
 }
 
