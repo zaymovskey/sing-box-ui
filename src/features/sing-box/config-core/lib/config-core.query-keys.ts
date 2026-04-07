@@ -6,4 +6,5 @@ export const singBoxQueryKeys = {
   inbounds: () => [...singBoxQueryKeys.all, "inbounds"] as const,
   securityAssets: (type?: "tls" | "reality") =>
     [...singBoxQueryKeys.all, "security-assets", type] as const,
+  inboundsStats: () => [...singBoxQueryKeys.all, "inbounds", "stats"] as const,
 };

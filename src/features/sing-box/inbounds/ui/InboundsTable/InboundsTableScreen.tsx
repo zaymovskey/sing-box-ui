@@ -10,6 +10,7 @@ import { mapInboundsListToRows } from "../../lib/map-inbounds-list-to-rows.mappe
 import { useInboundsColumns } from "../../lib/use-inbounds-columns";
 import { useInboundsListState } from "../../lib/use-inbounds-list-state";
 import { useInboundsListQuery } from "../../model/inbounds-list.query";
+import { useInboundsStatsQuery } from "../../model/inbounds-state.query";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
@@ -26,7 +27,10 @@ const inboundTypeOptions = [
 export function InboundsTableScreen() {
   const inboundColumns = useInboundsColumns();
 
-  const { data: inboundsListResponse } = useInboundsListQuery();
+  const { data: inboundsList } = useInboundsListQuery();
+  const { data: inboundsStats } = useInboundsStatsQuery();
+
+  console.log("inboundsStats", inboundsStats);
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
@@ -40,7 +44,7 @@ export function InboundsTableScreen() {
   } = useInboundsListState();
 
   const tableRows = useMemo(() => {
-    const rows = mapInboundsListToRows(inboundsListResponse?.list ?? []);
+    const rows = mapInboundsListToRows(inboundsList?.list ?? []);
     const query = debouncedSearchQuery.trim().toLowerCase();
 
     return rows.filter((row) => {
@@ -55,7 +59,7 @@ export function InboundsTableScreen() {
 
       return queryFilter && typeFilter;
     });
-  }, [inboundsListResponse, debouncedSearchQuery, selectedTypes]);
+  }, [inboundsList, debouncedSearchQuery, selectedTypes]);
 
   const paginatedRows = useMemo(() => {
     const startIndex = (activePage - 1) * PER_PAGE;

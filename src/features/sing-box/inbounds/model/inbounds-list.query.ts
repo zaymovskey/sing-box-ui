@@ -11,6 +11,6 @@ export function useInboundsListQuery() {
     queryKey: singBoxQueryKeys.inbounds(),
     queryFn: getInboundsList,
     retry: false,
-    staleTime: 0,
+    staleTime: 30_000,
   });
 }
