@@ -1,34 +1,6 @@
 export { type DraftConfig, DraftConfigSchema } from "./draft-config.schema";
-export {
-  type SaveHysteria2Inbound,
-  type SaveInboundInput,
-  SaveInboundInputSchema,
-  type SaveVlessInbound,
-  SaveVlessInboundSchema,
-  type SaveVlessUser,
-  type SingBoxHysteria2Inbound,
-  SingBoxHysteria2InboundSchema,
-  type SingBoxHysteria2User,
-  type SingBoxInbound,
-  SingBoxInboundSchema,
-  type SingBoxVlessInbound,
-  SingBoxVlessInboundSchema,
-  type SingBoxVlessUser,
-  type StoredHysteria2Inbound,
-  StoredHysteria2InboundSchema,
-  type StoredInbound,
-  StoredInboundSchema,
-  type StoredVlessInbound,
-  StoredVlessInboundSchema,
-} from "./inbounds.schema";
-export {
-  type Hysteria2User,
-  Hysteria2UserSchema,
-  type StoredInboundUser,
-  StoredInboundUserSchema,
-  type VlessUser,
-  VlessUserSchema,
-} from "./inbounds.schema";
+export * from "./inbounds.schema";
+export * from "./inbounds.schema";
 export {
   type DirectOutbound,
   DirectOutboundSchema,
