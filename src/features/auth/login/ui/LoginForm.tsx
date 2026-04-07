@@ -1,11 +1,11 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
-import { SingBoxLogo } from "@/shared/assets/icons";
+import { logoPic } from "@/shared/assets/icons";
 import { applyFormApiError, appRoutes } from "@/shared/lib";
 import {
   Button,
@@ -60,7 +60,7 @@ export function LoginForm() {
     <div className="relative flex min-h-screen w-full items-center justify-center px-4">
       <div className="bg-card dark:bg-input/30 dark:border-input absolute top-3 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 rounded-md shadow-md">
         <div className="flex h-14 w-14 items-center justify-center rounded-xl">
-          <SingBoxLogo className="h-8" />
+          <Image alt="logo" className="h-8 w-8" src={logoPic} />
         </div>
       </div>
 
