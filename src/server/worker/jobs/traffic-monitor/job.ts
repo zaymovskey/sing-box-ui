@@ -57,6 +57,9 @@ export function startTrafficMonitor() {
           const delta = trafficValue - dbUser[`last_seen_${prefix}_counter`];
 
           if (delta > 0) {
+            console.log(
+              `[traffic] user ${dbUser.id} (${dbUser.internal_name}) ${prefix}link traffic increased by ${delta} bytes (total: ${dbUser[`${prefix}_traffic_total`] + delta} bytes)`,
+            );
             updateInboundUserTraffic(
               prefix,
               dbUser.id,
@@ -64,8 +67,14 @@ export function startTrafficMonitor() {
               dbUser[`${prefix}_traffic_total`] + delta,
             );
           } else if (delta === 0) {
+            console.log(
+              `[traffic] user ${dbUser.id} (${dbUser.internal_name}) ${prefix}link traffic unchanged at ${trafficValue} bytes`,
+            );
             continue;
           } else {
+            console.log(
+              `[traffic] user ${dbUser.id} (${dbUser.internal_name}) ${prefix}link traffic counter reset`,
+            );
             updateInboundUserTraffic(
               prefix,
               dbUser.id,
