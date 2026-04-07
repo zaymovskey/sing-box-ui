@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import fs from "node:fs";
 import path from "node:path";
 
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 
-const PROTO_PATH = path.resolve(
-  process.cwd(),
-  "src/server/worker/grpc/stats.proto",
-);
+function resolveProtoPath(): string {
+  const distPath = path.resolve(
+    process.cwd(),
+    ".worker-dist/server/worker/grpc/stats.proto",
+  );
+
+  if (fs.existsSync(distPath)) {
+    return distPath;
+  }
+
+  return path.resolve(process.cwd(), "src/server/worker/grpc/stats.proto");
+}
+
+export const PROTO_PATH = resolveProtoPath();
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
