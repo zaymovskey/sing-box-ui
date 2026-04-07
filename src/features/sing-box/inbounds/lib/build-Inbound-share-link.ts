@@ -105,7 +105,7 @@ export function buildInboundShareLink(
       params.set("obfs-password", hy2Inbound.obfs.password);
     }
 
-    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.internal_tag ?? "")}`;
+    return `hy2://${hyUser.password}@${host}:${port}/?${params.toString()}#${encodeURIComponent(hy2Inbound.display_tag ?? "")}`;
   }
 
   return null;
