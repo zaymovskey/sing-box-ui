@@ -1,7 +1,7 @@
 import { z } from "zod";
 
+import { StoredInboundSchema } from "../inbounds/list.schema";
 import { DraftExperimentalSchema } from "./experimental.schema";
-import { StoredInboundSchema } from "./inbounds.schema";
 import { DraftOutboundSchema } from "./outbounds.schema";
 
 const LogLevelSchema = z.enum([

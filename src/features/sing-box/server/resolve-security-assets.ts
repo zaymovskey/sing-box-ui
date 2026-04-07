@@ -1,5 +1,4 @@
-import { type SecurityAsset } from "../../../shared/api/contracts/security-assets/security-assets.schema";
-import { type StoredInbound } from "../../../shared/api/contracts/sing-box/core";
+import { type SecurityAsset, type StoredInbound } from "@/shared/api/contracts";
 
 export function resolveSecurityAssets(
   config: Record<string, unknown>,

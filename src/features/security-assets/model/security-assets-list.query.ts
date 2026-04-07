@@ -16,6 +16,6 @@ export function useSecurityAssetsListQuery(params?: {
     queryKey: singBoxQueryKeys.securityAssets(params?.type),
     queryFn: () => getSecurityAssets(params),
     retry: false,
-    staleTime: 0,
+    staleTime: 30_000,
   });
 }
