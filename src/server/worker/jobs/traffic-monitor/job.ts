@@ -90,5 +90,5 @@ export function startTrafficMonitor() {
       console.error("[traffic] query stats error:");
       console.error(err);
     }
-  }, 5000);
+  }, 3000);
 }

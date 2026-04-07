@@ -1,13 +1,20 @@
 import { getInboundsStats } from "@/server/db/sing-box/inbounds";
-import { InboundStatsSchema } from "@/shared/api/contracts";
+import {
+  type InboundsStatsResponse,
+  InboundsStatsResponseSchema,
+} from "@/shared/api/contracts";
 import { withRoute } from "@/shared/lib/server";
 
 export const GET = withRoute({
   auth: true,
-  responseSchema: InboundStatsSchema.array(),
+  responseSchema: InboundsStatsResponseSchema,
   handler: async () => {
     const inboundsStats = getInboundsStats();
 
-    return inboundsStats;
+    const inboundsStatsResponse: InboundsStatsResponse = {
+      items: inboundsStats,
+    };
+
+    return inboundsStatsResponse;
   },
 });

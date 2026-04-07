@@ -145,6 +145,7 @@ export function getStoredInbounds(): StoredInbound[] {
       }));
 
       const inbound: StoredVlessInbound = {
+        id: row.id,
         type: "vless",
         display_tag: row.display_tag ?? "",
         internal_tag: row.internal_tag ?? "",
@@ -178,6 +179,7 @@ export function getStoredInbounds(): StoredInbound[] {
     }));
 
     const inbound: StoredHysteria2Inbound = {
+      id: row.id,
       type: "hysteria2",
       display_tag: row.display_tag ?? "",
       internal_tag: row.internal_tag ?? "",

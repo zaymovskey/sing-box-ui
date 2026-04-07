@@ -9,6 +9,7 @@ import {
 } from "../core/inbounds.schema";
 
 export const StoredBaseInboundSchema = z.object({
+  id: NonEmptyStringSchema,
   display_tag: NonEmptyStringSchema,
   internal_tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),

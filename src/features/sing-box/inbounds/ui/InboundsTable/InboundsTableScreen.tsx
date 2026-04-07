@@ -10,7 +10,7 @@ import { mapInboundsListToRows } from "../../lib/map-inbounds-list-to-rows.mappe
 import { useInboundsColumns } from "../../lib/use-inbounds-columns";
 import { useInboundsListState } from "../../lib/use-inbounds-list-state";
 import { useInboundsListQuery } from "../../model/inbounds-list.query";
-import { useInboundsStatsQuery } from "../../model/inbounds-state.query";
+import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { EditInboundDialog } from "../dialogs/EditInboundDialog";
@@ -130,6 +130,7 @@ export function InboundsTableScreen() {
           columns={inboundColumns.columns}
           data={paginatedRows}
           expandedRowTags={inboundColumns.expandedRowTags.tags}
+          inboundsStats={inboundsStats}
         />
 
         <InboundsTablePagination

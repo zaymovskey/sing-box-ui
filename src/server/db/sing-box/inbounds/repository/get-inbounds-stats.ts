@@ -7,7 +7,7 @@ import {
 } from "@/shared/api/contracts";
 
 const sql = String.raw;
-const ONLINE_WINDOW_MS = 30_000;
+const ONLINE_WINDOW_MS = 7_000;
 
 export function getInboundsStats(): InboundStats[] {
   const db = getDb();
