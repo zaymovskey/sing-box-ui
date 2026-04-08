@@ -82,13 +82,13 @@ export function SingBoxStatusControl() {
                 currentMainStatusConfig.dotColor,
               )}
             />
-            <span className={cn(currentMainStatusConfig.textColor)}>
-              {currentMainStatusConfig.icon}
-            </span>
             <span
               className={cn("font-medium", currentMainStatusConfig.textColor)}
             >
               {currentMainStatusConfig.label}
+            </span>
+            <span className={cn(currentMainStatusConfig.textColor)}>
+              {currentMainStatusConfig.icon}
             </span>
           </Button>
         </PopoverTrigger>
