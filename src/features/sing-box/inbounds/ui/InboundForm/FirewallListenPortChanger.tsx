@@ -25,15 +25,6 @@ type FirewallExposure = {
   port: number;
 };
 
-function isValidPort(value: unknown): value is number {
-  return (
-    typeof value === "number" &&
-    Number.isInteger(value) &&
-    value >= 1 &&
-    value <= 65535
-  );
-}
-
 function getProtocols(type: InboundFormValues["type"]): FirewallProtocol[] {
   if (TCP_ONLY_PROTOCOLS.includes(type)) {
     return ["TCP"];
@@ -48,9 +39,9 @@ function getProtocols(type: InboundFormValues["type"]): FirewallProtocol[] {
 
 function getFirewallExposures(
   type: InboundFormValues["type"] | undefined,
-  port: unknown,
+  port: number,
 ): FirewallExposure[] {
-  if (!type || !isValidPort(port)) {
+  if (!type) {
     return [];
   }
 
@@ -71,7 +62,7 @@ function getFirewallChanges(params: {
   mode: "create" | "edit";
   initialValues?: InboundFormValues;
   currentType: InboundFormValues["type"] | undefined;
-  currentListenPort: unknown;
+  currentListenPort: number;
 }): FirewallChange[] {
   const { mode, initialValues, currentType, currentListenPort } = params;
 

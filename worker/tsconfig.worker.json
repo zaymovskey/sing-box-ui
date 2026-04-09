@@ -1,0 +1,35 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../.worker-dist",
+    "rootDir": "../src",
+    "module": "commonjs",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "isolatedModules": false,
+    "baseUrl": "..",
+    "incremental": false,
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "../src/server/worker/**/*.ts",
+    "../src/server/db/client.ts",
+    "../src/server/db/sing-box/**/*.ts",
+    "../src/shared/server/**/*.ts",
+    "../src/shared/api/contracts/sing-box/**/*.ts",
+    "../src/shared/api/contracts/common/**/*.ts",
+    "../src/features/sing-box/server/**/*.ts"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../.next",
+    "../src/**/*.tsx",
+    "../src/**/ui/**",
+    "../src/shared/assets/**"
+  ]
+}
