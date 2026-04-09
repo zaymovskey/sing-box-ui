@@ -1,5 +1,5 @@
-export { buildRuntimeConfigFromDb } from "../../../features/sing-box/server/build-runtime-config-from-db";
-export { resolveSecurityAssets } from "../../../features/sing-box/server/resolve-security-assets";
+export { buildRuntimeConfigFromDb } from "../../features/sing-box/server/build-runtime-config-from-db";
+export { resolveSecurityAssets } from "../../features/sing-box/server/resolve-security-assets";
 export {
   errorJson,
   noContent,

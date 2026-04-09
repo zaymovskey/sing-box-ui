@@ -8,7 +8,7 @@ import {
   OkResponseSchema,
   SaveInboundInputSchema,
 } from "@/shared/api/contracts";
-import { withRoute } from "@/shared/lib/server";
+import { withRoute } from "@/shared/server";
 
 export const POST = withRoute({
   auth: true,

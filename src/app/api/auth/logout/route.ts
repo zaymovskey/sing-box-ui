@@ -1,5 +1,5 @@
 import { OkResponseSchema } from "@/shared/api/contracts";
-import { clearSessionCookie, withRoute } from "@/shared/lib/server";
+import { clearSessionCookie, withRoute } from "@/shared/server";
 
 export const POST = withRoute({
   auth: true,

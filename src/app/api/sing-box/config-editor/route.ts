@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { OkResponseSchema } from "@/shared/api/contracts";
-import { ServerApiError, withRoute } from "@/shared/lib/server";
+import { ServerApiError, withRoute } from "@/shared/server";
 
 export const GET = withRoute({
   auth: true,

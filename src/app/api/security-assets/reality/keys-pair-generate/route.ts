@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import { RealityKeysPairResponseSchema } from "@/shared/api/contracts";
-import { ServerApiError, withRoute } from "@/shared/lib/server";
+import { ServerApiError, withRoute } from "@/shared/server";
 
 export const POST = withRoute({
   auth: true,

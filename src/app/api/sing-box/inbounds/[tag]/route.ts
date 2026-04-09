@@ -8,7 +8,7 @@ import {
   OkResponseSchema,
   SaveInboundInputSchema,
 } from "@/shared/api/contracts";
-import { ServerApiError, withRoute } from "@/shared/lib/server";
+import { ServerApiError, withRoute } from "@/shared/server";
 
 const TagParamsSchema = z.object({
   tag: z.string().min(1),

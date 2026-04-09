@@ -10,7 +10,7 @@ import {
   type SecurityAsset,
   SecurityAssetSchema,
 } from "@/shared/api/contracts";
-import { ServerApiError, withRoute } from "@/shared/lib/server";
+import { ServerApiError, withRoute } from "@/shared/server";
 
 const idParamsSchema = z.object({
   id: z.string().min(1),

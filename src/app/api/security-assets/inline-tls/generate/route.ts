@@ -3,7 +3,7 @@ import {
   type TLSInlineGenerateResponse,
   TLSInlineGenerateResponseSchema,
 } from "@/shared/api/contracts";
-import { generateSelfSignedInlineCert, withRoute } from "@/shared/lib/server";
+import { generateSelfSignedInlineCert, withRoute } from "@/shared/server";
 
 export const runtime = "nodejs";
 

@@ -3,7 +3,7 @@ import {
   type InboundsStatsResponse,
   InboundsStatsResponseSchema,
 } from "@/shared/api/contracts";
-import { withRoute } from "@/shared/lib/server";
+import { withRoute } from "@/shared/server";
 
 export const GET = withRoute({
   auth: true,

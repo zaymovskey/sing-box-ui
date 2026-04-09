@@ -14,7 +14,7 @@ import {
   checkFilePresence,
   resolveHostCertPath,
   withRoute,
-} from "@/shared/lib/server";
+} from "@/shared/server";
 
 async function validateCertificate(
   filePath: string,

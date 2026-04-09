@@ -2,7 +2,7 @@ import { jwtVerify } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { appRoutes } from "@/shared/lib";
-import { getServerEnv } from "@/shared/lib/server";
+import { getServerEnv } from "@/shared/server";
 
 const encoder = new TextEncoder();
 

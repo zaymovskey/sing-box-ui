@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 
 import { getSecurityAssets } from "@/server/db/security-assets";
 import { getStoredInbounds } from "@/server/db/sing-box/inbounds";
+import { getServerEnv } from "@/shared/server";
 
 import {
   type SingBoxHysteria2Inbound,
@@ -12,7 +13,6 @@ import {
   type StoredVlessInbound,
 } from "../../../shared/api/contracts";
 import { stripDraftFields } from "../../../shared/api/contracts/sing-box/core/strip-draft-fields.mapper";
-import { getServerEnv } from "../../../shared/lib/server/env-server";
 import { resolveSecurityAssets } from "./resolve-security-assets";
 
 type V2RayApiStatsConfig = {
