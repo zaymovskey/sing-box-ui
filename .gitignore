@@ -22,3 +22,4 @@ docker/data/**
 !docker/data/sing-box-state/
 !docker/data/sing-box-state/.gitkeep
 worker-files.txt
+.cursor/
