@@ -3,8 +3,8 @@ import path from "node:path";
 
 const filesToCopy = [
   {
-    from: path.resolve("src/server/worker/grpc/stats.proto"),
-    to: path.resolve(".worker-dist/server/worker/grpc/stats.proto"),
+    from: path.resolve("worker/grpc/stats.proto"),
+    to: path.resolve(".worker-dist/worker/grpc/stats.proto"),
   },
 ];
 
