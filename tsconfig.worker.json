@@ -17,9 +17,13 @@
     }
   },
   "include": [
-    "src/server/**/*.ts",
-    "src/shared/**/*.ts",
-    "src/features/**/server/**/*.ts"
+    "src/server/worker/**/*.ts",
+    "src/server/db/client.ts",
+    "src/server/db/sing-box/**/*.ts",
+    "src/shared/server/**/*.ts",
+    "src/shared/api/contracts/sing-box/**/*.ts",
+    "src/shared/api/contracts/common/**/*.ts",
+    "src/features/sing-box/server/**/*.ts"
   ],
   "exclude": [
     "node_modules",
