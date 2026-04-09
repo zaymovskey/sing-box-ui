@@ -1,5 +1,6 @@
 import z from "zod";
 
+import { applyInboundFirewallChanges } from "@/features/sing-box";
 import {
   createStoredInbound,
   getStoredInbounds,
@@ -15,7 +16,15 @@ export const POST = withRoute({
   requestSchema: SaveInboundInputSchema,
   responseSchema: OkResponseSchema,
   handler: async ({ body }) => {
-    return createStoredInbound(body);
+    const response = createStoredInbound(body);
+
+    applyInboundFirewallChanges({
+      mode: "add",
+      vpnProtocol: body.type,
+      listenPort: body.listen_port,
+    });
+
+    return response;
   },
 });
 

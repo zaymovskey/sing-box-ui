@@ -58,9 +58,12 @@ export function EditInboundDialog({
     [inboundsListResponse],
   );
 
-  const initialValues = useMemo(() => {
+  const mappedInbound = useMemo(() => {
     return mapInboundToFormValues(inbound);
   }, [inbound]);
+
+  const [initialValues, setInitialValues] =
+    useState<InboundFormValues>(mappedInbound);
 
   const [currentInboundTag, setCurrentInboundTag] = useState<
     string | undefined
@@ -78,14 +81,16 @@ export function EditInboundDialog({
     }
 
     setCurrentInboundTag(inbound.display_tag);
-    form.reset(initialValues, {
+    setInitialValues(mappedInbound);
+
+    form.reset(mappedInbound, {
       keepDirty: false,
       keepTouched: false,
       keepErrors: false,
       keepSubmitCount: false,
       keepIsSubmitted: false,
     });
-  }, [open, inbound.display_tag, initialValues, form]);
+  }, [open, inbound.display_tag, mappedInbound, form]);
 
   const { editInbound, isPending } = useEditInbound();
 
@@ -129,7 +134,7 @@ export function EditInboundDialog({
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
-      await editInbound(currentInboundTag, values);
+      await editInbound(inbound.internal_tag, values);
 
       serverToast.success("Инбаунд успешно обновлен", {
         id: "edit-inbound",
@@ -137,6 +142,7 @@ export function EditInboundDialog({
       });
 
       setCurrentInboundTag(values.display_tag);
+      setInitialValues(values);
 
       form.clearErrors();
       form.reset(values, {

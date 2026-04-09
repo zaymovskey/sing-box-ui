@@ -1,3 +1,5 @@
+import { MessageCircleWarning } from "lucide-react";
+
 import { type StoredInbound } from "@/shared/api/contracts";
 import {
   Button,
@@ -57,8 +59,20 @@ export function DeleteInboundDialog({
           <DialogTitle>Подтвердите удаление инбаунда</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          Вы уверены, что хотите удалить инбаунд {inbound.display_tag}?
+        <div className="flex-1 space-y-4 overflow-y-auto px-6 pt-4 pb-6">
+          <p>
+            Вы уверены, что хотите удалить инбаунд{" "}
+            <span className="font-medium">{inbound.display_tag}</span>?
+          </p>
+
+          {inbound.listen_port != null && (
+            <div className="bg-muted text-muted-foreground flex items-center rounded-md border px-4 py-3 text-sm">
+              <MessageCircleWarning className="mr-2 size-4" /> После удаления
+              порт{" "}
+              <span className="mx-1 font-medium">{inbound.listen_port}</span>{" "}
+              будет закрыт в firewall.
+            </div>
+          )}
         </div>
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">

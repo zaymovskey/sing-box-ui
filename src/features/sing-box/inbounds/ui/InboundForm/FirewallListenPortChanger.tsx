@@ -6,6 +6,10 @@ import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { UncontrolledNumberField } from "@/shared/ui";
 
+import {
+  TCP_ONLY_PROTOCOLS,
+  UDP_ONLY_PROTOCOLS,
+} from "../../lib/protocols.constant";
 import { useInboundFormContext } from "../../model/inbound-form-ui.context";
 
 type FirewallProtocol = "TCP" | "UDP";
@@ -20,9 +24,6 @@ type FirewallExposure = {
   protocol: FirewallProtocol;
   port: number;
 };
-
-const TCP_ONLY_PROTOCOLS: InboundFormValues["type"][] = ["vless"];
-const UDP_ONLY_PROTOCOLS: InboundFormValues["type"][] = ["hysteria2"];
 
 function isValidPort(value: unknown): value is number {
   return (
@@ -155,7 +156,7 @@ export function FirewallListenPortChanger({
         showErrorMessage={false}
       />
 
-      <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+      <div className="bg-muted/30 min-h-[90px] rounded-md border px-3 py-3 text-sm">
         <div className="flex items-start gap-2">
           <BrickWallFire className="text-chart-5 mt-0.5 size-4 shrink-0" />
 
@@ -191,7 +192,6 @@ export function FirewallListenPortChanger({
           </div>
         </div>
       </div>
-
       <div className="text-destructive min-h-5 text-sm">{message}</div>
     </div>
   );

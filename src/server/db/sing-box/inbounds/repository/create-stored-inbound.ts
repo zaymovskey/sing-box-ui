@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { getDb } from "@/server/db/client";
-import { type SaveInboundInput } from "@/shared/api/contracts";
+import { type OkResponse, type SaveInboundInput } from "@/shared/api/contracts";
 
 import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
 
@@ -15,7 +15,7 @@ function makeInternalUserName(userId: string): string {
   return `user_${userId}`;
 }
 
-export function createStoredInbound(input: SaveInboundInput): { ok: true } {
+export function createStoredInbound(input: SaveInboundInput): OkResponse {
   const db = getDb();
   const now = new Date().toISOString();
   const inboundId = randomUUID();

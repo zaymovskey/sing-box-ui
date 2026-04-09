@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import { getDb } from "@/server/db/client";
 import {
+  type InboundDbType,
   type SaveHysteria2Inbound,
   type SaveInboundInput,
   type SaveVlessInbound,
@@ -18,7 +19,7 @@ type ExistingInboundUserRow = {
 
 type ExistingInboundRow = {
   id: string;
-  type: "vless" | "hysteria2";
+  type: InboundDbType;
   internal_tag: string;
 };
 
@@ -233,14 +234,14 @@ function syncHysteria2Users(
 }
 
 export function updateStoredInboundByDisplayTag(
-  displayTag: string,
+  internalTag: string,
   input: SaveInboundInput,
 ): boolean {
   const db = getDb();
   const now = new Date().toISOString();
 
   const trx = db.transaction(
-    (currentDisplayTag: string, saveInput: SaveInboundInput) => {
+    (currentInternalTag: string, saveInput: SaveInboundInput) => {
       const existing = db
         .prepare(
           sql`
@@ -249,10 +250,10 @@ export function updateStoredInboundByDisplayTag(
               type,
               internal_tag
             FROM inbounds
-            WHERE display_tag = ?
+            WHERE internal_tag = ?
           `,
         )
-        .get(currentDisplayTag) as ExistingInboundRow | undefined;
+        .get(currentInternalTag) as ExistingInboundRow | undefined;
 
       if (!existing) {
         return false;
@@ -439,5 +440,5 @@ export function updateStoredInboundByDisplayTag(
     },
   );
 
-  return trx(displayTag, input);
+  return trx(internalTag, input);
 }

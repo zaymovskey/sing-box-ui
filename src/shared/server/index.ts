@@ -22,5 +22,6 @@ export { sha256 } from "./crypto/sha256";
 export { getServerEnv } from "./env-server";
 export { checkFilePresence } from "./filesystem/check-file-presence";
 export { resolveHostCertPath } from "./filesystem/resolve-host-cert-path";
+export { allowPort, removePort } from "./firewall/firewall.service";
 export { generateSelfSignedFilesCert } from "./openssl/generate-self-signed-file-cert";
 export { generateSelfSignedInlineCert } from "./openssl/generate-self-signed-inline-cert";

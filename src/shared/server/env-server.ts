@@ -16,6 +16,7 @@ const serverEnvSchema = z.object({
   SINGBOX_CONTAINER_NAME: z.string().min(1),
   USE_HTTPS: z.enum(["true", "false"]).default("false"),
   SQLITE_DB_PATH: z.string().min(1),
+  ENABLE_FIREWALL: z.enum(["true", "false"]).default("false"),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -36,6 +37,7 @@ function getBuildSafeEnv(source: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
       source.SINGBOX_CONTAINER_NAME ?? "build-placeholder",
     USE_HTTPS: source.USE_HTTPS ?? "false",
     SQLITE_DB_PATH: source.SQLITE_DB_PATH ?? "/data/app.db",
+    ENABLE_FIREWALL: source.ENABLE_FIREWALL ?? "false",
   };
 }
 

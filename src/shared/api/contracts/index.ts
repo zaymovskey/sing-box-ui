@@ -41,15 +41,7 @@ export {
 } from "./security-assets/security-assets.schema";
 export * from "./sing-box/core";
 export * from "./sing-box/inbounds";
-export {
-  InboundHysteria2RowSchema,
-  InboundRowSchema,
-  type InboundUserRow,
-  InboundUserRowSchema,
-  type InboundVlessRow,
-  type InboundVlessRows,
-  InboundVlessRowSchema,
-} from "./sing-box/inbounds/db-row.schema";
+export * from "./sing-box/inbounds/db-row.schema";
 export {
   type InboundsListResponse,
   InboundsListResponseSchema,

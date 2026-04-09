@@ -19,15 +19,17 @@ export function InboundFormBaseFields() {
         />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <UncontrolledTextField<InboundFormValues>
-            label="Tag"
-            name="display_tag"
-            placeholder="in-01"
-          />
+          <div className="flex flex-col gap-3">
+            <UncontrolledTextField<InboundFormValues>
+              label="Tag"
+              name="display_tag"
+              placeholder="in-01"
+            />
 
-          <FirewallListenPortChanger className="md:row-span-2" />
+            <InboundFormListenField />
+          </div>
 
-          <InboundFormListenField />
+          <FirewallListenPortChanger />
         </div>
       </div>
 
