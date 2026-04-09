@@ -28,7 +28,7 @@ ARG NEXT_PUBLIC_SINGBOX_CERTS_DIR
 ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 
-RUN rm -rf .worker-dist tsconfig.worker.tsbuildinfo \
+RUN rm -rf .worker-dist \
   && npm run build:worker \
   && test -f .worker-dist/server/worker/main.js \
   && find .worker-dist -type f | sort
@@ -69,7 +69,6 @@ RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
 
 COPY --from=builder /app/.worker-dist ./.worker-dist
-COPY --from=builder /app/docs ./docs
 COPY --from=deps /app/node_modules ./node_modules
 
 CMD ["node", ".worker-dist/server/worker/main.js"]
