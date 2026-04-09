@@ -30,7 +30,7 @@ ENV NEXT_PUBLIC_SINGBOX_CERTS_DIR=$NEXT_PUBLIC_SINGBOX_CERTS_DIR
 
 RUN rm -rf .worker-dist \
   && npm run build:worker \
-  && test -f .worker-dist/server/worker/main.js \
+  && test -f .worker-dist/worker/main.js \
   && find .worker-dist -type f | sort
 
 RUN npm run build
@@ -71,4 +71,4 @@ RUN apk add --no-cache openssl
 COPY --from=builder /app/.worker-dist ./.worker-dist
 COPY --from=deps /app/node_modules ./node_modules
 
-CMD ["node", ".worker-dist/server/worker/main.js"]
+CMD ["node", ".worker-dist/worker/main.js"]
