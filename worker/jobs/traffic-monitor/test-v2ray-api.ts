@@ -15,7 +15,7 @@ function resolveProtoPath(): string {
     return distPath;
   }
 
-  return path.resolve(process.cwd(), "src/server/worker/grpc/stats.proto");
+  return path.resolve(__dirname, "../../grpc/stats.proto");
 }
 
 export const PROTO_PATH = resolveProtoPath();
