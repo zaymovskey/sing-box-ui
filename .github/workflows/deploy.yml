@@ -57,3 +57,5 @@ jobs:
             echo "DEPLOY_PATH=${{ steps.vars.outputs.deploy_path }}"
             echo "IMAGE_TAG=$IMAGE_TAG"
             docker inspect sing-box-ui --format '{{.Config.Image}}'
+
+            docker image prune -a -f
