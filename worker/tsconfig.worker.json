@@ -2,7 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../.worker-dist",
-    "rootDir": "../src",
+    "rootDir": "..",
     "module": "commonjs",
     "target": "ES2022",
     "moduleResolution": "node",
@@ -13,23 +13,25 @@
     "baseUrl": "..",
     "incremental": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
   },
-  "include": [
-    "../src/server/worker/**/*.ts",
-    "../src/server/db/client.ts",
-    "../src/server/db/sing-box/**/*.ts",
-    "../src/shared/server/**/*.ts",
-    "../src/shared/api/contracts/sing-box/**/*.ts",
-    "../src/shared/api/contracts/common/**/*.ts",
-    "../src/features/sing-box/server/**/*.ts"
+  "files": [
+    "./main.ts",
+    "./jobs/traffic-monitor/job.ts",
+    "./jobs/traffic-monitor/test-v2ray-api.ts"
   ],
   "exclude": [
     "../node_modules",
     "../.next",
     "../src/**/*.tsx",
     "../src/**/ui/**",
+    "../src/features/security-assets/**",
+    "../src/features/sing-box/inbounds/ui/**",
+    "../src/shared/ui/**",
+    "../src/shared/hooks/**",
     "../src/shared/assets/**"
   ]
 }
