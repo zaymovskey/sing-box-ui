@@ -12,7 +12,7 @@ import {
   getServerEnv,
   ServerApiError,
   withRoute,
-} from "@/shared/lib/server";
+} from "@/shared/server";
 
 const execFileAsync = promisify(execFile);
 

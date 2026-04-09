@@ -5,7 +5,7 @@ import {
   setSessionCookie,
   signSession,
   withRoute,
-} from "@/shared/lib/server";
+} from "@/shared/server";
 
 export const POST = withRoute({
   auth: false,

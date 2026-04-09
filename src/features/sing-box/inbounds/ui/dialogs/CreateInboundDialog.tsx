@@ -170,7 +170,9 @@ export function CreateInboundDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-          <InboundFormProvider contextValue={{ mode: "create" }}>
+          <InboundFormProvider
+            contextValue={{ mode: "create", initialValues: initialValues }}
+          >
             <InboundForm
               form={form}
               formId={FORM_ID}

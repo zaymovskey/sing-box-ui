@@ -22,7 +22,7 @@ export const SaveBaseInboundSchema = z.object({
   display_tag: NonEmptyStringSchema,
   internal_tag: NonEmptyStringSchema.optional(),
   listen: ListenSchema.optional(),
-  listen_port: ListenPortSchema.optional(),
+  listen_port: ListenPortSchema,
   sniff: SniffSchema,
   sniff_override_destination: SniffOverrideDestinationSchema,
 });

@@ -26,6 +26,9 @@ services:
     image: ghcr.io/zaymovskey/sing-box-ui:${IMAGE_TAG:-latest}
     container_name: sing-box-ui
     restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
     env_file:
       - .env
     volumes:

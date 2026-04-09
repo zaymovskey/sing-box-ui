@@ -1,5 +1,5 @@
-export { buildRuntimeConfigFromDb } from "../../../features/sing-box/server/build-runtime-config-from-db";
-export { resolveSecurityAssets } from "../../../features/sing-box/server/resolve-security-assets";
+export { buildRuntimeConfigFromDb } from "../../features/sing-box/server/build-runtime-config-from-db";
+export { resolveSecurityAssets } from "../../features/sing-box/server/resolve-security-assets";
 export {
   errorJson,
   noContent,
@@ -22,5 +22,6 @@ export { sha256 } from "./crypto/sha256";
 export { getServerEnv } from "./env-server";
 export { checkFilePresence } from "./filesystem/check-file-presence";
 export { resolveHostCertPath } from "./filesystem/resolve-host-cert-path";
+export { allowPort, removePort } from "./firewall/firewall.service";
 export { generateSelfSignedFilesCert } from "./openssl/generate-self-signed-file-cert";
 export { generateSelfSignedInlineCert } from "./openssl/generate-self-signed-inline-cert";

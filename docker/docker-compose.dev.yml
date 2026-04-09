@@ -17,6 +17,9 @@ services:
       dockerfile: Dockerfile.dev
     container_name: sing-box-ui-dev
     restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
     env_file:
       - .env
     environment:

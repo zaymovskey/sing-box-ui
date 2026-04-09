@@ -59,8 +59,8 @@ export function LoginForm() {
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center px-4">
       <div className="bg-card dark:bg-input/30 dark:border-input absolute top-3 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 rounded-md shadow-md">
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl">
-          <Image alt="logo" className="h-8 w-8" src={logoPic} />
+        <div className="flex h-20 w-20 items-center justify-center rounded-xl">
+          <Image alt="logo" className="h-12 w-12" src={logoPic} />
         </div>
       </div>
 

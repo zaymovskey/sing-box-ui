@@ -26,6 +26,7 @@ export function SingBoxStatusControl() {
     data: statusData,
     isPending: statusIsPending,
     isError: statusIsError,
+    isFetched: statusIsFetched,
     refetch: refetchStatus,
   } = useSingBoxStatusQuery();
 
@@ -35,7 +36,12 @@ export function SingBoxStatusControl() {
   const [isApplyFlowActive, setIsApplyFlowActive] = useState(false);
 
   const getMainStatus = (): MainStatuses => {
-    if (reloadIsPending || statusIsPending || isApplyFlowActive) {
+    if (
+      !statusIsFetched ||
+      reloadIsPending ||
+      statusIsPending ||
+      isApplyFlowActive
+    ) {
       return "loading";
     }
 
@@ -82,13 +88,13 @@ export function SingBoxStatusControl() {
                 currentMainStatusConfig.dotColor,
               )}
             />
-            <span className={cn(currentMainStatusConfig.textColor)}>
-              {currentMainStatusConfig.icon}
-            </span>
             <span
               className={cn("font-medium", currentMainStatusConfig.textColor)}
             >
               {currentMainStatusConfig.label}
+            </span>
+            <span className={cn(currentMainStatusConfig.textColor)}>
+              {currentMainStatusConfig.icon}
             </span>
           </Button>
         </PopoverTrigger>

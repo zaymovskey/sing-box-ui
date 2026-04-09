@@ -1,4 +1,4 @@
-import { type ApiErrorPayload } from "../../../api/contracts";
+import { type ApiErrorPayload } from "../../api/contracts";
 
 type InitNoStatus = Omit<ResponseInit, "status">;
 

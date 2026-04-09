@@ -11,7 +11,7 @@ import {
   generateSelfSignedFilesCert,
   resolveHostCertPath,
   withRoute,
-} from "@/shared/lib/server";
+} from "@/shared/server";
 
 export const runtime = "nodejs";
 

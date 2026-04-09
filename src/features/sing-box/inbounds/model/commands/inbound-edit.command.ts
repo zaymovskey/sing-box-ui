@@ -12,7 +12,7 @@ export function useEditInbound() {
   const editInboundMutation = useEditInboundMutation();
 
   const editInbound = useCallback(
-    async (originalTag: string, updatedInbound: InboundFormValues) => {
+    async (internalTag: string, updatedInbound: InboundFormValues) => {
       const parsedEditedInbound = mapFormToInbound(updatedInbound);
 
       const inboundParseResult =
@@ -23,7 +23,7 @@ export function useEditInbound() {
       }
 
       return editInboundMutation.mutateAsync({
-        originalTag,
+        originalInternalTag: internalTag,
         inbound: inboundParseResult.data,
       });
     },
