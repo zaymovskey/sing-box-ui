@@ -11,11 +11,13 @@ type NumberFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder?: string;
+  showErrorMessage?: boolean;
 } & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
 
 export function UncontrolledNumberField<T extends FieldValues>({
   name,
   label,
+  showErrorMessage = true,
   ...inputProps
 }: NumberFieldProps<T>) {
   const { register } = useFormContext<T>();
@@ -36,12 +38,22 @@ export function UncontrolledNumberField<T extends FieldValues>({
       <Input
         {...inputProps}
         type="number"
-        {...register(name, { valueAsNumber: true })}
+        {...register(name, {
+          setValueAs: (value) => {
+            if (value === "" || value == null) {
+              return undefined;
+            }
+            const parsed = Number(value);
+            return Number.isNaN(parsed) ? undefined : parsed;
+          },
+        })}
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}
         id={inputId}
       />
-      <div className="text-destructive min-h-5 text-sm">{message ?? ""}</div>
+      {showErrorMessage && (
+        <div className="text-destructive min-h-5 text-sm">{message ?? ""}</div>
+      )}
     </FormItem>
   );
 }

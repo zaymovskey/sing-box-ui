@@ -3,10 +3,10 @@ import {
   ControlledSwitchField,
   Separator,
   SubsectionTitle,
-  UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
+import { FirewallListenPortChanger } from "./FirewallListenPortChanger";
 import { InboundFormListenField } from "./InboundFormListenField";
 
 export function InboundFormBaseFields() {
@@ -25,17 +25,9 @@ export function InboundFormBaseFields() {
             placeholder="in-01"
           />
 
-          <UncontrolledNumberField<InboundFormValues>
-            label="Listen port"
-            name="listen_port"
-            placeholder="8443"
-          />
+          <FirewallListenPortChanger className="md:row-span-2" />
+
           <InboundFormListenField />
-          {/* <UncontrolledTextField<InboundFormValues>
-            label="Listen"
-            name="listen"
-            placeholder="::"
-          /> */}
         </div>
       </div>
 
