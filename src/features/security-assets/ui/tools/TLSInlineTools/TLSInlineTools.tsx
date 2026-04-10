@@ -27,17 +27,17 @@ export function TLSInlineTools({
     >
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
         label="Certificate"
         name="source.certificatePem"
         placeholder="certificatePem"
+        showErrorMessage={false}
       />
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
         label="Key"
         name="source.keyPem"
         placeholder="keyPem"
+        showErrorMessage={false}
       />
       {error && (
         <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">

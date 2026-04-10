@@ -35,6 +35,59 @@ function uniq(values: string[]): string[] {
   return [...new Set(values)];
 }
 
+function mapHy2MasqueradeToRuntime(
+  masquerade: StoredHysteria2Inbound["masquerade"],
+): SingBoxHysteria2Inbound["masquerade"] | undefined {
+  if (!masquerade) {
+    return undefined;
+  }
+
+  if (typeof masquerade === "string") {
+    const value = masquerade.trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  const type = masquerade.type?.trim();
+
+  if (!type) {
+    return undefined;
+  }
+
+  if (type === "file") {
+    const directory = masquerade.directory?.trim() ?? masquerade.file?.trim();
+
+    if (!directory) {
+      return undefined;
+    }
+
+    return {
+      type: "file",
+      directory,
+    };
+  }
+
+  if (type === "proxy") {
+    const url = masquerade.url?.trim();
+
+    if (!url) {
+      return undefined;
+    }
+
+    return {
+      type: "proxy",
+      url,
+    };
+  }
+
+  if (type === "string") {
+    return {
+      type: "string",
+    };
+  }
+
+  return undefined;
+}
+
 export async function buildRuntimeConfigFromDb(): Promise<
   Record<string, unknown>
 > {
@@ -157,7 +210,7 @@ export function mapStoredInboundsToSingBox(
             key_path: stored.tls.key_path,
           }
         : undefined,
-      masquerade: stored.masquerade,
+      masquerade: mapHy2MasqueradeToRuntime(stored.masquerade),
       bbr_profile: stored.bbr_profile,
       brutal_debug: stored.brutal_debug,
     };

@@ -1,11 +1,47 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
+  type SaveHysteria2Inbound,
   type SaveInboundInput,
   type StoredInbound,
 } from "@/shared/api/contracts";
 
 import { mapHy2FormToInbound } from "./map-hy2-form-to-inbound";
 import { mapVlessFormToInbound } from "./map-vless-form-to-inbound.mapper";
+
+function mapInboundMasqueradeToForm(
+  masquerade: SaveHysteria2Inbound["masquerade"],
+): Extract<InboundFormValues, { type: "hysteria2" }>["masquerade"] {
+  if (!masquerade) {
+    return {
+      type: "disabled",
+    };
+  }
+
+  if (typeof masquerade === "string") {
+    return {
+      type: "url",
+      url_string: masquerade,
+    };
+  }
+
+  if (masquerade.type === "file") {
+    return {
+      type: "file_server",
+      directory: masquerade.directory ?? "",
+    };
+  }
+
+  if (masquerade.type === "proxy") {
+    return {
+      type: "reverse_proxy",
+      url: masquerade.url ?? "",
+    };
+  }
+
+  return {
+    type: "fixed_response",
+  };
+}
 
 export function mapFormToInbound(values: InboundFormValues): SaveInboundInput {
   if (values.type === "vless") {
@@ -54,6 +90,7 @@ export function mapInboundToFormValues(
       _security_asset_id: inbound._security_asset_id ?? undefined,
       obfs_enabled: Boolean(inbound.obfs?.type || inbound.obfs?.password),
       obfs_password: inbound.obfs?.password ?? "",
+      masquerade: mapInboundMasqueradeToForm(inbound.masquerade),
     };
   }
 

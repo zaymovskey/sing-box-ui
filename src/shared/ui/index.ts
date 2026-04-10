@@ -47,6 +47,7 @@ export { UncontrolledHiddenField } from "./form/uncontrolled/UncontrolledHiddenF
 export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberField";
 export { UncontrolledPasswordField } from "./form/uncontrolled/UncontrolledPasswordField";
 export { UncontrolledPathField } from "./form/uncontrolled/UncontrolledPathField";
+export { UncontrolledTextareaField } from "./form/uncontrolled/UncontrolledTextareaField";
 export { UncontrolledTextField } from "./form/uncontrolled/UncontrolledTextField";
 export { UncontrolledInputWithGenerateField } from "./form/uncontrolled/UncontrolledUuidField";
 export { Input } from "./input";
@@ -115,3 +116,4 @@ export {
   TableRow,
 } from "./table";
 export { EmptyTableState } from "./table/EmptyTableState";
+export { Textarea } from "./textarea";

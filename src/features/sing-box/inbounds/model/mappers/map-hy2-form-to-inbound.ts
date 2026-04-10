@@ -1,6 +1,48 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { type SaveHysteria2Inbound } from "@/shared/api/contracts";
 
+function mapMasquerade(
+  masquerade: Extract<InboundFormValues, { type: "hysteria2" }>["masquerade"],
+): SaveHysteria2Inbound["masquerade"] {
+  if (masquerade.type === "disabled") {
+    return undefined;
+  }
+
+  if (masquerade.type === "url") {
+    return masquerade.url_string?.trim() || undefined;
+  }
+
+  if (masquerade.type === "file_server") {
+    const directory = masquerade.directory?.trim();
+
+    if (!directory) {
+      return undefined;
+    }
+
+    return {
+      type: "file",
+      directory,
+    };
+  }
+
+  if (masquerade.type === "reverse_proxy") {
+    const url = masquerade.url?.trim();
+
+    if (!url) {
+      return undefined;
+    }
+
+    return {
+      type: "proxy",
+      url,
+    };
+  }
+
+  return {
+    type: "string",
+  };
+}
+
 export function mapHy2FormToInbound(
   values: Extract<InboundFormValues, { type: "hysteria2" }>,
 ): SaveHysteria2Inbound {
@@ -25,5 +67,6 @@ export function mapHy2FormToInbound(
           password: values.obfs_password?.trim() || undefined,
         }
       : undefined,
+    masquerade: mapMasquerade(values.masquerade),
   };
 }

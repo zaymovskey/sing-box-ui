@@ -2,21 +2,20 @@
 
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 
-import { Input } from "../../input";
+import { Textarea } from "../../textarea";
 import { FormItem, FormLabel } from "../form";
 
-type InputProps = React.ComponentProps<typeof Input>;
+type TextareaProps = React.ComponentProps<typeof Textarea>;
 
 type Props<T extends FieldValues> = {
   name: Path<T>;
   label?: string;
   showErrorMessage?: boolean;
-} & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
+} & Omit<TextareaProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
 
-export function UncontrolledTextField<T extends FieldValues>({
+export function UncontrolledTextareaField<T extends FieldValues>({
   name,
   label,
-  type = "text",
   showErrorMessage = true,
   ...inputProps
 }: Props<T>) {
@@ -39,13 +38,12 @@ export function UncontrolledTextField<T extends FieldValues>({
         </FormLabel>
       )}
 
-      <Input
+      <Textarea
         {...form.register(name)}
         {...inputProps}
         aria-describedby={message ? messageId : undefined}
         aria-invalid={!!error}
         id={inputId}
-        type={type}
       />
 
       {showErrorMessage && (

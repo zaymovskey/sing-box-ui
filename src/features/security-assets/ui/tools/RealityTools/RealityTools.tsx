@@ -27,17 +27,17 @@ export function RealityTools({
     >
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
         label="Reality private key"
         name="privateKey"
         placeholder="private_key"
+        showErrorMessage={false}
       />
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
         label="Reality public key"
         name="_publicKey"
         placeholder="public_key"
+        showErrorMessage={false}
       />
       {error && (
         <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">

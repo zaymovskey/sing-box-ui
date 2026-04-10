@@ -28,3 +28,5 @@ docker/data/**
 !docker/data/sing-box-state/.gitkeep
 worker-files.txt
 .cursor/
+
+context.md

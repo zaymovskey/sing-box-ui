@@ -32,5 +32,15 @@ export const defaultsByType = {
     obfs_enabled: false,
     obfs_password: "",
     _security_asset_id: undefined,
+    masquerade: {
+      type: "disabled",
+      url_string: undefined,
+      directory: undefined,
+      url: undefined,
+      rewrite_host: false,
+      status_code: undefined,
+      headers: undefined,
+      content: undefined,
+    },
   },
 } satisfies Record<InboundFormValues["type"], InboundFormValues>;

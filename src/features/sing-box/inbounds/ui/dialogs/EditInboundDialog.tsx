@@ -72,6 +72,7 @@ export function EditInboundDialog({
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
+    shouldUnregister: true,
     defaultValues: initialValues,
   });
 

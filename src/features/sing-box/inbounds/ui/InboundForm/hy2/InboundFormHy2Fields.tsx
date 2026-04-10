@@ -17,6 +17,8 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
+import { Hy2MasqueradeField } from "./Hy2MasqueradeField";
+
 export function InboundFormHy2Fields() {
   const { control, trigger, formState, setValue } =
     useFormContext<InboundFormValues>();
@@ -196,6 +198,17 @@ export function InboundFormHy2Fields() {
           name="obfs_password"
           placeholder="secret"
         />
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Что отвечать по HTTP/3, если клиент не прошёл аутентификацию (маскировка под обычный сервис)."
+          title="Masquerade"
+        />
+
+        <Hy2MasqueradeField />
       </div>
 
       <Separator />
