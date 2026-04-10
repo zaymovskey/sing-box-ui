@@ -70,11 +70,7 @@ export const InboundHysteria2RowSchema = z.object({
   obfs_type: NullableStringSchema,
   obfs_password: NullableStringSchema,
 
-  masquerade_string: NullableStringSchema,
-  masquerade_type: NullableStringSchema,
-  masquerade_file: NullableStringSchema,
-  masquerade_directory: NullableStringSchema,
-  masquerade_url: NullableStringSchema,
+  masquerade_json: NullableStringSchema,
 
   bbr_profile: NullableStringSchema,
   brutal_debug: NullableSqliteBooleanSchema,

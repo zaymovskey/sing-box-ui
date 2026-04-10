@@ -373,11 +373,7 @@ export function updateStoredInboundByDisplayTag(
               ignore_client_bandwidth = ?,
               obfs_type = ?,
               obfs_password = ?,
-              masquerade_string = ?,
-              masquerade_type = ?,
-              masquerade_file = ?,
-              masquerade_directory = ?,
-              masquerade_url = ?,
+              masquerade_json = ?,
               bbr_profile = ?,
               brutal_debug = ?
             WHERE inbound_id = ?
@@ -388,11 +384,7 @@ export function updateStoredInboundByDisplayTag(
           booleanToSqliteBool(saveInput.ignore_client_bandwidth),
           saveInput.obfs?.type ?? null,
           saveInput.obfs?.password ?? null,
-          masqueradeRow.masquerade_string,
-          masqueradeRow.masquerade_type,
-          masqueradeRow.masquerade_file,
-          masqueradeRow.masquerade_directory,
-          masqueradeRow.masquerade_url,
+          masqueradeRow.masquerade_json,
           saveInput.bbr_profile ?? null,
           booleanToSqliteBool(saveInput.brutal_debug),
           inboundId,
@@ -407,15 +399,11 @@ export function updateStoredInboundByDisplayTag(
               ignore_client_bandwidth,
               obfs_type,
               obfs_password,
-              masquerade_string,
-              masquerade_type,
-              masquerade_file,
-              masquerade_directory,
-              masquerade_url,
+              masquerade_json,
               bbr_profile,
               brutal_debug
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
         ).run(
           inboundId,
@@ -424,11 +412,7 @@ export function updateStoredInboundByDisplayTag(
           booleanToSqliteBool(saveInput.ignore_client_bandwidth),
           saveInput.obfs?.type ?? null,
           saveInput.obfs?.password ?? null,
-          masqueradeRow.masquerade_string,
-          masqueradeRow.masquerade_type,
-          masqueradeRow.masquerade_file,
-          masqueradeRow.masquerade_directory,
-          masqueradeRow.masquerade_url,
+          masqueradeRow.masquerade_json,
           saveInput.bbr_profile ?? null,
           booleanToSqliteBool(saveInput.brutal_debug),
         );

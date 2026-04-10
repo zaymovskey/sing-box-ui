@@ -68,11 +68,7 @@ export function getStoredInbounds(): StoredInbound[] {
           ignore_client_bandwidth,
           obfs_type,
           obfs_password,
-          masquerade_string,
-          masquerade_type,
-          masquerade_file,
-          masquerade_directory,
-          masquerade_url,
+          masquerade_json,
           bbr_profile,
           brutal_debug
         FROM inbound_hysteria2

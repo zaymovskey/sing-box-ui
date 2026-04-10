@@ -76,32 +76,19 @@ export function mapTlsFromSecurityAssetForHy2(
 }
 
 export function mapMasqueradeFromRow(row: {
-  masquerade_string: string | null;
-  masquerade_type: string | null;
-  masquerade_file: string | null;
-  masquerade_directory: string | null;
-  masquerade_url: string | null;
+  masquerade_json: string | null;
 }): StoredHysteria2Inbound["masquerade"] | undefined {
-  if (row.masquerade_string) {
-    return row.masquerade_string;
-  }
-
-  const hasObjectFields =
-    row.masquerade_type ||
-    row.masquerade_file ||
-    row.masquerade_directory ||
-    row.masquerade_url;
-
-  if (!hasObjectFields) {
+  if (!row.masquerade_json) {
     return undefined;
   }
 
-  return {
-    type: row.masquerade_type ?? undefined,
-    file: row.masquerade_file ?? undefined,
-    directory: row.masquerade_directory ?? undefined,
-    url: row.masquerade_url ?? undefined,
-  };
+  try {
+    return JSON.parse(
+      row.masquerade_json,
+    ) as StoredHysteria2Inbound["masquerade"];
+  } catch {
+    return undefined;
+  }
 }
 
 export function booleanToSqliteBool(value: boolean | undefined): 0 | 1 | null {
@@ -115,38 +102,16 @@ export function booleanToSqliteBool(value: boolean | undefined): 0 | 1 | null {
 export function mapMasqueradeToRow(
   masquerade: StoredHysteria2Inbound["masquerade"],
 ): {
-  masquerade_string: string | null;
-  masquerade_type: string | null;
-  masquerade_file: string | null;
-  masquerade_directory: string | null;
-  masquerade_url: string | null;
+  masquerade_json: string | null;
 } {
   if (!masquerade) {
     return {
-      masquerade_string: null,
-      masquerade_type: null,
-      masquerade_file: null,
-      masquerade_directory: null,
-      masquerade_url: null,
-    };
-  }
-
-  if (typeof masquerade === "string") {
-    return {
-      masquerade_string: masquerade,
-      masquerade_type: null,
-      masquerade_file: null,
-      masquerade_directory: null,
-      masquerade_url: null,
+      masquerade_json: null,
     };
   }
 
   return {
-    masquerade_string: null,
-    masquerade_type: masquerade.type ?? null,
-    masquerade_file: masquerade.file ?? null,
-    masquerade_directory: masquerade.directory ?? null,
-    masquerade_url: masquerade.url ?? null,
+    masquerade_json: JSON.stringify(masquerade),
   };
 }
 
