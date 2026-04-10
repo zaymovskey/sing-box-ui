@@ -16,7 +16,7 @@
     "prepare": "husky install",
     "shadcn:add": "npx shadcn@latest add",
     "type-check": "tsc --noEmit",
-    "dev:worker": "nodemon -L --watch src/server --ext ts --exec \"tsx src/server/worker/main.ts\"",
+    "dev:worker": "nodemon -L --watch worker --watch src/server --watch src/shared --watch src/features --ext ts --exec \"tsx worker/main.ts\"",
     "build:worker": "tsc -p worker/tsconfig.worker.json && tsc-alias -p worker/tsconfig.worker.json && node scripts/copy-worker-assets.mjs"
   },
   "lint-staged": {

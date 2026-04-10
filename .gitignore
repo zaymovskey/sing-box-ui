@@ -5,6 +5,11 @@ node_modules/
 out/
 dist/
 .worker-dist/
+.worker-dist/**
+
+# worker TS build artifacts accidentally emitted into source tree
+worker/**/*.js
+worker/**/*.js.map
 .env
 .env.local
 .env.*.local
