@@ -30,8 +30,6 @@ export function InboundsTableScreen() {
   const { data: inboundsList } = useInboundsListQuery();
   const { data: inboundsStats } = useInboundsStatsQuery();
 
-  console.log("inboundsStats", inboundsStats);
-
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
   const {

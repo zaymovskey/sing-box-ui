@@ -77,6 +77,12 @@ export function EditInboundDialog({
   });
 
   useEffect(() => {
+    if (initialValues) {
+      form.reset(initialValues);
+    }
+  }, [form, initialValues]);
+
+  useEffect(() => {
     if (!open) {
       return;
     }

@@ -10,6 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  UncontrolledHiddenField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
@@ -113,6 +114,8 @@ export function InboundFormListenField() {
           </SelectGroup>
         </SelectContent>
       </Select>
+
+      <UncontrolledHiddenField<InboundFormValues> name="listen" />
 
       {customSelected && (
         <UncontrolledTextField<InboundFormValues>
