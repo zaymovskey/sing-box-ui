@@ -1,0 +1,20 @@
+---
+alwaysApply: true
+---
+
+Assistant behavior:
+
+- Be concise
+- Avoid long explanations unless asked
+- Focus on solving the task
+
+Do not:
+
+- Overexplain
+- Add unnecessary context
+- Suggest irrelevant improvements
+
+If solution is obvious:
+
+- Give direct answer
+- Do not expand

@@ -1,0 +1,22 @@
+---
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+Code rules:
+
+- Do not overcomplicate logic
+- Avoid nested complexity
+- Prefer flat and readable code
+
+Bad:
+
+- Deep nesting
+- Overuse of abstractions
+- Premature optimization
+
+Good:
+
+- Simple logic
+- Direct implementation
+- Easy to understand at a glance
