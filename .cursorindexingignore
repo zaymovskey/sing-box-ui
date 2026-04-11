@@ -2,3 +2,5 @@
 .worker-dist/app/**
 src/shared/api/contracts/**
 data/**
+src/_rest-client/**
+docs/**
