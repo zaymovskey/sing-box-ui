@@ -1,0 +1,4 @@
+.worker-dist/**
+.worker-dist/app/**
+src/shared/api/contracts/**
+data/**
