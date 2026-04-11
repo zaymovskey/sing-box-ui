@@ -24,6 +24,8 @@ function mapInboundMasqueradeToForm(
     };
   }
 
+  const raw = masquerade as Record<string, unknown>;
+
   if (masquerade.type === "file") {
     return {
       type: "file_server",
@@ -35,11 +37,26 @@ function mapInboundMasqueradeToForm(
     return {
       type: "reverse_proxy",
       url: masquerade.url ?? "",
+      rewrite_host: raw.rewrite_host === true,
+    };
+  }
+
+  if (masquerade.type === "string") {
+    return {
+      type: "fixed_response",
+      status_code:
+        typeof raw.status_code === "number" ? raw.status_code : undefined,
+      content: typeof raw.content === "string" ? raw.content : "",
+      headers: typeof raw.headers === "string" ? raw.headers : "",
     };
   }
 
   return {
     type: "fixed_response",
+    status_code:
+      typeof raw.status_code === "number" ? raw.status_code : undefined,
+    content: typeof raw.content === "string" ? raw.content : "",
+    headers: typeof raw.headers === "string" ? raw.headers : "",
   };
 }
 

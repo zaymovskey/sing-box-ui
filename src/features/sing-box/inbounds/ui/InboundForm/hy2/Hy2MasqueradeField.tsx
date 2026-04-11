@@ -1,68 +1,63 @@
+"use client";
+
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
-  type Hy2Form,
-  type InboundFormValues,
-} from "@/features/sing-box/config-core";
-import {
+  ControlledSelectField,
   ControlledSwitchField,
-  FormLabel,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  type SelectFieldItem,
   UncontrolledNumberField,
   UncontrolledTextareaField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
+import { useInboundFormContext } from "../../../model/inbound-form-ui.context";
+
+const masqueradeTypeItems: SelectFieldItem[] = [
+  { label: "Disabled", value: "disabled" },
+  { label: "URL (simple)", value: "url" },
+  { label: "File server", value: "file_server" },
+  { label: "Reverse proxy", value: "reverse_proxy" },
+  { label: "Fixed response", value: "fixed_response" },
+];
+
 export function Hy2MasqueradeField() {
   const form = useFormContext<InboundFormValues>();
+  const { initialValues } = useInboundFormContext();
 
-  const error = form.getFieldState("masquerade", form.formState).error;
-  const inputId = "field_masquerade";
-
-  const selectedMasqueradeType = useWatch({
+  const watchedMasqueradeType = useWatch({
     control: form.control,
     name: "masquerade.type",
+    exact: true,
   });
 
-  const onMasqueradeTypeChange = (value: Hy2Form["masquerade"]["type"]) => {
-    form.setValue("masquerade.type", value, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: form.formState.submitCount > 0,
-    });
-  };
+  const initialMasqueradeType =
+    initialValues?.type === "hysteria2"
+      ? initialValues.masquerade.type
+      : undefined;
+
+  // useWatch на первом кадре после reset часто undefined, а Select уже показывает значение из Controller —
+  // иначе условные поля (URL и т.д.) не монтируются при открытии редактирования.
+  const selectedMasqueradeType =
+    watchedMasqueradeType ??
+    form.getValues("masquerade.type") ??
+    initialMasqueradeType;
 
   return (
     <div className="flex flex-col gap-2">
-      <FormLabel
-        className={error ? "text-destructive" : undefined}
-        htmlFor={inputId}
-      >
-        Masquerade type
-      </FormLabel>
-
-      <Select
-        value={selectedMasqueradeType}
-        onValueChange={(value) =>
-          onMasqueradeTypeChange(value as Hy2Form["masquerade"]["type"])
-        }
-      >
-        <SelectTrigger className="w-full" id={inputId}>
-          <SelectValue placeholder="Выберите masquerade" />
-        </SelectTrigger>
-
-        <SelectContent>
-          <SelectItem value="disabled">Disabled</SelectItem>
-          <SelectItem value="url">URL (simple)</SelectItem>
-          <SelectItem value="file_server">File server</SelectItem>
-          <SelectItem value="reverse_proxy">Reverse proxy</SelectItem>
-          <SelectItem value="fixed_response">Fixed response</SelectItem>
-        </SelectContent>
-      </Select>
+      <ControlledSelectField<InboundFormValues>
+        items={masqueradeTypeItems}
+        label="Masquerade type"
+        name="masquerade.type"
+        placeholder="Выберите masquerade"
+        onValueChangeExternal={() => {
+          form.clearErrors("masquerade");
+          if (form.formState.submitCount > 0) {
+            void form.trigger("masquerade");
+          }
+        }}
+      />
 
       {selectedMasqueradeType === "url" && (
         <UncontrolledTextField<InboundFormValues>
