@@ -39,7 +39,6 @@ export function InboundForm({
     const nextInboundType = nextType as InboundFormValues["type"];
 
     form.clearErrors();
-
     form.reset(defaultsByType[nextInboundType], {
       keepDirty: false,
       keepTouched: false,
