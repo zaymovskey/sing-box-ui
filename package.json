@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@hookform/devtools": "^4.4.0",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/better-sqlite3": "^7.6.13",
     "@types/next": "^9.0.0",

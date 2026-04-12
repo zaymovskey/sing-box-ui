@@ -1,5 +1,6 @@
 "use client";
 
+import { DevTool } from "@hookform/devtools";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
@@ -86,6 +87,8 @@ export function InboundForm({
           {type === "hysteria2" && <InboundFormHy2Fields />}
         </section>
       </form>
+
+      <DevTool control={form.control} />
     </FormProvider>
   );
 }
