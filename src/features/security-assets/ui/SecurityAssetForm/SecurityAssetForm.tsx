@@ -1,6 +1,5 @@
 "use client";
 
-import { DevTool } from "@hookform/devtools";
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import {
@@ -104,8 +103,6 @@ export function SecurityAssetForm({
           {watchedType === "reality" && <SecurityAssetFormRealityFields />}
         </section>
       </form>
-
-      <DevTool control={form.control} />
     </FormProvider>
   );
 }
