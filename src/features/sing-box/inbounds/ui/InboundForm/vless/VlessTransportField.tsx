@@ -10,8 +10,6 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
-import { useInboundFormContext } from "../../../model/inbound-form-ui.context";
-
 const transportTypeOptions: SelectFieldItem<string>[] = [
   { label: "Disabled", value: "disabled" },
   { label: "WebSocket", value: "ws" },
@@ -23,13 +21,10 @@ const transportTypeOptions: SelectFieldItem<string>[] = [
 
 export function VlessTransportField() {
   const form = useFormContext<Extract<InboundFormValues, { type: "vless" }>>();
-  const { initialValues } =
-    useInboundFormContext<Extract<InboundFormValues, { type: "vless" }>>();
 
   const transportType = useWatch({
     control: form.control,
     name: "transport.type",
-    defaultValue: initialValues?.transport?.type,
   });
 
   return (
