@@ -10,14 +10,28 @@ const VlessUserFormSchema = z.object({
   flow: VlessFlowSchema.optional(),
 });
 
+const VlessMultiplexBrutalSchema = z.object({
+  enabled: z.boolean(),
+  up_mbps: z.number().min(0),
+  down_mbps: z.number().min(0),
+});
+
+const VlessMultiplexSchema = z.object({
+  enabled: z.boolean(),
+  padding: z.boolean(),
+  brutal: VlessMultiplexBrutalSchema,
+});
+
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserFormSchema).min(1, "Нужен хотя бы один пользователь"),
+  multiplex: VlessMultiplexSchema.optional(),
   _security_asset_id: z.string().trim().min(1).optional(),
   _tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {
   tlsValidate(data, ctx);
   usersValidate(data, ctx);
+  multiplexBrutalValidate(data, ctx);
 });
 
 const tlsValidate = (
@@ -62,5 +76,27 @@ const usersValidate = (
       path: ["users", index, "uuid"],
       message: "UUID пользователя должен быть уникальным",
     });
+  }
+};
+
+const multiplexBrutalValidate = (
+  data: z.input<typeof VlessFormSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (data.multiplex?.enabled && data.multiplex?.brutal?.enabled) {
+    if (data.multiplex?.brutal?.up_mbps <= 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["multiplex.brutal.up_mbps"],
+        message: "Multiplex brutal up must be greater than 0",
+      });
+    }
+    if (data.multiplex?.brutal?.down_mbps <= 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["multiplex.brutal.down_mbps"],
+        message: "Multiplex brutal down must be greater than 0",
+      });
+    }
   }
 };

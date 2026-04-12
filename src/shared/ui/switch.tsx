@@ -3,15 +3,15 @@ import * as React from "react";
 
 import { cn } from "../lib";
 
-function Switch({
-  className,
-  size = "default",
-  ...props
-}: React.ComponentProps<typeof SwitchPrimitive.Root> & {
-  size?: "sm" | "default";
-}) {
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root> & {
+    size?: "sm" | "default";
+  }
+>(({ className, size = "default", ...props }, ref) => {
   return (
     <SwitchPrimitive.Root
+      ref={ref}
       className={cn(
         "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-[1.15rem] data-[size=default]:w-8 data-[size=sm]:h-3.5 data-[size=sm]:w-6",
         className,
@@ -28,6 +28,8 @@ function Switch({
       />
     </SwitchPrimitive.Root>
   );
-}
+});
+
+Switch.displayName = SwitchPrimitive.Root.displayName;
 
 export { Switch };

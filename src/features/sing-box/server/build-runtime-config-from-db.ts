@@ -158,6 +158,15 @@ export function mapStoredInboundsToSingBox(
         listen_port: stored.listen_port,
         sniff: stored.sniff,
         sniff_override_destination: stored.sniff_override_destination,
+        multiplex: {
+          enabled: stored.multiplex?.enabled ?? false,
+          padding: stored.multiplex?.padding ?? false,
+          brutal: {
+            enabled: stored.multiplex?.brutal?.enabled ?? false,
+            up_mbps: stored.multiplex?.brutal?.up_mbps ?? 0,
+            down_mbps: stored.multiplex?.brutal?.down_mbps ?? 0,
+          },
+        },
         users: stored.users.map((user) => ({
           name: user.internal_name,
           uuid: user.uuid,

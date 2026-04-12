@@ -141,6 +141,7 @@ export function EditInboundDialog({
     serverToast.loading("Сохранение...", { id: "edit-inbound" });
 
     try {
+      console.log("submit values", values);
       await editInbound(inbound.internal_tag, values);
 
       serverToast.success("Инбаунд успешно обновлен", {
@@ -151,7 +152,9 @@ export function EditInboundDialog({
       setCurrentInboundTag(values.display_tag);
       setInitialValues(values);
 
+      console.log("values", values);
       form.clearErrors();
+
       form.reset(values, {
         keepDirty: false,
         keepTouched: false,
@@ -159,6 +162,7 @@ export function EditInboundDialog({
         keepSubmitCount: false,
         keepIsSubmitted: false,
       });
+      console.log("current form values", form.getValues("multiplex"));
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
 

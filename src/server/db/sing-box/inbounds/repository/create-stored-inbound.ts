@@ -59,14 +59,24 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
           INSERT INTO inbound_vless (
             inbound_id,
             tls_enabled,
-            reality_public_key
+            reality_public_key,
+            multiplex_enabled,
+            multiplex_padding,
+            multiplex_brutal_enabled,
+            multiplex_brutal_up_mbps,
+            multiplex_brutal_down_mbps
           )
-          VALUES (?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `,
       ).run(
         inboundId,
         booleanToSqliteBool(saveInput._tls_enabled),
         saveInput.tls?.reality?._reality_public_key ?? null,
+        booleanToSqliteBool(saveInput.multiplex?.enabled ?? false),
+        booleanToSqliteBool(saveInput.multiplex?.padding ?? false),
+        booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
+        saveInput.multiplex?.brutal?.up_mbps ?? 0,
+        saveInput.multiplex?.brutal?.down_mbps ?? 0,
       );
 
       saveInput.users.forEach((user, index) => {

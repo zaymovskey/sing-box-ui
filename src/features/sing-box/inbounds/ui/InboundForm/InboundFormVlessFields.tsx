@@ -15,6 +15,7 @@ import {
   Separator,
   SubsectionTitle,
   UncontrolledInputWithGenerateField,
+  UncontrolledNumberField,
   UncontrolledTextField,
 } from "@/shared/ui";
 
@@ -57,7 +58,6 @@ export function InboundFormVlessFields() {
   const tlsEnabled = useWatch({
     control,
     name: "_tls_enabled",
-    defaultValue: false,
   });
 
   useEffect(() => {
@@ -86,6 +86,16 @@ export function InboundFormVlessFields() {
       flow: undefined,
     });
   };
+
+  const multiplexEnabled = useWatch({
+    control,
+    name: "multiplex.enabled",
+  });
+
+  const multiplexBrutalEnabled = useWatch({
+    control,
+    name: "multiplex.brutal.enabled",
+  });
 
   return (
     <div className="space-y-6">
@@ -139,6 +149,46 @@ export function InboundFormVlessFields() {
           <Button type="button" variant="outline" onClick={handleAddUser}>
             Добавить пользователя
           </Button>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Дополнительная настройка VLESS для мультиплексирования нескольких потоков внутри одного соединения. Обычно не нужна и включается только если вы точно понимаете, зачем она нужна."
+          title="Multiplex"
+        />
+        <ControlledSwitchField<InboundFormValues>
+          label="Multiplex enabled"
+          name="multiplex.enabled"
+        />
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <ControlledSwitchField<InboundFormValues>
+            disabled={!multiplexEnabled}
+            label="Multiplex padding"
+            name="multiplex.padding"
+          />
+
+          <ControlledSwitchField<InboundFormValues>
+            disabled={!multiplexEnabled}
+            label="Multiplex brutal enabled"
+            name="multiplex.brutal.enabled"
+          />
+          <UncontrolledNumberField<InboundFormValues>
+            disabled={!multiplexBrutalEnabled}
+            label="Multiplex brutal up (Mbps)"
+            name="multiplex.brutal.up_mbps"
+            placeholder="100"
+          />
+
+          <UncontrolledNumberField<InboundFormValues>
+            disabled={!multiplexBrutalEnabled}
+            label="Multiplex brutal down (Mbps)"
+            name="multiplex.brutal.down_mbps"
+            placeholder="100"
+          />
         </div>
       </div>
 

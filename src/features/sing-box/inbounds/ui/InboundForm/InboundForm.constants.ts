@@ -17,6 +17,15 @@ export const defaultsByType = {
     users: [{ display_name: "", uuid: "", flow: undefined }],
     _tls_enabled: false,
     _security_asset_id: undefined,
+    multiplex: {
+      enabled: false,
+      padding: false,
+      brutal: {
+        enabled: false,
+        up_mbps: 0,
+        down_mbps: 0,
+      },
+    },
   },
   hysteria2: {
     type: "hysteria2",

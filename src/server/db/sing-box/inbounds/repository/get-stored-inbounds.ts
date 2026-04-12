@@ -51,7 +51,12 @@ export function getStoredInbounds(): StoredInbound[] {
         SELECT
           inbound_id,
           tls_enabled,
-          reality_public_key
+          reality_public_key,
+          multiplex_enabled,
+          multiplex_padding,
+          multiplex_brutal_enabled,
+          multiplex_brutal_up_mbps,
+          multiplex_brutal_down_mbps
         FROM inbound_vless
       `,
     )
@@ -159,6 +164,19 @@ export function getStoredInbounds(): StoredInbound[] {
         ),
         _security_asset_id: row.security_asset_id ?? undefined,
         _tls_enabled: sqliteBoolToBoolean(vlessRow?.tls_enabled ?? null),
+        multiplex: {
+          enabled:
+            sqliteBoolToBoolean(vlessRow?.multiplex_enabled ?? null) ?? false,
+          padding:
+            sqliteBoolToBoolean(vlessRow?.multiplex_padding ?? null) ?? false,
+          brutal: {
+            enabled:
+              sqliteBoolToBoolean(vlessRow?.multiplex_brutal_enabled ?? null) ??
+              false,
+            up_mbps: vlessRow?.multiplex_brutal_up_mbps ?? 0,
+            down_mbps: vlessRow?.multiplex_brutal_down_mbps ?? 0,
+          },
+        },
       };
 
       return inbound;

@@ -90,6 +90,15 @@ export function mapInboundToFormValues(
         flow: user.flow === "xtls-rprx-vision" ? "xtls-rprx-vision" : undefined,
       })) ?? [{ name: "", uuid: "", flow: undefined }],
       _security_asset_id: inbound._security_asset_id ?? undefined,
+      multiplex: {
+        enabled: inbound.multiplex?.enabled ?? false,
+        padding: inbound.multiplex?.padding ?? false,
+        brutal: {
+          enabled: inbound.multiplex?.brutal?.enabled ?? false,
+          up_mbps: inbound.multiplex?.brutal?.up_mbps ?? 0,
+          down_mbps: inbound.multiplex?.brutal?.down_mbps ?? 0,
+        },
+      },
     };
   }
 

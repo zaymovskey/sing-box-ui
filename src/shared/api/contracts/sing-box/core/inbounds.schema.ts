@@ -142,10 +142,23 @@ export function addHysteria2CrossFieldValidation(
   }
 }
 
+const SingBoxVlessMultiplexBrutalSchema = z.object({
+  enabled: z.boolean(),
+  up_mbps: z.number().min(0),
+  down_mbps: z.number().min(0),
+});
+
+const SingBoxVlessMultiplexSchema = z.object({
+  enabled: z.boolean(),
+  padding: z.boolean(),
+  brutal: SingBoxVlessMultiplexBrutalSchema,
+});
+
 export const SingBoxVlessInboundSchema = SingBoxBaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(SingBoxVlessUserSchema).min(1),
   tls: SingBoxVlessTlsSchema.optional(),
+  multiplex: SingBoxVlessMultiplexSchema.optional(),
 });
 
 export const SingBoxHysteria2InboundSchema = SingBoxBaseInboundSchema.extend({
