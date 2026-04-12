@@ -60,6 +60,73 @@ function mapInboundMasqueradeToForm(
   };
 }
 
+function stringifyHeaders(
+  headers: Record<string, string> | undefined,
+): string | undefined {
+  if (!headers) {
+    return undefined;
+  }
+
+  return JSON.stringify(headers, null, 2);
+}
+
+function mapTransportToForm(
+  transport: Extract<StoredInbound, { type: "vless" }>["transport"],
+): Extract<InboundFormValues, { type: "vless" }>["transport"] {
+  if (!transport) {
+    return {
+      type: "disabled",
+    };
+  }
+
+  if (transport.type === "ws") {
+    return {
+      type: "ws",
+      path: transport.path ?? "",
+      headers: stringifyHeaders(transport.headers),
+      max_early_data: transport.max_early_data,
+      early_data_header_name: transport.early_data_header_name ?? "",
+    };
+  }
+
+  if (transport.type === "grpc") {
+    return {
+      type: "grpc",
+      service_name: transport.service_name,
+      idle_timeout: transport.idle_timeout ?? "",
+      ping_timeout: transport.ping_timeout ?? "",
+      permit_without_stream: transport.permit_without_stream ?? false,
+    };
+  }
+
+  if (transport.type === "http") {
+    return {
+      type: "http",
+      host: Array.isArray(transport.host)
+        ? transport.host.join(", ")
+        : (transport.host ?? ""),
+      path: transport.path ?? "",
+      method: transport.method ?? "",
+      headers: stringifyHeaders(transport.headers),
+      idle_timeout: transport.idle_timeout ?? "",
+      ping_timeout: transport.ping_timeout ?? "",
+    };
+  }
+
+  if (transport.type === "httpupgrade") {
+    return {
+      type: "httpupgrade",
+      host: transport.host ?? "",
+      path: transport.path ?? "",
+      headers: stringifyHeaders(transport.headers),
+    };
+  }
+
+  return {
+    type: "quic",
+  };
+}
+
 export function mapFormToInbound(values: InboundFormValues): SaveInboundInput {
   if (values.type === "vless") {
     return mapVlessFormToInbound(values);
@@ -99,6 +166,7 @@ export function mapInboundToFormValues(
           down_mbps: inbound.multiplex?.brutal?.down_mbps ?? 0,
         },
       },
+      transport: mapTransportToForm(inbound.transport),
     };
   }
 

@@ -15,6 +15,7 @@ import {
   mapMasqueradeFromRow,
   mapTlsFromSecurityAssetForHy2,
   mapTlsFromSecurityAssetForVless,
+  mapTransportFromRow,
   sqliteBoolToBoolean,
 } from "../../helpers";
 
@@ -56,7 +57,8 @@ export function getStoredInbounds(): StoredInbound[] {
           multiplex_padding,
           multiplex_brutal_enabled,
           multiplex_brutal_up_mbps,
-          multiplex_brutal_down_mbps
+          multiplex_brutal_down_mbps,
+          transport_json
         FROM inbound_vless
       `,
     )
@@ -177,6 +179,7 @@ export function getStoredInbounds(): StoredInbound[] {
             down_mbps: vlessRow?.multiplex_brutal_down_mbps ?? 0,
           },
         },
+        transport: vlessRow ? mapTransportFromRow(vlessRow) : undefined,
       };
 
       return inbound;

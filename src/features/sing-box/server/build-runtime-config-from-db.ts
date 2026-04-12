@@ -167,6 +167,7 @@ export function mapStoredInboundsToSingBox(
             down_mbps: stored.multiplex?.brutal?.down_mbps ?? 0,
           },
         },
+        transport: stored.transport,
         users: stored.users.map((user) => ({
           name: user.internal_name,
           uuid: user.uuid,

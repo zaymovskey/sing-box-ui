@@ -3,7 +3,11 @@ import { randomUUID } from "node:crypto";
 import { getDb } from "@/server/db/client";
 import { type OkResponse, type SaveInboundInput } from "@/shared/api/contracts";
 
-import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
+import {
+  booleanToSqliteBool,
+  mapMasqueradeToRow,
+  mapTransportToRow,
+} from "../../helpers";
 
 const sql = String.raw;
 
@@ -54,6 +58,8 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
     );
 
     if (saveInput.type === "vless") {
+      const transportRow = mapTransportToRow(saveInput.transport);
+
       db.prepare(
         sql`
           INSERT INTO inbound_vless (
@@ -64,9 +70,10 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
             multiplex_padding,
             multiplex_brutal_enabled,
             multiplex_brutal_up_mbps,
-            multiplex_brutal_down_mbps
+            multiplex_brutal_down_mbps,
+            transport_json
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
       ).run(
         inboundId,
@@ -77,6 +84,7 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
         booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
         saveInput.multiplex?.brutal?.up_mbps ?? 0,
         saveInput.multiplex?.brutal?.down_mbps ?? 0,
+        transportRow.transport_json,
       );
 
       saveInput.users.forEach((user, index) => {

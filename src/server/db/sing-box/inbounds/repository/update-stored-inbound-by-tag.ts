@@ -8,7 +8,11 @@ import {
   type SaveVlessInbound,
 } from "@/shared/api/contracts";
 
-import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
+import {
+  booleanToSqliteBool,
+  mapMasqueradeToRow,
+  mapTransportToRow,
+} from "../../helpers";
 
 const sql = String.raw;
 
@@ -291,6 +295,8 @@ export function updateStoredInboundByDisplayTag(
       );
 
       if (saveInput.type === "vless") {
+        const transportRow = mapTransportToRow(saveInput.transport);
+
         db.prepare(
           sql`
             DELETE FROM inbound_hysteria2
@@ -319,7 +325,8 @@ export function updateStoredInboundByDisplayTag(
                 multiplex_padding = ?,
                 multiplex_brutal_enabled = ?,
                 multiplex_brutal_up_mbps = ?,
-                multiplex_brutal_down_mbps = ?
+                multiplex_brutal_down_mbps = ?,
+                transport_json = ?
               WHERE inbound_id = ?
             `,
           ).run(
@@ -330,6 +337,7 @@ export function updateStoredInboundByDisplayTag(
             booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
             saveInput.multiplex?.brutal?.up_mbps ?? 0,
             saveInput.multiplex?.brutal?.down_mbps ?? 0,
+            transportRow.transport_json,
             inboundId,
           );
         } else {
@@ -343,9 +351,10 @@ export function updateStoredInboundByDisplayTag(
                 multiplex_padding,
                 multiplex_brutal_enabled,
                 multiplex_brutal_up_mbps,
-                multiplex_brutal_down_mbps
+                multiplex_brutal_down_mbps,
+                transport_json
               )
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
           ).run(
             inboundId,
@@ -356,6 +365,7 @@ export function updateStoredInboundByDisplayTag(
             booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
             saveInput.multiplex?.brutal?.up_mbps ?? 0,
             saveInput.multiplex?.brutal?.down_mbps ?? 0,
+            transportRow.transport_json,
           );
         }
 

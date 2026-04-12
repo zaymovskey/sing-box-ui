@@ -14,7 +14,7 @@ import { useInboundFormContext } from "../../model/inbound-form-ui.context";
 import { InboundFormHy2Fields } from "./hy2/InboundFormHy2Fields";
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
-import { InboundFormVlessFields } from "./InboundFormVlessFields";
+import { InboundFormVlessFields } from "./vless/InboundFormVlessFields";
 
 type InboundFormProps = {
   formId: string;

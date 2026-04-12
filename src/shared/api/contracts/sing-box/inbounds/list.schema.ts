@@ -5,6 +5,7 @@ import {
   Hysteria2BandwidthSchema,
   Hysteria2MasqueradeSchema,
   Hysteria2ObfsSchema,
+  SingBoxV2RayTransportSchema,
 } from "../core/inbounds.schema";
 import { SaveBaseInboundSchema, StoredBaseInboundSchema } from "./base.schema";
 import { StoredHysteria2TlsSchema, StoredVlessTlsSchema } from "./tls.schema";
@@ -35,6 +36,7 @@ export const StoredVlessInboundSchema = StoredBaseInboundSchema.extend({
   tls: StoredVlessTlsSchema.optional(),
   _security_asset_id: z.string().optional(),
   multiplex: StoredVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
   _tls_enabled: z.boolean().optional(),
 });
 
@@ -54,6 +56,7 @@ export const SaveVlessInboundSchema = SaveBaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(SaveVlessUserSchema).min(1),
   multiplex: SaveVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
   tls: StoredVlessTlsSchema.optional(),
   _security_asset_id: z.string().optional(),
   _tls_enabled: z.boolean().optional(),

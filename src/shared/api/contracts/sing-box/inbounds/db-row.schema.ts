@@ -55,6 +55,7 @@ export const InboundVlessRowSchema = z.object({
   multiplex_brutal_enabled: NullableSqliteBooleanSchema,
   multiplex_brutal_up_mbps: NullableNumberSchema,
   multiplex_brutal_down_mbps: NullableNumberSchema,
+  transport_json: NullableStringSchema,
 });
 
 export const InboundVlessRowsSchema = z.array(InboundVlessRowSchema);

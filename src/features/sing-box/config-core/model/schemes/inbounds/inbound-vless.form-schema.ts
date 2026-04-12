@@ -3,6 +3,7 @@ import z from "zod";
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
 const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
+const JsonStringSchema = z.string().trim();
 
 const VlessUserFormSchema = z.object({
   display_name: z.string().trim().min(1, "Нужен user_name"),
@@ -22,10 +23,82 @@ const VlessMultiplexSchema = z.object({
   brutal: VlessMultiplexBrutalSchema,
 });
 
+const VlessTransportWsSchema = z.object({
+  type: z.literal("ws"),
+  path: z.string().trim().optional(),
+  headers: JsonStringSchema.optional(),
+  max_early_data: z.number().int().min(0).optional(),
+  early_data_header_name: z.string().trim().optional(),
+});
+
+const VlessTransportGrpcSchema = z.object({
+  type: z.literal("grpc"),
+  service_name: z.string().trim().min(1, "Нужен service_name"),
+  idle_timeout: z.string().trim().optional(),
+  ping_timeout: z.string().trim().optional(),
+  permit_without_stream: z.boolean().optional(),
+});
+
+const VlessTransportHttpSchema = z.object({
+  type: z.literal("http"),
+  host: z.string().trim().optional(),
+  path: z.string().trim().optional(),
+  method: z.string().trim().optional(),
+  headers: JsonStringSchema.optional(),
+  idle_timeout: z.string().trim().optional(),
+  ping_timeout: z.string().trim().optional(),
+});
+
+const VlessTransportHttpUpgradeSchema = z.object({
+  type: z.literal("httpupgrade"),
+  host: z.string().trim().optional(),
+  path: z.string().trim().optional(),
+  headers: JsonStringSchema.optional(),
+});
+
+const VlessTransportQuicSchema = z.object({
+  type: z.literal("quic"),
+});
+
+const VlessTransportDisabledSchema = z.object({
+  type: z.literal("disabled"),
+});
+
+const VlessTransportSchema = z
+  .discriminatedUnion("type", [
+    VlessTransportWsSchema,
+    VlessTransportGrpcSchema,
+    VlessTransportHttpSchema,
+    VlessTransportHttpUpgradeSchema,
+    VlessTransportQuicSchema,
+    VlessTransportDisabledSchema,
+  ])
+  .superRefine((data, ctx) => {
+    if ("headers" in data && data.headers) {
+      validateJsonObjectString(data.headers, ctx, ["headers"]);
+    }
+
+    if (data.type === "http" && data.host) {
+      const hosts = data.host
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (hosts.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["host"],
+          message: "Host должен содержать хотя бы одно значение",
+        });
+      }
+    }
+  });
+
 export const VlessFormSchema = BaseInboundFormSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserFormSchema).min(1, "Нужен хотя бы один пользователь"),
   multiplex: VlessMultiplexSchema.optional(),
+  transport: VlessTransportSchema.optional(),
   _security_asset_id: z.string().trim().min(1).optional(),
   _tls_enabled: z.boolean(),
 }).superRefine((data, ctx) => {
@@ -43,6 +116,35 @@ const tlsValidate = (
       code: "custom",
       path: ["_security_asset_id"],
       message: "При включенном TLS необходимо выбрать TLS / Reality",
+    });
+  }
+};
+
+const validateJsonObjectString = (
+  value: string,
+  ctx: z.RefinementCtx,
+  path: (string | number)[],
+) => {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      Array.isArray(parsed) ||
+      Object.values(parsed).some((item) => typeof item !== "string")
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path,
+        message: 'Ожидается JSON-объект вида {"Header":"value"}',
+      });
+    }
+  } catch {
+    ctx.addIssue({
+      code: "custom",
+      path,
+      message: "Некорректный JSON",
     });
   }
 };

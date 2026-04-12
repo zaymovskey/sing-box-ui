@@ -115,6 +115,34 @@ export function mapMasqueradeToRow(
   };
 }
 
+export function mapTransportFromRow(row: {
+  transport_json: string | null;
+}): StoredVlessInbound["transport"] | undefined {
+  if (!row.transport_json) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(row.transport_json) as StoredVlessInbound["transport"];
+  } catch {
+    return undefined;
+  }
+}
+
+export function mapTransportToRow(transport: StoredVlessInbound["transport"]): {
+  transport_json: string | null;
+} {
+  if (!transport) {
+    return {
+      transport_json: null,
+    };
+  }
+
+  return {
+    transport_json: JSON.stringify(transport),
+  };
+}
+
 export function ensureInternalNames(input: SaveInboundInput): StoredInbound {
   return {
     ...input,

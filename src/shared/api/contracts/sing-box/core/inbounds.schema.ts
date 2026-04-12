@@ -87,6 +87,48 @@ export const SingBoxVlessTlsSchema = z.object({
   reality: SingBoxVlessRealitySchema.optional(),
 });
 
+const HeaderObjectSchema = z.record(z.string(), z.string());
+
+const HostSchema = z.union([
+  z.string().min(1),
+  z.array(z.string().min(1)).min(1),
+]);
+
+export const SingBoxV2RayTransportSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("ws"),
+    path: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+    max_early_data: z.number().int().nonnegative().optional(),
+    early_data_header_name: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("grpc"),
+    service_name: NonEmptyStringSchema,
+    idle_timeout: z.string().optional(),
+    ping_timeout: z.string().optional(),
+    permit_without_stream: z.boolean().optional(),
+  }),
+  z.object({
+    type: z.literal("http"),
+    host: HostSchema.optional(),
+    path: z.string().optional(),
+    method: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+    idle_timeout: z.string().optional(),
+    ping_timeout: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("httpupgrade"),
+    host: NonEmptyStringSchema.optional(),
+    path: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+  }),
+  z.object({
+    type: z.literal("quic"),
+  }),
+]);
+
 export const Hysteria2ObfsSchema = z.object({
   type: z.literal("salamander").optional(),
   password: z.string().optional(),
@@ -159,6 +201,7 @@ export const SingBoxVlessInboundSchema = SingBoxBaseInboundSchema.extend({
   users: z.array(SingBoxVlessUserSchema).min(1),
   tls: SingBoxVlessTlsSchema.optional(),
   multiplex: SingBoxVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
 });
 
 export const SingBoxHysteria2InboundSchema = SingBoxBaseInboundSchema.extend({
@@ -184,6 +227,7 @@ export type SingBoxHysteria2User = z.infer<typeof SingBoxHysteria2UserSchema>;
 
 export type SingBoxVlessReality = z.infer<typeof SingBoxVlessRealitySchema>;
 export type SingBoxVlessTls = z.infer<typeof SingBoxVlessTlsSchema>;
+export type SingBoxV2RayTransport = z.infer<typeof SingBoxV2RayTransportSchema>;
 
 export type SingBoxHysteria2Tls = z.infer<typeof SingBoxHysteria2TlsSchema>;
 

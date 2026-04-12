@@ -26,6 +26,9 @@ export const defaultsByType = {
         down_mbps: 0,
       },
     },
+    transport: {
+      type: "disabled",
+    },
   },
   hysteria2: {
     type: "hysteria2",
