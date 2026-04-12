@@ -177,6 +177,13 @@ export function mapInboundToFormValues(
       up_mbps: inbound.up_mbps ?? 1,
       down_mbps: inbound.down_mbps ?? 1,
       ignore_client_bandwidth: inbound.ignore_client_bandwidth ?? false,
+      bbr_profile:
+        inbound.bbr_profile === "conservative" ||
+        inbound.bbr_profile === "aggressive" ||
+        inbound.bbr_profile === "standard"
+          ? inbound.bbr_profile
+          : "standard",
+      brutal_debug: inbound.brutal_debug ?? false,
       users: inbound.users?.map((user) => ({
         display_name: user.display_name ?? "",
         password: user.password ?? "",

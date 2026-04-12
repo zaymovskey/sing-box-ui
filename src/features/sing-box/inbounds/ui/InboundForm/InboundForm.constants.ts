@@ -43,6 +43,8 @@ export const defaultsByType = {
     ignore_client_bandwidth: false,
     obfs_enabled: false,
     obfs_password: "",
+    bbr_profile: "standard",
+    brutal_debug: false,
     _security_asset_id: undefined,
     masquerade: {
       type: "disabled",

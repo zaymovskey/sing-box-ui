@@ -2,6 +2,8 @@ import z from "zod";
 
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
+const Hy2BbrProfileSchema = z.enum(["conservative", "standard", "aggressive"]);
+
 const Hy2UserSchema = z.object({
   display_name: z.string().trim().min(1, "Укажите имя пользователя"),
   password: z.string().trim().min(1, "Укажите пароль"),
@@ -40,6 +42,8 @@ export const Hy2FormSchema = BaseInboundFormSchema.extend({
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
   obfs_enabled: z.boolean(),
   obfs_password: z.string().trim().optional(),
+  bbr_profile: Hy2BbrProfileSchema,
+  brutal_debug: z.boolean(),
   _security_asset_id: z.string().trim().min(1).optional(),
   masquerade: Hy2MasqueradeSchema,
 }).superRefine((data, ctx) => {

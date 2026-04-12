@@ -34,6 +34,12 @@ export function InboundFormHy2Fields() {
       label: asset.name,
     })) ?? [];
 
+  const bbrProfileOptions: SelectFieldItem[] = [
+    { label: "Консервативный", value: "conservative" },
+    { label: "Стандартный", value: "standard" },
+    { label: "Агрессивный", value: "aggressive" },
+  ];
+
   const {
     fields: users,
     append,
@@ -188,6 +194,31 @@ export function InboundFormHy2Fields() {
             ожидать эти значения от клиента и будет использовать серверные
             настройки по умолчанию.
           </p>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <SubsectionTitle
+          description="Настройки профиля BBR и отладочного режима brutal. В большинстве случаев достаточно оставить стандартный профиль и не включать отладку."
+          title="BBR и отладка"
+        />
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <ControlledSelectField<InboundFormValues>
+            items={bbrProfileOptions}
+            label="Профиль BBR"
+            name="bbr_profile"
+            placeholder="Выберите профиль BBR"
+          />
+
+          <ControlledSwitchField<InboundFormValues>
+            className="h-fit"
+            label="Отладка brutal"
+            name="brutal_debug"
+            placeholder="Включить подробный лог/отладку для brutal-режима"
+          />
         </div>
       </div>
 

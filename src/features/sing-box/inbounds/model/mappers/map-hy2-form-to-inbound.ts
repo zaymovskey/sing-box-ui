@@ -67,6 +67,8 @@ export function mapHy2FormToInbound(
           password: values.obfs_password?.trim() || undefined,
         }
       : undefined,
+    bbr_profile: values.bbr_profile,
+    brutal_debug: values.brutal_debug,
     masquerade: mapMasquerade(values.masquerade),
   };
 }
