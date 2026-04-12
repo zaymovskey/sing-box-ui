@@ -60,7 +60,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["handshake"],
-        message: "Reality handshake is required when reality is enabled",
+        message: "При включенном Reality необходимо указать handshake",
       });
     }
 
@@ -68,7 +68,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["private_key"],
-        message: "Reality private_key is required when reality is enabled",
+        message: "При включенном Reality необходимо указать private_key",
       });
     }
 
@@ -76,7 +76,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["short_id"],
-        message: "Reality short_id is required when reality is enabled",
+        message: "При включенном Reality необходимо указать short_id",
       });
     }
   });
@@ -171,7 +171,8 @@ export function addHysteria2CrossFieldValidation(
     ctx.addIssue({
       code: "custom",
       path: ["ignore_client_bandwidth"],
-      message: "ignore_client_bandwidth conflicts with up_mbps/down_mbps",
+      message:
+        "ignore_client_bandwidth нельзя использовать вместе с up_mbps/down_mbps",
     });
   }
 
@@ -179,7 +180,7 @@ export function addHysteria2CrossFieldValidation(
     ctx.addIssue({
       code: "custom",
       path: ["obfs", "type"],
-      message: "Obfs type is required when obfs password is set",
+      message: "Если указан пароль obfs, необходимо указать и тип obfs",
     });
   }
 }

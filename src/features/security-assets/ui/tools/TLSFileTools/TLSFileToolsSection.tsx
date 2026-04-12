@@ -172,9 +172,12 @@ export function TLSFileToolsSection() {
     ]);
 
     if (!isValid) {
-      clientToast.error("Заполните serverName, certificate path и key path", {
-        duration: 3000,
-      });
+      clientToast.error(
+        "Заполните Server Name, путь к сертификату и путь к ключу",
+        {
+          duration: 3000,
+        },
+      );
       return;
     }
 
@@ -275,7 +278,7 @@ export function TLSFileToolsSection() {
 
       <UncontrolledPathField<SecurityAssetFormValues>
         className="mb-5"
-        label="Certificate path (.crt)"
+        label="Путь к сертификату (.crt)"
         name="source.certificatePath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
         placeholder="cert.crt"
@@ -283,7 +286,7 @@ export function TLSFileToolsSection() {
 
       <UncontrolledPathField<SecurityAssetFormValues>
         className="mb-5"
-        label="Key path (.key)"
+        label="Путь к ключу (.key)"
         name="source.keyPath"
         path={clientEnv.NEXT_PUBLIC_SINGBOX_CERTS_DIR}
         placeholder="key.key"

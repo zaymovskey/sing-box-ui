@@ -15,11 +15,11 @@ import {
 import { useInboundFormContext } from "../../../model/inbound-form-ui.context";
 
 const masqueradeTypeItems: SelectFieldItem[] = [
-  { label: "Disabled", value: "disabled" },
-  { label: "URL (simple)", value: "url" },
-  { label: "File server", value: "file_server" },
+  { label: "Отключена", value: "disabled" },
+  { label: "URL (простой режим)", value: "url" },
+  { label: "Файловый сервер", value: "file_server" },
   { label: "Reverse proxy", value: "reverse_proxy" },
-  { label: "Fixed response", value: "fixed_response" },
+  { label: "Фиксированный ответ", value: "fixed_response" },
 ];
 
 export function Hy2MasqueradeField() {
@@ -45,12 +45,12 @@ export function Hy2MasqueradeField() {
     initialMasqueradeType;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="space-y-4">
       <ControlledSelectField<InboundFormValues>
         items={masqueradeTypeItems}
-        label="Masquerade type"
+        label="Режим маскировки"
         name="masquerade.type"
-        placeholder="Выберите masquerade"
+        placeholder="Выберите режим маскировки"
         onValueChangeExternal={() => {
           form.clearErrors("masquerade");
           if (form.formState.submitCount > 0) {
@@ -69,43 +69,47 @@ export function Hy2MasqueradeField() {
 
       {selectedMasqueradeType === "file_server" && (
         <UncontrolledTextField<InboundFormValues>
-          label="Directory"
+          label="Директория"
           name="masquerade.directory"
-          placeholder="/path/to/directory"
+          placeholder="/var/www/html"
         />
       )}
 
       {selectedMasqueradeType === "reverse_proxy" && (
-        <>
+        <div className="space-y-4">
           <UncontrolledTextField<InboundFormValues>
+            label="Upstream URL"
             name="masquerade.url"
             placeholder="https://example.com"
           />
           <ControlledSwitchField<InboundFormValues>
             label="Rewrite host"
             name="masquerade.rewrite_host"
+            placeholder="Подменять заголовок Host на адрес upstream-сервера"
           />
-        </>
+        </div>
       )}
 
       {selectedMasqueradeType === "fixed_response" && (
-        <>
+        <div className="space-y-4">
           <UncontrolledNumberField<InboundFormValues>
             label="Status code"
             name="masquerade.status_code"
             placeholder="200"
           />
           <UncontrolledTextareaField<InboundFormValues>
-            label="Content"
+            label="Контент"
             name="masquerade.content"
-            placeholder="Content"
+            placeholder="Hello from sing-box"
+            rows={4}
           />
-          <UncontrolledTextField<InboundFormValues>
+          <UncontrolledTextareaField<InboundFormValues>
             label="Headers"
             name="masquerade.headers"
-            placeholder="Headers"
+            placeholder='{"Content-Type":"text/plain; charset=utf-8"}'
+            rows={4}
           />
-        </>
+        </div>
       )}
     </div>
   );

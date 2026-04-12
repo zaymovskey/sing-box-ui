@@ -21,22 +21,22 @@ export function RealityTools({
   return (
     <div
       className={cn(
-        "space-y-4 rounded-lg border p-4",
+        "bg-muted/20 space-y-4 rounded-lg border p-4",
         disabled && "opacity-70",
       )}
     >
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        label="Reality private key"
+        label="Приватный ключ Reality"
         name="privateKey"
-        placeholder="private_key"
+        placeholder="Ключ будет подставлен после генерации"
         showErrorMessage={false}
       />
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        label="Reality public key"
+        label="Публичный ключ Reality"
         name="_publicKey"
-        placeholder="public_key"
+        placeholder="Ключ будет подставлен после генерации"
         showErrorMessage={false}
       />
       {error && (
@@ -46,6 +46,15 @@ export function RealityTools({
           </p>
         </div>
       )}
+
+      <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+        <p className="text-muted-foreground">
+          Генератор создаёт пару ключей Reality и сразу подставляет их в форму.
+          Обычно этого достаточно, если ты не переносишь уже существующую
+          конфигурацию.
+        </p>
+      </div>
+
       <div className="flex justify-end">
         <Button
           disabled={disabled}

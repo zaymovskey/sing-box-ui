@@ -3,8 +3,8 @@ import z from "zod";
 import { BaseInboundFormSchema } from "./inbound-base.form-schema";
 
 const Hy2UserSchema = z.object({
-  display_name: z.string().trim().min(1, "Нужен user_name"),
-  password: z.string().trim().min(1, "Нужен password"),
+  display_name: z.string().trim().min(1, "Укажите имя пользователя"),
+  password: z.string().trim().min(1, "Укажите пароль"),
 });
 
 const Hy2MasqueradeSchema = z.object({
@@ -34,8 +34,8 @@ const Hy2MasqueradeSchema = z.object({
 
 export const Hy2FormSchema = BaseInboundFormSchema.extend({
   type: z.literal("hysteria2"),
-  up_mbps: z.number().int().min(1, "Нужен up_mbps").optional(),
-  down_mbps: z.number().int().min(1, "Нужен down_mbps").optional(),
+  up_mbps: z.number().int().min(1, "Укажите up_mbps").optional(),
+  down_mbps: z.number().int().min(1, "Укажите down_mbps").optional(),
   ignore_client_bandwidth: z.boolean(),
   users: z.array(Hy2UserSchema).min(1, "Нужен хотя бы один пользователь"),
   obfs_enabled: z.boolean(),
@@ -58,7 +58,7 @@ const obfsValidate = (
     ctx.addIssue({
       code: "custom",
       path: ["obfs_password"],
-      message: "Укажите obfs password",
+      message: "Укажите пароль obfs",
     });
   }
 };
@@ -150,7 +150,7 @@ const masqueradeValidate = (
       ctx.addIssue({
         code: "custom",
         path: ["masquerade", "url_string"],
-        message: "Укажите URL для masquerade",
+        message: "Укажите URL для маскировки",
       });
       return;
     }
@@ -171,7 +171,7 @@ const masqueradeValidate = (
       ctx.addIssue({
         code: "custom",
         path: ["masquerade", "directory"],
-        message: "Укажите directory для file server",
+        message: "Укажите директорию для файлового сервера",
       });
     }
 
@@ -232,7 +232,7 @@ const masqueradeValidate = (
     ctx.addIssue({
       code: "custom",
       path: ["masquerade", "headers"],
-      message: "Headers должен быть валидным JSON",
+      message: "Headers должен быть корректным JSON",
     });
     return;
   }

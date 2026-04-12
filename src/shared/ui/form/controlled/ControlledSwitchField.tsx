@@ -8,6 +8,7 @@ import {
   useWatch,
 } from "react-hook-form";
 
+import { cn } from "../../../lib/client/cn";
 import { Switch } from "../../switch";
 import { FormItem, FormLabel } from "../form";
 
@@ -16,9 +17,11 @@ type SwitchFieldProps<T extends FieldValues> = {
   label: string;
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 };
 
 export function ControlledSwitchField<T extends FieldValues>({
+  className,
   name,
   label,
   placeholder,
@@ -36,12 +39,19 @@ export function ControlledSwitchField<T extends FieldValues>({
   }, [form, name]);
 
   return (
-    <FormItem className="flex items-center justify-between rounded-md border p-3">
+    <FormItem
+      className={cn(
+        "flex items-center justify-between rounded-md border p-3",
+        className,
+      )}
+    >
       <div className="space-y-1">
         <FormLabel className={error ? "text-destructive" : undefined}>
           {label}
         </FormLabel>
-        <div className="text-muted-foreground text-xs">{placeholder}</div>
+        {placeholder && (
+          <div className="text-muted-foreground text-xs">{placeholder}</div>
+        )}
       </div>
 
       <Switch

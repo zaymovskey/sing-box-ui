@@ -109,7 +109,10 @@ export function InboundFormVlessFields() {
 
         <div className="space-y-4">
           {users.map((user, index) => (
-            <div key={user.id} className="space-y-4 rounded-lg border p-4">
+            <div
+              key={user.id}
+              className="bg-muted/20 space-y-4 rounded-lg border p-4"
+            >
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Пользователь {index + 1}</h4>
 
@@ -126,23 +129,23 @@ export function InboundFormVlessFields() {
 
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <UncontrolledTextField<InboundFormValues>
-                  label="User name"
+                  label="Имя пользователя"
                   name={`users.${index}.display_name`}
-                  placeholder="user"
+                  placeholder="iPhone, Laptop, Home PC"
                 />
 
                 <UncontrolledInputWithGenerateField<InboundFormValues>
                   generateFunction={() => generateClientUuid()}
                   label="UUID"
                   name={`users.${index}.uuid`}
-                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  placeholder="Нажмите Generate или вставьте готовый UUID"
                 />
 
                 <ControlledSelectField<InboundFormValues>
                   items={flowOptions}
-                  label="Flow (optional)"
+                  label="Flow"
                   name={`users.${index}.flow`}
-                  placeholder="Выберите flow"
+                  placeholder="Выберите flow или оставьте пустым"
                 />
               </div>
             </div>
@@ -159,38 +162,49 @@ export function InboundFormVlessFields() {
       <div className="space-y-4">
         <SubsectionTitle
           description="Дополнительная настройка VLESS для мультиплексирования нескольких потоков внутри одного соединения. Обычно не нужна и включается только если вы точно понимаете, зачем она нужна."
-          title="Multiplex"
+          title="Мультиплексирование"
         />
         <ControlledSwitchField<InboundFormValues>
-          label="Multiplex enabled"
+          label="Включить multiplex"
           name="multiplex.enabled"
+          placeholder="Разрешить несколько логических потоков внутри одного соединения"
         />
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <ControlledSwitchField<InboundFormValues>
             disabled={!multiplexEnabled}
-            label="Multiplex padding"
+            label="Padding"
             name="multiplex.padding"
+            placeholder="Добавлять padding для более ровного профиля трафика"
           />
 
           <ControlledSwitchField<InboundFormValues>
             disabled={!multiplexEnabled}
-            label="Multiplex brutal enabled"
+            label="Brutal"
             name="multiplex.brutal.enabled"
+            placeholder="Включить brutal congestion control для multiplex"
           />
           <UncontrolledNumberField<InboundFormValues>
             disabled={!multiplexBrutalEnabled}
-            label="Multiplex brutal up (Mbps)"
+            label="Brutal up (Mbps)"
             name="multiplex.brutal.up_mbps"
             placeholder="100"
           />
 
           <UncontrolledNumberField<InboundFormValues>
             disabled={!multiplexBrutalEnabled}
-            label="Multiplex brutal down (Mbps)"
+            label="Brutal down (Mbps)"
             name="multiplex.brutal.down_mbps"
             placeholder="100"
           />
+        </div>
+
+        <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+          <p className="text-muted-foreground">
+            Если не знаешь, нужен ли тебе `multiplex`, почти всегда правильный
+            ответ: нет. Включай его только если клиентская сторона настроена так
+            же.
+          </p>
         </div>
       </div>
 
@@ -199,7 +213,7 @@ export function InboundFormVlessFields() {
       <div className="space-y-4">
         <SubsectionTitle
           description="Дополнительная настройка транспорта VLESS, например WebSocket или gRPC. В большинстве случаев можно не использовать."
-          title="Transport"
+          title="Транспорт"
         />
 
         <VlessTransportField />
@@ -214,8 +228,9 @@ export function InboundFormVlessFields() {
         />
 
         <ControlledSwitchField<InboundFormValues>
-          label="Reality enabled"
+          label="Включить Reality"
           name="_tls_enabled"
+          placeholder="Использовать TLS/Reality из выбранного security asset"
         />
 
         <ControlledSelectField<InboundFormValues>
@@ -224,7 +239,7 @@ export function InboundFormVlessFields() {
           label="Reality asset"
           loading={securityAssetsListLoading}
           name="_security_asset_id"
-          placeholder="Выберите Reality asset"
+          placeholder="Выберите asset с Reality-конфигурацией"
         />
 
         <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">

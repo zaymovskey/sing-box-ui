@@ -73,9 +73,9 @@ export function SecurityAssetForm({
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <UncontrolledTextField<SecurityAssetFormValues>
-              label="Name"
+              label="Имя"
               name="name"
-              placeholder="my-security-asset"
+              placeholder="my-tls-asset"
             />
 
             <UncontrolledTextField<SecurityAssetFormValues>
@@ -94,7 +94,7 @@ export function SecurityAssetForm({
                 : "Настройте параметры Reality, handshake и сгенерируйте ключевую пару."
             }
             title={
-              watchedType === "tls" ? "TLS настройки" : "Reality настройки"
+              watchedType === "tls" ? "Настройки TLS" : "Настройки Reality"
             }
           />
 

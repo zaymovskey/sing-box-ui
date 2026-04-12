@@ -6,7 +6,7 @@ const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
 const JsonStringSchema = z.string().trim();
 
 const VlessUserFormSchema = z.object({
-  display_name: z.string().trim().min(1, "Нужен user_name"),
+  display_name: z.string().trim().min(1, "Укажите имя пользователя"),
   uuid: z.uuid("Нужен UUID"),
   flow: VlessFlowSchema.optional(),
 });
@@ -33,7 +33,7 @@ const VlessTransportWsSchema = z.object({
 
 const VlessTransportGrpcSchema = z.object({
   type: z.literal("grpc"),
-  service_name: z.string().trim().min(1, "Нужен service_name"),
+  service_name: z.string().trim().min(1, "Укажите service_name"),
   idle_timeout: z.string().trim().optional(),
   ping_timeout: z.string().trim().optional(),
   permit_without_stream: z.boolean().optional(),
@@ -190,14 +190,14 @@ const multiplexBrutalValidate = (
       ctx.addIssue({
         code: "custom",
         path: ["multiplex.brutal.up_mbps"],
-        message: "Multiplex brutal up must be greater than 0",
+        message: "Значение brutal up должно быть больше 0",
       });
     }
     if (data.multiplex?.brutal?.down_mbps <= 0) {
       ctx.addIssue({
         code: "custom",
         path: ["multiplex.brutal.down_mbps"],
-        message: "Multiplex brutal down must be greater than 0",
+        message: "Значение brutal down должно быть больше 0",
       });
     }
   }

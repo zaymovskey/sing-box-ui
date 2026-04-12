@@ -112,7 +112,10 @@ export function InboundFormHy2Fields() {
 
         <div className="space-y-4">
           {users.map((user, index) => (
-            <div key={user.id} className="space-y-4 rounded-lg border p-4">
+            <div
+              key={user.id}
+              className="bg-muted/20 space-y-4 rounded-lg border p-4"
+            >
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Пользователь {index + 1}</h4>
 
@@ -129,15 +132,15 @@ export function InboundFormHy2Fields() {
 
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <UncontrolledTextField<InboundFormValues>
-                  label="User name"
+                  label="Имя пользователя"
                   name={`users.${index}.display_name`}
-                  placeholder="user"
+                  placeholder="iPhone, Laptop, Home PC"
                 />
 
                 <UncontrolledTextField<InboundFormValues>
-                  label="Password"
+                  label="Пароль"
                   name={`users.${index}.password`}
-                  placeholder="password"
+                  placeholder="Секрет для подключения клиента"
                 />
               </div>
             </div>
@@ -158,24 +161,33 @@ export function InboundFormHy2Fields() {
         />
 
         <ControlledSwitchField<InboundFormValues>
-          label="Ignore client bandwidth"
+          label="Игнорировать bandwidth клиента"
           name="ignore_client_bandwidth"
+          placeholder="Сервер не будет требовать `up_mbps` и `down_mbps` от клиента"
         />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledNumberField<InboundFormValues>
             disabled={ignoreClientBandwidth}
-            label="Up (Mbps)"
+            label="Upstream (Mbps)"
             name="up_mbps"
             placeholder="100"
           />
 
           <UncontrolledNumberField<InboundFormValues>
             disabled={ignoreClientBandwidth}
-            label="Down (Mbps)"
+            label="Downstream (Mbps)"
             name="down_mbps"
             placeholder="100"
           />
+        </div>
+
+        <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+          <p className="text-muted-foreground">
+            Если включить игнорирование bandwidth клиента, sing-box перестанет
+            ожидать эти значения от клиента и будет использовать серверные
+            настройки по умолчанию.
+          </p>
         </div>
       </div>
 
@@ -184,19 +196,20 @@ export function InboundFormHy2Fields() {
       <div className="space-y-4">
         <SubsectionTitle
           description="Дополнительная маскировка трафика. Обычно используется только если это действительно нужно вашему сценарию."
-          title="Obfuscation"
+          title="Обфускация"
         />
 
         <ControlledSwitchField<InboundFormValues>
-          label="Enable obfs"
+          label="Включить obfs"
           name="obfs_enabled"
+          placeholder="Использовать salamander obfuscation для клиентов Hysteria2"
         />
 
         <UncontrolledTextField<InboundFormValues>
           disabled={!obfsEnabled}
-          label="Obfs password"
+          label="Пароль obfs"
           name="obfs_password"
-          placeholder="secret"
+          placeholder="Общий пароль для obfuscation"
         />
       </div>
 
@@ -205,7 +218,7 @@ export function InboundFormHy2Fields() {
       <div className="space-y-4">
         <SubsectionTitle
           description="Что отвечать по HTTP/3, если клиент не прошёл аутентификацию (маскировка под обычный сервис)."
-          title="Masquerade"
+          title="Маскировка"
         />
 
         <Hy2MasqueradeField />
@@ -224,7 +237,7 @@ export function InboundFormHy2Fields() {
           label="TLS asset"
           loading={securityAssetsListPending}
           name="_security_asset_id"
-          placeholder="Выберите TLS asset"
+          placeholder="Выберите asset с сертификатом и ключом"
         />
 
         <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">

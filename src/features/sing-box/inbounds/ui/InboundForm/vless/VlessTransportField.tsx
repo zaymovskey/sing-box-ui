@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui";
 
 const transportTypeOptions: SelectFieldItem<string>[] = [
-  { label: "Disabled", value: "disabled" },
+  { label: "Отключен", value: "disabled" },
   { label: "WebSocket", value: "ws" },
   { label: "gRPC", value: "grpc" },
   { label: "HTTP", value: "http" },
@@ -28,36 +28,46 @@ export function VlessTransportField() {
   });
 
   return (
-    <div>
+    <div className="space-y-4">
       <ControlledSelectField<InboundFormValues>
-        className="mb-4"
+        className="mb-1"
         items={transportTypeOptions}
-        label="Transport type"
+        label="Транспорт"
         name="transport.type"
-        placeholder="Выберите тип транспорта"
+        placeholder="Выберите транспорт VLESS"
         showErrorMessage={false}
       />
+
+      <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+        <p className="text-muted-foreground">
+          В большинстве случаев транспорт не нужен. Используйте его только если
+          клиент и сервер действительно должны работать через `ws`, `grpc`,
+          `http`, `httpupgrade` или `quic`.
+        </p>
+      </div>
+
       {transportType === "grpc" && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <UncontrolledTextField<InboundFormValues>
             label="Service name"
             name="transport.service_name"
-            placeholder="Введите service name"
+            placeholder="my-grpc-service"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Idle timeout"
             name="transport.idle_timeout"
-            placeholder="Введите idle timeout"
+            placeholder="15s"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Ping timeout"
             name="transport.ping_timeout"
-            placeholder="Введите ping timeout"
+            placeholder="15s"
           />
           <ControlledSwitchField<InboundFormValues>
+            className="h-fit"
             label="Permit without stream"
             name="transport.permit_without_stream"
-            placeholder="Введите permit without stream"
+            placeholder="Разрешить HTTP/2 PING без активных стримов"
           />
         </div>
       )}
@@ -67,17 +77,17 @@ export function VlessTransportField() {
           <UncontrolledTextField<InboundFormValues>
             label="Host"
             name="transport.host"
-            placeholder="Введите host"
+            placeholder="example.com, cdn.example.com"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Path"
             name="transport.path"
-            placeholder="Введите path"
+            placeholder="/vless-http"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Method"
             name="transport.method"
-            placeholder="Введите method"
+            placeholder="PUT"
           />
           <UncontrolledTextareaField<InboundFormValues>
             label="Headers"
@@ -88,12 +98,12 @@ export function VlessTransportField() {
           <UncontrolledTextField<InboundFormValues>
             label="Idle timeout"
             name="transport.idle_timeout"
-            placeholder="Введите idle timeout"
+            placeholder="15s"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Ping timeout"
             name="transport.ping_timeout"
-            placeholder="Введите ping timeout"
+            placeholder="15s"
           />
         </div>
       )}
@@ -103,7 +113,7 @@ export function VlessTransportField() {
           <UncontrolledTextField<InboundFormValues>
             label="Path"
             name="transport.path"
-            placeholder="Введите path"
+            placeholder="/ws"
           />
           <UncontrolledTextareaField<InboundFormValues>
             label="Headers"
@@ -114,12 +124,12 @@ export function VlessTransportField() {
           <UncontrolledNumberField<InboundFormValues>
             label="Max early data"
             name="transport.max_early_data"
-            placeholder="Введите max early data"
+            placeholder="2048"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Early data header name"
             name="transport.early_data_header_name"
-            placeholder="Введите early data header name"
+            placeholder="Sec-WebSocket-Protocol"
           />
         </div>
       )}
@@ -129,12 +139,12 @@ export function VlessTransportField() {
           <UncontrolledTextField<InboundFormValues>
             label="Host"
             name="transport.host"
-            placeholder="Введите host"
+            placeholder="example.com"
           />
           <UncontrolledTextField<InboundFormValues>
             label="Path"
             name="transport.path"
-            placeholder="Введите path"
+            placeholder="/upgrade"
           />
           <UncontrolledTextareaField<InboundFormValues>
             label="Headers"
@@ -145,7 +155,14 @@ export function VlessTransportField() {
         </div>
       )}
 
-      {transportType === "quic" && <>{/* Ничего */}</>}
+      {transportType === "quic" && (
+        <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+          <p className="text-muted-foreground">
+            Для `quic` дополнительных полей не требуется. Достаточно выбрать
+            этот тип транспорта.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
