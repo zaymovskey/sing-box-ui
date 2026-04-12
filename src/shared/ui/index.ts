@@ -42,6 +42,7 @@ export {
   FormProvider,
   useFormField,
 } from "./form/form";
+export { FormDebugPanel } from "./form/FormDebugPanel";
 export { RootErrorMessage } from "./form/RootErrorMessage";
 export { UncontrolledHiddenField } from "./form/uncontrolled/UncontrolledHiddenField";
 export { UncontrolledNumberField } from "./form/uncontrolled/UncontrolledNumberField";

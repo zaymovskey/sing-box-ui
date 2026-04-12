@@ -2,8 +2,10 @@
 
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
+import { clientEnv } from "@/shared/lib";
 import {
   ControlledSelectField,
+  FormDebugPanel,
   SectionTitle,
   UncontrolledTextField,
 } from "@/shared/ui";
@@ -103,6 +105,10 @@ export function SecurityAssetForm({
           {watchedType === "reality" && <SecurityAssetFormRealityFields />}
         </section>
       </form>
+
+      {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+        <FormDebugPanel form={form} />
+      )}
     </FormProvider>
   );
 }

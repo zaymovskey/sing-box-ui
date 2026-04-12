@@ -3,7 +3,12 @@
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
-import { ControlledSelectField, SectionTitle } from "@/shared/ui";
+import { clientEnv } from "@/shared/lib";
+import {
+  ControlledSelectField,
+  FormDebugPanel,
+  SectionTitle,
+} from "@/shared/ui";
 
 import { useInboundFormContext } from "../../model/inbound-form-ui.context";
 import { InboundFormHy2Fields } from "./hy2/InboundFormHy2Fields";
@@ -86,6 +91,10 @@ export function InboundForm({
           {type === "hysteria2" && <InboundFormHy2Fields />}
         </section>
       </form>
+
+      {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+        <FormDebugPanel form={form} />
+      )}
     </FormProvider>
   );
 }
