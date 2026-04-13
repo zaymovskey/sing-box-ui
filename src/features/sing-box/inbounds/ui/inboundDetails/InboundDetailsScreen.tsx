@@ -238,7 +238,7 @@ export function InboundDetailsScreen({
       {initialValues && (
         <>
           <Card className="gap-0 overflow-hidden py-0">
-            <div className="px-6 py-6">
+            <div className="mx-auto max-w-3xl px-6 py-6">
               <InboundFormProvider
                 contextValue={{ mode: "edit", initialValues }}
               >
