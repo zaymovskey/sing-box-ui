@@ -39,6 +39,7 @@ export function InboundShareQrDialog({
     if (copied) {
       clientToast.success("Ссылка скопирована в буфер обмена", {
         duration: 3000,
+        id: "inbound-share-qr-dialog-success-copy",
       });
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1000);
