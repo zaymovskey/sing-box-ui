@@ -54,6 +54,7 @@ export function InboundUserRow({
     if (copied) {
       clientToast.success("Ссылка скопирована в буфер обмена", {
         duration: 3000,
+        id: "inbound-user-row-success-copy",
       });
       if (host === "localhost") {
         clientToast.error(
@@ -72,7 +73,7 @@ export function InboundUserRow({
             <Separator />
             <div>4. Убедитесь что порт открыт в firewall.</div>
           </div>,
-          { ...sonnerErrorCloseButton },
+          { ...sonnerErrorCloseButton, id: "localhost-inbound-user-row-info" },
         );
       }
       setIsCopied(true);

@@ -3,6 +3,7 @@ export { deleteStoredInboundByInternalTag } from "./repository/delete-stored-inb
 export { getStoredInboundByInternalTag } from "./repository/get-inbound-by-internal-tag";
 export { getInboundUserByInternalName } from "./repository/get-inbound-user-by-internal-name";
 export { getInboundsStats } from "./repository/get-inbounds-stats";
+export { getStoredInboundDetailsByInternalTag } from "./repository/get-stored-inbound-details-by-internal-tag";
 export { getStoredInbounds } from "./repository/get-stored-inbounds";
 export { updateInboundUserTraffic } from "./repository/update-inbound-user-traffic";
 export { updateStoredInboundByDisplayTag } from "./repository/update-stored-inbound-by-tag";

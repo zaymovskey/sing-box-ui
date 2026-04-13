@@ -15,6 +15,7 @@ import {
   mapMasqueradeFromRow,
   mapTlsFromSecurityAssetForHy2,
   mapTlsFromSecurityAssetForVless,
+  mapTransportFromRow,
   sqliteBoolToBoolean,
 } from "../../helpers";
 
@@ -34,7 +35,6 @@ export function getStoredInbounds(): StoredInbound[] {
           listen,
           listen_port,
           sniff,
-          sniff_override_destination,
           security_asset_id,
           created_at,
           updated_at
@@ -51,7 +51,13 @@ export function getStoredInbounds(): StoredInbound[] {
         SELECT
           inbound_id,
           tls_enabled,
-          reality_public_key
+          reality_public_key,
+          multiplex_enabled,
+          multiplex_padding,
+          multiplex_brutal_enabled,
+          multiplex_brutal_up_mbps,
+          multiplex_brutal_down_mbps,
+          transport_json
         FROM inbound_vless
       `,
     )
@@ -68,11 +74,7 @@ export function getStoredInbounds(): StoredInbound[] {
           ignore_client_bandwidth,
           obfs_type,
           obfs_password,
-          masquerade_string,
-          masquerade_type,
-          masquerade_file,
-          masquerade_directory,
-          masquerade_url,
+          masquerade_json,
           bbr_profile,
           brutal_debug
         FROM inbound_hysteria2
@@ -152,9 +154,6 @@ export function getStoredInbounds(): StoredInbound[] {
         listen: row.listen ?? undefined,
         listen_port: row.listen_port ?? undefined,
         sniff: sqliteBoolToBoolean(row.sniff),
-        sniff_override_destination: sqliteBoolToBoolean(
-          row.sniff_override_destination,
-        ),
         users: vlessUsers,
         tls: mapTlsFromSecurityAssetForVless(
           linkedAsset,
@@ -163,6 +162,20 @@ export function getStoredInbounds(): StoredInbound[] {
         ),
         _security_asset_id: row.security_asset_id ?? undefined,
         _tls_enabled: sqliteBoolToBoolean(vlessRow?.tls_enabled ?? null),
+        multiplex: {
+          enabled:
+            sqliteBoolToBoolean(vlessRow?.multiplex_enabled ?? null) ?? false,
+          padding:
+            sqliteBoolToBoolean(vlessRow?.multiplex_padding ?? null) ?? false,
+          brutal: {
+            enabled:
+              sqliteBoolToBoolean(vlessRow?.multiplex_brutal_enabled ?? null) ??
+              false,
+            up_mbps: vlessRow?.multiplex_brutal_up_mbps ?? 0,
+            down_mbps: vlessRow?.multiplex_brutal_down_mbps ?? 0,
+          },
+        },
+        transport: vlessRow ? mapTransportFromRow(vlessRow) : undefined,
       };
 
       return inbound;
@@ -186,9 +199,6 @@ export function getStoredInbounds(): StoredInbound[] {
       listen: row.listen ?? undefined,
       listen_port: row.listen_port ?? undefined,
       sniff: sqliteBoolToBoolean(row.sniff),
-      sniff_override_destination: sqliteBoolToBoolean(
-        row.sniff_override_destination,
-      ),
       up_mbps: hysteria2Row?.up_mbps ?? undefined,
       down_mbps: hysteria2Row?.down_mbps ?? undefined,
       ignore_client_bandwidth: sqliteBoolToBoolean(

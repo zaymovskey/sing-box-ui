@@ -6,16 +6,24 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 
 function resolveProtoPath(): string {
-  const distPath = path.resolve(
-    process.cwd(),
-    ".worker-dist/server/worker/grpc/stats.proto",
-  );
+  const candidates = [
+    // worker build output (see worker/tsconfig.worker.json outDir)
+    path.resolve(process.cwd(), ".worker-dist/server/worker/grpc/stats.proto"),
+    // dev / source tree
+    path.resolve(process.cwd(), "worker/grpc/stats.proto"),
+    // fallback (in case cwd is worker/)
+    path.resolve(process.cwd(), "grpc/stats.proto"),
+  ];
 
-  if (fs.existsSync(distPath)) {
-    return distPath;
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
   }
 
-  return path.resolve(__dirname, "../../grpc/stats.proto");
+  throw new Error(
+    `[traffic] stats.proto not found. Tried:\n${candidates.map((p) => `- ${p}`).join("\n")}`,
+  );
 }
 
 export const PROTO_PATH = resolveProtoPath();
@@ -53,19 +61,3 @@ export async function queryStats() {
     );
   });
 }
-
-// async function main() {
-//   try {
-//     console.log("🚀 calling v2ray api...");
-
-//     const res = await queryStats();
-
-//     console.log("✅ RESPONSE:");
-//     console.dir(res, { depth: null });
-//   } catch (err) {
-//     console.error("❌ ERROR:");
-//     console.error(err);
-//   }
-// }
-
-// main();

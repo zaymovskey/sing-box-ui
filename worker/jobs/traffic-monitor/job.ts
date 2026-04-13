@@ -2,7 +2,7 @@ import { getDb } from "@/server/db/client";
 import { getInboundUserByInternalName } from "@/server/db/sing-box/inbounds/repository/get-inbound-user-by-internal-name";
 import { updateInboundUserTraffic } from "@/server/db/sing-box/inbounds/repository/update-inbound-user-traffic";
 
-import { queryStats } from "./test-v2ray-api";
+import { queryStats } from "./v2ray-api";
 
 interface TrafficStats {
   stat: { name: string; value: string }[];

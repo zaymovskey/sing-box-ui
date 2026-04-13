@@ -25,6 +25,14 @@ export const LogSchema = z
 export const RouteSchema = z
   .object({
     final: z.string().min(1).optional(),
+    rules: z
+      .array(
+        z.object({
+          inbound: z.string().min(1).optional(),
+          action: z.literal("sniff"),
+        }),
+      )
+      .optional(),
   })
   .optional();
 

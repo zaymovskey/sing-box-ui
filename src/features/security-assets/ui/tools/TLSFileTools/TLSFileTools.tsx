@@ -58,12 +58,12 @@ export function TLSFileTools({
   return (
     <div
       className={cn(
-        "space-y-4 rounded-lg border p-4",
+        "bg-muted/20 space-y-4 rounded-lg border p-4",
         disabled && "opacity-70",
       )}
     >
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium">TLS certificates</div>
+        <div className="text-sm font-medium">TLS-сертификаты</div>
       </div>
 
       <StatusRow label="Сертификат (.crt)" status={statuses.crt} />
@@ -79,7 +79,7 @@ export function TLSFileTools({
       )}
 
       <p className="text-muted-foreground text-xs">
-        Проверка и генерация TLS сертификатов
+        Проверка и генерация TLS-сертификатов в выбранной директории
       </p>
 
       {error && (
@@ -92,8 +92,8 @@ export function TLSFileTools({
 
       <SwitchField
         checked={tlsOverwrite}
-        label="Overwrite TLS"
-        placeholder="Replace existing certificates"
+        label="Перезаписать существующие файлы"
+        placeholder="Разрешить генератору заменить уже существующие сертификат и ключ"
         onChange={setTlsOverwrite}
       />
 

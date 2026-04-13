@@ -31,8 +31,82 @@ type ExperimentalConfig = {
   v2ray_api?: V2RayApiConfig;
 };
 
+type RuntimeRouteRule = {
+  inbound?: string;
+  action: "sniff";
+};
+
+type RuntimeRouteConfig = {
+  final?: string;
+  rules?: RuntimeRouteRule[];
+};
+
 function uniq(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+function buildRouteRulesFromStoredInbounds(
+  inbounds: StoredInbound[],
+): RuntimeRouteRule[] {
+  return inbounds
+    .filter((inbound) => inbound.sniff === true)
+    .map((inbound) => ({
+      inbound: inbound.internal_tag,
+      action: "sniff" as const,
+    }));
+}
+
+function mapHy2MasqueradeToRuntime(
+  masquerade: StoredHysteria2Inbound["masquerade"],
+): SingBoxHysteria2Inbound["masquerade"] | undefined {
+  if (!masquerade) {
+    return undefined;
+  }
+
+  if (typeof masquerade === "string") {
+    const value = masquerade.trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  const type = masquerade.type?.trim();
+
+  if (!type) {
+    return undefined;
+  }
+
+  if (type === "file") {
+    const directory = masquerade.directory?.trim() ?? masquerade.file?.trim();
+
+    if (!directory) {
+      return undefined;
+    }
+
+    return {
+      type: "file",
+      directory,
+    };
+  }
+
+  if (type === "proxy") {
+    const url = masquerade.url?.trim();
+
+    if (!url) {
+      return undefined;
+    }
+
+    return {
+      type: "proxy",
+      url,
+    };
+  }
+
+  if (type === "string") {
+    return {
+      type: "string",
+    };
+  }
+
+  return undefined;
 }
 
 export async function buildRuntimeConfigFromDb(): Promise<
@@ -49,6 +123,7 @@ export async function buildRuntimeConfigFromDb(): Promise<
   const dbInbounds = getStoredInbounds();
   const runtimeInbounds = mapStoredInboundsToSingBox(dbInbounds);
   const statsConfig = buildV2RayStatsFromStoredInbounds(dbInbounds);
+  const sniffRules = buildRouteRulesFromStoredInbounds(dbInbounds);
   const dbSecurityAssets = getSecurityAssets();
 
   const rawExperimental =
@@ -66,9 +141,22 @@ export async function buildRuntimeConfigFromDb(): Promise<
       ? rawV2RayApi.stats
       : undefined;
 
+  const rawRoute =
+    typeof rawDraft.route === "object" && rawDraft.route !== null
+      ? (rawDraft.route as RuntimeRouteConfig)
+      : undefined;
+
+  const rawRouteRules = Array.isArray(rawRoute?.rules)
+    ? rawRoute.rules
+    : undefined;
+
   const draftWithDbSources: Record<string, unknown> = {
     ...rawDraft,
     inbounds: runtimeInbounds,
+    route: {
+      ...(rawRoute ?? {}),
+      rules: [...sniffRules, ...(rawRouteRules ?? [])],
+    },
     experimental: {
       ...(rawExperimental ?? {}),
       v2ray_api: {
@@ -103,8 +191,16 @@ export function mapStoredInboundsToSingBox(
         tag: stored.internal_tag,
         listen: stored.listen,
         listen_port: stored.listen_port,
-        sniff: stored.sniff,
-        sniff_override_destination: stored.sniff_override_destination,
+        multiplex: {
+          enabled: stored.multiplex?.enabled ?? false,
+          padding: stored.multiplex?.padding ?? false,
+          brutal: {
+            enabled: stored.multiplex?.brutal?.enabled ?? false,
+            up_mbps: stored.multiplex?.brutal?.up_mbps ?? 0,
+            down_mbps: stored.multiplex?.brutal?.down_mbps ?? 0,
+          },
+        },
+        transport: stored.transport,
         users: stored.users.map((user) => ({
           name: user.internal_name,
           uuid: user.uuid,
@@ -137,8 +233,6 @@ export function mapStoredInboundsToSingBox(
       tag: stored.internal_tag,
       listen: stored.listen,
       listen_port: stored.listen_port,
-      sniff: stored.sniff,
-      sniff_override_destination: stored.sniff_override_destination,
       up_mbps: stored.up_mbps,
       down_mbps: stored.down_mbps,
       ignore_client_bandwidth: stored.ignore_client_bandwidth,
@@ -157,7 +251,7 @@ export function mapStoredInboundsToSingBox(
             key_path: stored.tls.key_path,
           }
         : undefined,
-      masquerade: stored.masquerade,
+      masquerade: mapHy2MasqueradeToRuntime(stored.masquerade),
       bbr_profile: stored.bbr_profile,
       brutal_debug: stored.brutal_debug,
     };

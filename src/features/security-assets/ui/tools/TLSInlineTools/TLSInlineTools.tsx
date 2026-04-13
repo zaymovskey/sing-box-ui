@@ -21,23 +21,23 @@ export function TLSInlineTools({
   return (
     <div
       className={cn(
-        "space-y-4 rounded-lg border p-4",
+        "bg-muted/20 space-y-4 rounded-lg border p-4",
         disabled && "opacity-70",
       )}
     >
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
-        label="Certificate"
+        label="Сертификат"
         name="source.certificatePem"
-        placeholder="certificatePem"
+        placeholder="Сертификат будет подставлен после генерации"
+        showErrorMessage={false}
       />
       <UncontrolledTextField<SecurityAssetFormValues>
         disabled={true}
-        errorMessage={false}
-        label="Key"
+        label="Ключ"
         name="source.keyPem"
-        placeholder="keyPem"
+        placeholder="Ключ будет подставлен после генерации"
+        showErrorMessage={false}
       />
       {error && (
         <div className="border-destructive-foreground/40 bg-destructive-foreground/5 mt-2 rounded-md border px-3 py-2">
@@ -46,6 +46,14 @@ export function TLSInlineTools({
           </p>
         </div>
       )}
+
+      <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
+        <p className="text-muted-foreground">
+          Генератор создаёт самоподписанный TLS-сертификат для указанного
+          `serverName` и сразу подставляет сертификат с ключом в форму.
+        </p>
+      </div>
+
       <div className="flex justify-end">
         <Button
           disabled={disabled}

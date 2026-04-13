@@ -1,11 +1,131 @@
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 import {
+  type SaveHysteria2Inbound,
   type SaveInboundInput,
   type StoredInbound,
 } from "@/shared/api/contracts";
 
 import { mapHy2FormToInbound } from "./map-hy2-form-to-inbound";
 import { mapVlessFormToInbound } from "./map-vless-form-to-inbound.mapper";
+
+function mapInboundMasqueradeToForm(
+  masquerade: SaveHysteria2Inbound["masquerade"],
+): Extract<InboundFormValues, { type: "hysteria2" }>["masquerade"] {
+  if (!masquerade) {
+    return {
+      type: "disabled",
+    };
+  }
+
+  if (typeof masquerade === "string") {
+    return {
+      type: "url",
+      url_string: masquerade,
+    };
+  }
+
+  const raw = masquerade as Record<string, unknown>;
+
+  if (masquerade.type === "file") {
+    return {
+      type: "file_server",
+      directory: masquerade.directory ?? "",
+    };
+  }
+
+  if (masquerade.type === "proxy") {
+    return {
+      type: "reverse_proxy",
+      url: masquerade.url ?? "",
+      rewrite_host: raw.rewrite_host === true,
+    };
+  }
+
+  if (masquerade.type === "string") {
+    return {
+      type: "fixed_response",
+      status_code:
+        typeof raw.status_code === "number" ? raw.status_code : undefined,
+      content: typeof raw.content === "string" ? raw.content : "",
+      headers: typeof raw.headers === "string" ? raw.headers : "",
+    };
+  }
+
+  return {
+    type: "fixed_response",
+    status_code:
+      typeof raw.status_code === "number" ? raw.status_code : undefined,
+    content: typeof raw.content === "string" ? raw.content : "",
+    headers: typeof raw.headers === "string" ? raw.headers : "",
+  };
+}
+
+function stringifyHeaders(
+  headers: Record<string, string> | undefined,
+): string | undefined {
+  if (!headers) {
+    return undefined;
+  }
+
+  return JSON.stringify(headers, null, 2);
+}
+
+function mapTransportToForm(
+  transport: Extract<StoredInbound, { type: "vless" }>["transport"],
+): Extract<InboundFormValues, { type: "vless" }>["transport"] {
+  if (!transport) {
+    return {
+      type: "disabled",
+    };
+  }
+
+  if (transport.type === "ws") {
+    return {
+      type: "ws",
+      path: transport.path ?? "",
+      headers: stringifyHeaders(transport.headers),
+      max_early_data: transport.max_early_data,
+      early_data_header_name: transport.early_data_header_name ?? "",
+    };
+  }
+
+  if (transport.type === "grpc") {
+    return {
+      type: "grpc",
+      service_name: transport.service_name,
+      idle_timeout: transport.idle_timeout ?? "",
+      ping_timeout: transport.ping_timeout ?? "",
+      permit_without_stream: transport.permit_without_stream ?? false,
+    };
+  }
+
+  if (transport.type === "http") {
+    return {
+      type: "http",
+      host: Array.isArray(transport.host)
+        ? transport.host.join(", ")
+        : (transport.host ?? ""),
+      path: transport.path ?? "",
+      method: transport.method ?? "",
+      headers: stringifyHeaders(transport.headers),
+      idle_timeout: transport.idle_timeout ?? "",
+      ping_timeout: transport.ping_timeout ?? "",
+    };
+  }
+
+  if (transport.type === "httpupgrade") {
+    return {
+      type: "httpupgrade",
+      host: transport.host ?? "",
+      path: transport.path ?? "",
+      headers: stringifyHeaders(transport.headers),
+    };
+  }
+
+  return {
+    type: "quic",
+  };
+}
 
 export function mapFormToInbound(values: InboundFormValues): SaveInboundInput {
   if (values.type === "vless") {
@@ -23,7 +143,6 @@ export function mapInboundToFormValues(
     listen: inbound.listen ?? "",
     listen_port: inbound.listen_port ?? 443,
     sniff: inbound.sniff ?? false,
-    sniff_override_destination: inbound.sniff_override_destination ?? false,
   };
 
   if (inbound.type === "vless") {
@@ -37,6 +156,16 @@ export function mapInboundToFormValues(
         flow: user.flow === "xtls-rprx-vision" ? "xtls-rprx-vision" : undefined,
       })) ?? [{ name: "", uuid: "", flow: undefined }],
       _security_asset_id: inbound._security_asset_id ?? undefined,
+      multiplex: {
+        enabled: inbound.multiplex?.enabled ?? false,
+        padding: inbound.multiplex?.padding ?? false,
+        brutal: {
+          enabled: inbound.multiplex?.brutal?.enabled ?? false,
+          up_mbps: inbound.multiplex?.brutal?.up_mbps ?? 0,
+          down_mbps: inbound.multiplex?.brutal?.down_mbps ?? 0,
+        },
+      },
+      transport: mapTransportToForm(inbound.transport),
     };
   }
 
@@ -47,6 +176,13 @@ export function mapInboundToFormValues(
       up_mbps: inbound.up_mbps ?? 1,
       down_mbps: inbound.down_mbps ?? 1,
       ignore_client_bandwidth: inbound.ignore_client_bandwidth ?? false,
+      bbr_profile:
+        inbound.bbr_profile === "conservative" ||
+        inbound.bbr_profile === "aggressive" ||
+        inbound.bbr_profile === "standard"
+          ? inbound.bbr_profile
+          : "standard",
+      brutal_debug: inbound.brutal_debug ?? false,
       users: inbound.users?.map((user) => ({
         display_name: user.display_name ?? "",
         password: user.password ?? "",
@@ -54,6 +190,7 @@ export function mapInboundToFormValues(
       _security_asset_id: inbound._security_asset_id ?? undefined,
       obfs_enabled: Boolean(inbound.obfs?.type || inbound.obfs?.password),
       obfs_password: inbound.obfs?.password ?? "",
+      masquerade: mapInboundMasqueradeToForm(inbound.masquerade),
     };
   }
 

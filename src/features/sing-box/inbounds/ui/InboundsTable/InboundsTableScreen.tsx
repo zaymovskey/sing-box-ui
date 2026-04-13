@@ -1,11 +1,14 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCcw, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { singBoxQueryKeys } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button, Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
+import { subscribeToInboundsChanged } from "../../lib/inbounds-sync";
 import { mapInboundsListToRows } from "../../lib/map-inbounds-list-to-rows.mapper";
 import { useInboundsColumns } from "../../lib/use-inbounds-columns";
 import { useInboundsListState } from "../../lib/use-inbounds-list-state";
@@ -13,7 +16,6 @@ import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
-import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 import { InboundsTablePagination } from "./InboundsTablePagination";
 
@@ -25,12 +27,11 @@ const inboundTypeOptions = [
 ];
 
 export function InboundsTableScreen() {
+  const qc = useQueryClient();
   const inboundColumns = useInboundsColumns();
 
   const { data: inboundsList } = useInboundsListQuery();
   const { data: inboundsStats } = useInboundsStatsQuery();
-
-  console.log("inboundsStats", inboundsStats);
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
 
@@ -73,6 +74,13 @@ export function InboundsTableScreen() {
       types: null,
     });
   };
+
+  useEffect(() => {
+    return subscribeToInboundsChanged(() => {
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inboundsStats() });
+    });
+  }, [qc]);
 
   return (
     <>
@@ -140,14 +148,6 @@ export function InboundsTableScreen() {
           onPageChange={(page) => setGetParam({ page: page.toString() })}
         />
       </Card>
-
-      {inboundColumns.actions.edit.inbound && (
-        <EditInboundDialog
-          inbound={inboundColumns.actions.edit.inbound}
-          open={inboundColumns.actions.edit.isOpen}
-          onOpenChange={inboundColumns.actions.edit.setIsOpen}
-        />
-      )}
 
       {inboundColumns.actions.delete.inbound && (
         <DeleteInboundDialog

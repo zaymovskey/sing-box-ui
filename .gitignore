@@ -5,6 +5,11 @@ node_modules/
 out/
 dist/
 .worker-dist/
+.worker-dist/**
+
+# worker TS build artifacts accidentally emitted into source tree
+worker/**/*.js
+worker/**/*.js.map
 .env
 .env.local
 .env.*.local
@@ -22,3 +27,5 @@ docker/data/**
 !docker/data/sing-box-state/
 !docker/data/sing-box-state/.gitkeep
 worker-files.txt
+
+context.md

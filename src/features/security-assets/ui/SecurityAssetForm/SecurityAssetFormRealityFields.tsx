@@ -135,7 +135,7 @@ export function SecurityAssetFormRealityFields() {
               label="Max time difference"
               name="tls.reality.max_time_difference"
               parseValue={parseDuration}
-              placeholder="Например, 500ms"
+              placeholder="Например, 500"
               selectOptions={durationOptions}
             />
           </div>

@@ -10,14 +10,12 @@ export const ListenPortSchema = z
   .max(65535, "Максимум 65535");
 
 export const SniffSchema = z.boolean().optional();
-export const SniffOverrideDestinationSchema = z.boolean().optional();
 
 export const SingBoxBaseInboundSchema = z.object({
   tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
   sniff: SniffSchema,
-  sniff_override_destination: SniffOverrideDestinationSchema,
 });
 
 export const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);
@@ -60,7 +58,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["handshake"],
-        message: "Reality handshake is required when reality is enabled",
+        message: "При включенном Reality необходимо указать handshake",
       });
     }
 
@@ -68,7 +66,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["private_key"],
-        message: "Reality private_key is required when reality is enabled",
+        message: "При включенном Reality необходимо указать private_key",
       });
     }
 
@@ -76,7 +74,7 @@ export const SingBoxVlessRealitySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["short_id"],
-        message: "Reality short_id is required when reality is enabled",
+        message: "При включенном Reality необходимо указать short_id",
       });
     }
   });
@@ -86,6 +84,48 @@ export const SingBoxVlessTlsSchema = z.object({
   server_name: z.string().optional(),
   reality: SingBoxVlessRealitySchema.optional(),
 });
+
+const HeaderObjectSchema = z.record(z.string(), z.string());
+
+const HostSchema = z.union([
+  z.string().min(1),
+  z.array(z.string().min(1)).min(1),
+]);
+
+export const SingBoxV2RayTransportSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("ws"),
+    path: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+    max_early_data: z.number().int().nonnegative().optional(),
+    early_data_header_name: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("grpc"),
+    service_name: NonEmptyStringSchema,
+    idle_timeout: z.string().optional(),
+    ping_timeout: z.string().optional(),
+    permit_without_stream: z.boolean().optional(),
+  }),
+  z.object({
+    type: z.literal("http"),
+    host: HostSchema.optional(),
+    path: z.string().optional(),
+    method: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+    idle_timeout: z.string().optional(),
+    ping_timeout: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("httpupgrade"),
+    host: NonEmptyStringSchema.optional(),
+    path: z.string().optional(),
+    headers: HeaderObjectSchema.optional(),
+  }),
+  z.object({
+    type: z.literal("quic"),
+  }),
+]);
 
 export const Hysteria2ObfsSchema = z.object({
   type: z.literal("salamander").optional(),
@@ -129,7 +169,8 @@ export function addHysteria2CrossFieldValidation(
     ctx.addIssue({
       code: "custom",
       path: ["ignore_client_bandwidth"],
-      message: "ignore_client_bandwidth conflicts with up_mbps/down_mbps",
+      message:
+        "ignore_client_bandwidth нельзя использовать вместе с up_mbps/down_mbps",
     });
   }
 
@@ -137,15 +178,29 @@ export function addHysteria2CrossFieldValidation(
     ctx.addIssue({
       code: "custom",
       path: ["obfs", "type"],
-      message: "Obfs type is required when obfs password is set",
+      message: "Если указан пароль obfs, необходимо указать и тип obfs",
     });
   }
 }
+
+const SingBoxVlessMultiplexBrutalSchema = z.object({
+  enabled: z.boolean(),
+  up_mbps: z.number().min(0),
+  down_mbps: z.number().min(0),
+});
+
+const SingBoxVlessMultiplexSchema = z.object({
+  enabled: z.boolean(),
+  padding: z.boolean(),
+  brutal: SingBoxVlessMultiplexBrutalSchema,
+});
 
 export const SingBoxVlessInboundSchema = SingBoxBaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(SingBoxVlessUserSchema).min(1),
   tls: SingBoxVlessTlsSchema.optional(),
+  multiplex: SingBoxVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
 });
 
 export const SingBoxHysteria2InboundSchema = SingBoxBaseInboundSchema.extend({
@@ -171,6 +226,7 @@ export type SingBoxHysteria2User = z.infer<typeof SingBoxHysteria2UserSchema>;
 
 export type SingBoxVlessReality = z.infer<typeof SingBoxVlessRealitySchema>;
 export type SingBoxVlessTls = z.infer<typeof SingBoxVlessTlsSchema>;
+export type SingBoxV2RayTransport = z.infer<typeof SingBoxV2RayTransportSchema>;
 
 export type SingBoxHysteria2Tls = z.infer<typeof SingBoxHysteria2TlsSchema>;
 

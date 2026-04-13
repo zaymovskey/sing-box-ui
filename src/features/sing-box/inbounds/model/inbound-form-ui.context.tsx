@@ -2,34 +2,43 @@ import { createContext, type ReactNode, useContext } from "react";
 
 import { type InboundFormValues } from "@/features/sing-box/config-core";
 
-const InboundFormContext = createContext<InboundFormContextValue | undefined>(
-  undefined,
-);
+const InboundFormContext = createContext<
+  InboundFormContextValue<InboundFormValues> | undefined
+>(undefined);
 
-export const useInboundFormContext = () => {
+export const useInboundFormContext = <
+  TInboundFormValues extends InboundFormValues = InboundFormValues,
+>() => {
   const context = useContext(InboundFormContext);
   if (context === undefined) {
     throw new Error(
       "useInboundFormContext must be used within a InboundFormProvider",
     );
   }
-  return context;
+
+  return context as InboundFormContextValue<TInboundFormValues>;
 };
 
-interface InboundFormContextValue {
+interface InboundFormContextValue<
+  TInboundFormValues extends InboundFormValues = InboundFormValues,
+> {
   mode: "edit" | "create";
-  initialValues?: InboundFormValues;
+  initialValues?: TInboundFormValues;
 }
 
-interface InboundFormProviderProps {
+interface InboundFormProviderProps<
+  TInboundFormValues extends InboundFormValues = InboundFormValues,
+> {
   children: ReactNode;
-  contextValue: InboundFormContextValue;
+  contextValue: InboundFormContextValue<TInboundFormValues>;
 }
 
-export const InboundFormProvider = ({
+export const InboundFormProvider = <
+  TInboundFormValues extends InboundFormValues = InboundFormValues,
+>({
   children,
   contextValue: { mode, initialValues },
-}: InboundFormProviderProps) => {
+}: InboundFormProviderProps<TInboundFormValues>) => {
   return (
     <InboundFormContext.Provider
       value={{

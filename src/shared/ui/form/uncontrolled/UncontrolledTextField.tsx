@@ -10,14 +10,14 @@ type InputProps = React.ComponentProps<typeof Input>;
 type Props<T extends FieldValues> = {
   name: Path<T>;
   label?: string;
-  errorMessage?: boolean;
+  showErrorMessage?: boolean;
 } & Omit<InputProps, "name" | "id" | "aria-invalid" | "aria-describedby">;
 
 export function UncontrolledTextField<T extends FieldValues>({
   name,
   label,
   type = "text",
-  errorMessage = true,
+  showErrorMessage = true,
   ...inputProps
 }: Props<T>) {
   const form = useFormContext<T>();
@@ -48,7 +48,7 @@ export function UncontrolledTextField<T extends FieldValues>({
         type={type}
       />
 
-      {errorMessage && (
+      {showErrorMessage && (
         <div className="text-destructive min-h-5 text-sm" id={messageId}>
           {message}
         </div>

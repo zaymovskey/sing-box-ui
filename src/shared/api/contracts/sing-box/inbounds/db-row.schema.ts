@@ -30,7 +30,6 @@ export const InboundRowSchema = z.object({
   listen: NullableStringSchema,
   listen_port: NullableNumberSchema,
   sniff: NullableSqliteBooleanSchema,
-  sniff_override_destination: NullableSqliteBooleanSchema,
 
   security_asset_id: NullableStringSchema,
 
@@ -50,6 +49,12 @@ export const InboundVlessRowSchema = z.object({
   inbound_id: DbIdSchema,
   tls_enabled: NullableSqliteBooleanSchema,
   reality_public_key: NullableStringSchema,
+  multiplex_enabled: NullableSqliteBooleanSchema,
+  multiplex_padding: NullableSqliteBooleanSchema,
+  multiplex_brutal_enabled: NullableSqliteBooleanSchema,
+  multiplex_brutal_up_mbps: NullableNumberSchema,
+  multiplex_brutal_down_mbps: NullableNumberSchema,
+  transport_json: NullableStringSchema,
 });
 
 export const InboundVlessRowsSchema = z.array(InboundVlessRowSchema);
@@ -70,11 +75,7 @@ export const InboundHysteria2RowSchema = z.object({
   obfs_type: NullableStringSchema,
   obfs_password: NullableStringSchema,
 
-  masquerade_string: NullableStringSchema,
-  masquerade_type: NullableStringSchema,
-  masquerade_file: NullableStringSchema,
-  masquerade_directory: NullableStringSchema,
-  masquerade_url: NullableStringSchema,
+  masquerade_json: NullableStringSchema,
 
   bbr_profile: NullableStringSchema,
   brutal_debug: NullableSqliteBooleanSchema,

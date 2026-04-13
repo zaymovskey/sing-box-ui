@@ -1,50 +1,71 @@
 "use client";
 
-import { type FieldValues, type Path, useFormContext } from "react-hook-form";
+import { useEffect } from "react";
+import {
+  type FieldValues,
+  type Path,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 
+import { cn } from "../../../lib/client/cn";
 import { Switch } from "../../switch";
-import { FormControl, FormField, FormItem, FormLabel } from "../form";
+import { FormItem, FormLabel } from "../form";
 
 type SwitchFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 };
 
 export function ControlledSwitchField<T extends FieldValues>({
+  className,
   name,
   label,
   placeholder,
   disabled = false,
 }: SwitchFieldProps<T>) {
-  const form = useFormContext();
+  const form = useFormContext<T>();
   const error = form.getFieldState(name, form.formState).error;
+  const checked = useWatch({
+    control: form.control,
+    name,
+  });
+
+  useEffect(() => {
+    form.register(name);
+  }, [form, name]);
 
   return (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="flex items-center justify-between rounded-md border p-3">
-          <div className="space-y-1">
-            <FormLabel className={error ? "text-destructive" : undefined}>
-              {label}
-            </FormLabel>
-            <div className="text-muted-foreground text-xs">{placeholder}</div>
-          </div>
-          <FormControl>
-            <Switch
-              checked={Boolean(field.value)}
-              disabled={disabled}
-              onCheckedChange={(v) => {
-                form.clearErrors("root");
-                field.onChange(v);
-              }}
-            />
-          </FormControl>
-        </FormItem>
+    <FormItem
+      className={cn(
+        "flex items-center justify-between rounded-md border p-3",
+        className,
       )}
-    />
+    >
+      <div className="space-y-1">
+        <FormLabel className={error ? "text-destructive" : undefined}>
+          {label}
+        </FormLabel>
+        {placeholder && (
+          <div className="text-muted-foreground text-xs">{placeholder}</div>
+        )}
+      </div>
+
+      <Switch
+        checked={Boolean(checked)}
+        disabled={disabled}
+        onCheckedChange={(value) => {
+          form.clearErrors("root");
+          form.setValue(name, value as T[Path<T>], {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: form.formState.submitCount > 0,
+          });
+        }}
+      />
+    </FormItem>
   );
 }

@@ -1,0 +1,24 @@
+# зависимости и билды
+node_modules
+.next
+.worker-dist
+
+# служебка
+.vscode
+.husky
+.github
+
+# кеши
+tsconfig.tsbuildinfo
+
+# логи / временное
+*.log
+
+# env
+.env
+.env.*
+
+# lock-файлы
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

@@ -23,7 +23,7 @@ export function TLSInlineToolsSection() {
     const isServerNameValid = await trigger("serverName");
 
     if (!isServerNameValid) {
-      clientToast.error("Укажите serverName для генерации TLS", {
+      clientToast.error("Укажите Server Name для генерации TLS", {
         duration: 3000,
       });
       return;
@@ -32,7 +32,7 @@ export function TLSInlineToolsSection() {
     try {
       const serverName = getValues("serverName");
       if (!serverName) {
-        clientToast.error("Укажите serverName для генерации TLS", {
+        clientToast.error("Укажите Server Name для генерации TLS", {
           duration: 3000,
         });
         return;

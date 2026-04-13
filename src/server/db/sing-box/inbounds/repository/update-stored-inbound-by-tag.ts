@@ -8,7 +8,11 @@ import {
   type SaveVlessInbound,
 } from "@/shared/api/contracts";
 
-import { booleanToSqliteBool, mapMasqueradeToRow } from "../../helpers";
+import {
+  booleanToSqliteBool,
+  mapMasqueradeToRow,
+  mapTransportToRow,
+} from "../../helpers";
 
 const sql = String.raw;
 
@@ -272,7 +276,6 @@ export function updateStoredInboundByDisplayTag(
             listen = ?,
             listen_port = ?,
             sniff = ?,
-            sniff_override_destination = ?,
             security_asset_id = ?,
             updated_at = ?
           WHERE id = ?
@@ -284,13 +287,14 @@ export function updateStoredInboundByDisplayTag(
         saveInput.listen ?? null,
         saveInput.listen_port ?? null,
         booleanToSqliteBool(saveInput.sniff),
-        booleanToSqliteBool(saveInput.sniff_override_destination),
         saveInput._security_asset_id ?? null,
         now,
         inboundId,
       );
 
       if (saveInput.type === "vless") {
+        const transportRow = mapTransportToRow(saveInput.transport);
+
         db.prepare(
           sql`
             DELETE FROM inbound_hysteria2
@@ -314,12 +318,24 @@ export function updateStoredInboundByDisplayTag(
               UPDATE inbound_vless
               SET
                 tls_enabled = ?,
-                reality_public_key = ?
+                reality_public_key = ?,
+                multiplex_enabled = ?,
+                multiplex_padding = ?,
+                multiplex_brutal_enabled = ?,
+                multiplex_brutal_up_mbps = ?,
+                multiplex_brutal_down_mbps = ?,
+                transport_json = ?
               WHERE inbound_id = ?
             `,
           ).run(
             booleanToSqliteBool(saveInput._tls_enabled),
             saveInput.tls?.reality?._reality_public_key ?? null,
+            booleanToSqliteBool(saveInput.multiplex?.enabled ?? false),
+            booleanToSqliteBool(saveInput.multiplex?.padding ?? false),
+            booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
+            saveInput.multiplex?.brutal?.up_mbps ?? 0,
+            saveInput.multiplex?.brutal?.down_mbps ?? 0,
+            transportRow.transport_json,
             inboundId,
           );
         } else {
@@ -328,14 +344,26 @@ export function updateStoredInboundByDisplayTag(
               INSERT INTO inbound_vless (
                 inbound_id,
                 tls_enabled,
-                reality_public_key
+                reality_public_key,
+                multiplex_enabled,
+                multiplex_padding,
+                multiplex_brutal_enabled,
+                multiplex_brutal_up_mbps,
+                multiplex_brutal_down_mbps,
+                transport_json
               )
-              VALUES (?, ?, ?)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `,
           ).run(
             inboundId,
             booleanToSqliteBool(saveInput._tls_enabled),
             saveInput.tls?.reality?._reality_public_key ?? null,
+            booleanToSqliteBool(saveInput.multiplex?.enabled ?? false),
+            booleanToSqliteBool(saveInput.multiplex?.padding ?? false),
+            booleanToSqliteBool(saveInput.multiplex?.brutal?.enabled ?? false),
+            saveInput.multiplex?.brutal?.up_mbps ?? 0,
+            saveInput.multiplex?.brutal?.down_mbps ?? 0,
+            transportRow.transport_json,
           );
         }
 
@@ -373,11 +401,7 @@ export function updateStoredInboundByDisplayTag(
               ignore_client_bandwidth = ?,
               obfs_type = ?,
               obfs_password = ?,
-              masquerade_string = ?,
-              masquerade_type = ?,
-              masquerade_file = ?,
-              masquerade_directory = ?,
-              masquerade_url = ?,
+              masquerade_json = ?,
               bbr_profile = ?,
               brutal_debug = ?
             WHERE inbound_id = ?
@@ -388,11 +412,7 @@ export function updateStoredInboundByDisplayTag(
           booleanToSqliteBool(saveInput.ignore_client_bandwidth),
           saveInput.obfs?.type ?? null,
           saveInput.obfs?.password ?? null,
-          masqueradeRow.masquerade_string,
-          masqueradeRow.masquerade_type,
-          masqueradeRow.masquerade_file,
-          masqueradeRow.masquerade_directory,
-          masqueradeRow.masquerade_url,
+          masqueradeRow.masquerade_json,
           saveInput.bbr_profile ?? null,
           booleanToSqliteBool(saveInput.brutal_debug),
           inboundId,
@@ -407,15 +427,11 @@ export function updateStoredInboundByDisplayTag(
               ignore_client_bandwidth,
               obfs_type,
               obfs_password,
-              masquerade_string,
-              masquerade_type,
-              masquerade_file,
-              masquerade_directory,
-              masquerade_url,
+              masquerade_json,
               bbr_profile,
               brutal_debug
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
         ).run(
           inboundId,
@@ -424,11 +440,7 @@ export function updateStoredInboundByDisplayTag(
           booleanToSqliteBool(saveInput.ignore_client_bandwidth),
           saveInput.obfs?.type ?? null,
           saveInput.obfs?.password ?? null,
-          masqueradeRow.masquerade_string,
-          masqueradeRow.masquerade_type,
-          masqueradeRow.masquerade_file,
-          masqueradeRow.masquerade_directory,
-          masqueradeRow.masquerade_url,
+          masqueradeRow.masquerade_json,
           saveInput.bbr_profile ?? null,
           booleanToSqliteBool(saveInput.brutal_debug),
         );

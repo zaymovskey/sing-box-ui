@@ -5,6 +5,7 @@ import {
   Hysteria2BandwidthSchema,
   Hysteria2MasqueradeSchema,
   Hysteria2ObfsSchema,
+  SingBoxV2RayTransportSchema,
 } from "../core/inbounds.schema";
 import { SaveBaseInboundSchema, StoredBaseInboundSchema } from "./base.schema";
 import { StoredHysteria2TlsSchema, StoredVlessTlsSchema } from "./tls.schema";
@@ -17,17 +18,45 @@ import {
 
 export type InboundsListResponse = z.infer<typeof InboundsListResponseSchema>;
 
+const StoredVlessMultiplexBrutalSchema = z.object({
+  enabled: z.boolean(),
+  up_mbps: z.number().min(0),
+  down_mbps: z.number().min(0),
+});
+
+const StoredVlessMultiplexSchema = z.object({
+  enabled: z.boolean(),
+  padding: z.boolean(),
+  brutal: StoredVlessMultiplexBrutalSchema,
+});
+
 export const StoredVlessInboundSchema = StoredBaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(VlessUserSchema).min(1),
   tls: StoredVlessTlsSchema.optional(),
   _security_asset_id: z.string().optional(),
+  multiplex: StoredVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
   _tls_enabled: z.boolean().optional(),
+});
+
+const SaveVlessMultiplexBrutalSchema = z.object({
+  enabled: z.boolean(),
+  up_mbps: z.number().min(0),
+  down_mbps: z.number().min(0),
+});
+
+const SaveVlessMultiplexSchema = z.object({
+  enabled: z.boolean(),
+  padding: z.boolean(),
+  brutal: SaveVlessMultiplexBrutalSchema,
 });
 
 export const SaveVlessInboundSchema = SaveBaseInboundSchema.extend({
   type: z.literal("vless"),
   users: z.array(SaveVlessUserSchema).min(1),
+  multiplex: SaveVlessMultiplexSchema.optional(),
+  transport: SingBoxV2RayTransportSchema.optional(),
   tls: StoredVlessTlsSchema.optional(),
   _security_asset_id: z.string().optional(),
   _tls_enabled: z.boolean().optional(),

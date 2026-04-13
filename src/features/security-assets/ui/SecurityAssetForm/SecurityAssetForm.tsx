@@ -2,8 +2,10 @@
 
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
+import { clientEnv } from "@/shared/lib";
 import {
   ControlledSelectField,
+  FormDebugPanel,
   SectionTitle,
   UncontrolledTextField,
 } from "@/shared/ui";
@@ -71,9 +73,9 @@ export function SecurityAssetForm({
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <UncontrolledTextField<SecurityAssetFormValues>
-              label="Name"
+              label="Имя"
               name="name"
-              placeholder="my-security-asset"
+              placeholder="my-tls-asset"
             />
 
             <UncontrolledTextField<SecurityAssetFormValues>
@@ -92,7 +94,7 @@ export function SecurityAssetForm({
                 : "Настройте параметры Reality, handshake и сгенерируйте ключевую пару."
             }
             title={
-              watchedType === "tls" ? "TLS настройки" : "Reality настройки"
+              watchedType === "tls" ? "Настройки TLS" : "Настройки Reality"
             }
           />
 
@@ -103,6 +105,10 @@ export function SecurityAssetForm({
           {watchedType === "reality" && <SecurityAssetFormRealityFields />}
         </section>
       </form>
+
+      {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+        <FormDebugPanel form={form} />
+      )}
     </FormProvider>
   );
 }

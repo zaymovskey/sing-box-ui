@@ -14,12 +14,12 @@ import {
   serverToast,
 } from "@/shared/ui";
 
+import { useSingBoxStatusQuery } from "../model/sing-box-status.query";
 import {
   checkStatuses,
   type MainStatuses,
   mainStatuses,
-} from "../lib/sing-box-status-control.constants";
-import { useSingBoxStatusQuery } from "../model/sing-box-status.query";
+} from "./sing-box-status-control.constants";
 
 export function SingBoxStatusControl() {
   const {
@@ -82,12 +82,21 @@ export function SingBoxStatusControl() {
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline">
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                currentMainStatusConfig.dotColor,
-              )}
-            />
+            <span className="relative flex h-2 w-2">
+              <span
+                className={cn(
+                  "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+                  currentMainStatusConfig.dotColor,
+                )}
+              />
+              <span
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  currentMainStatusConfig.dotColor,
+                )}
+              />
+            </span>
+
             <span
               className={cn("font-medium", currentMainStatusConfig.textColor)}
             >

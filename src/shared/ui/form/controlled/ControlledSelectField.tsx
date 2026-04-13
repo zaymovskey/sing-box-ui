@@ -23,9 +23,11 @@ type SelectFieldProps<T extends FieldValues> = {
   showErrorMessage?: boolean;
   loading?: boolean;
   onValueChangeExternal?: (value: string) => void;
+  className?: string;
 };
 
 export function ControlledSelectField<T extends FieldValues>({
+  className,
   name,
   label,
   placeholder,
@@ -47,7 +49,7 @@ export function ControlledSelectField<T extends FieldValues>({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="gap-2">
+        <FormItem className={cn("gap-2", className)}>
           <FormLabel
             className={error ? "text-destructive" : undefined}
             htmlFor={inputId}

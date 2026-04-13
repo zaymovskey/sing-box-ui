@@ -7,3 +7,4 @@ export { useUpdateConfigMutation } from "./model/config-core.mutation";
 export { useConfigQuery } from "./model/config-core.query";
 export type { InboundFormValues } from "./model/schemes/inbounds/config-core.inbounds-schema";
 export { InboundFormSchema } from "./model/schemes/inbounds/config-core.inbounds-schema";
+export type { Hy2Form } from "./model/schemes/inbounds/inbound-hy2.form-schema";

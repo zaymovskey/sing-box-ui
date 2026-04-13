@@ -6,10 +6,10 @@ import { type InboundFormValues } from "@/features/sing-box/config-core";
 import { ControlledSelectField, SectionTitle } from "@/shared/ui";
 
 import { useInboundFormContext } from "../../model/inbound-form-ui.context";
+import { InboundFormHy2Fields } from "./hy2/InboundFormHy2Fields";
 import { defaultsByType, typeItems } from "./InboundForm.constants";
 import { InboundFormBaseFields } from "./InboundFormBaseFields";
-import { InboundFormHy2Fields } from "./InboundFormHy2Fields";
-import { InboundFormVlessFields } from "./InboundFormVlessFields";
+import { InboundFormVlessFields } from "./vless/InboundFormVlessFields";
 
 type InboundFormProps = {
   formId: string;
@@ -86,6 +86,10 @@ export function InboundForm({
           {type === "hysteria2" && <InboundFormHy2Fields />}
         </section>
       </form>
+
+      {/* {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+        <FormDebugPanel form={form} />
+      )} */}
     </FormProvider>
   );
 }

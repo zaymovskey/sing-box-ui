@@ -1,9 +1,11 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { type StoredInbound } from "@/shared/api/contracts";
 import { Badge, Button } from "@/shared/ui";
+import { buttonVariants } from "@/shared/ui/button";
 
 import { type InboundRow } from "../model/inbound-row.type";
 
@@ -20,11 +22,6 @@ export function useInboundsColumns() {
   };
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-
-  const [editingInbound, setEditingInbound] = useState<StoredInbound | null>(
-    null,
-  );
   const [deletingInbound, setDeletingInbound] = useState<StoredInbound | null>(
     null,
   );
@@ -64,15 +61,14 @@ export function useInboundsColumns() {
       header: "",
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setEditingInbound(row.original.inbound);
-              setIsEditOpen(true);
-            }}
+          <Link
+            className={buttonVariants({ variant: "ghost", size: "default" })}
+            href={`/inbounds/${row.original.inbound.internal_tag}`}
+            rel="noreferrer"
+            target="_blank"
           >
             <Pencil className="size-4" />
-          </Button>
+          </Link>
 
           <Button
             variant="ghost"
@@ -122,11 +118,6 @@ export function useInboundsColumns() {
   return {
     columns: inboundColumns,
     actions: {
-      edit: {
-        isOpen: isEditOpen,
-        inbound: editingInbound,
-        setIsOpen: setIsEditOpen,
-      },
       delete: {
         isOpen: isDeleteOpen,
         inbound: deletingInbound,

@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+Project: sing-box-ui
+
+General principles:
+
+- Keep everything as simple as possible
+- Avoid overengineering
+- Prefer minimal and readable code
+- Do not introduce abstractions unless absolutely necessary
+
+Coding style:
+
+- Short functions over complex ones
+- Clear naming over clever naming
+- No unnecessary layers (services, managers, etc.)
+
+UI:
+
+- Minimal UI
+- No unnecessary features
+- Focus on usability and clarity
+
+Behavior:
+
+- Do not suggest complex architectures
+- Do not propose enterprise patterns
+- Prefer straightforward solutions
+
+When unsure:
+
+- Choose the simplest working solution

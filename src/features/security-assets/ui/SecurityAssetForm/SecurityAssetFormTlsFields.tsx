@@ -67,21 +67,21 @@ export function SecurityAssetFormTlsFields({
       <ControlledSelectField<SecurityAssetFormValues>
         items={[
           { label: "Inline", value: "inline" },
-          { label: "File", value: "file" },
+          { label: "Файлы", value: "file" },
         ]}
-        label="Certificate Source"
+        label="Источник сертификата"
         name="source.sourceType"
-        placeholder="Выбери источник сертификата"
+        placeholder="Выберите источник сертификата"
         showErrorMessage={false}
         onValueChangeExternal={onSourceTypeValueChangeExternal}
       />
 
       <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
-        <p className="text-foreground font-medium">Источник TLS сертификата</p>
+        <p className="text-foreground font-medium">Какой источник выбрать</p>
         <p className="text-muted-foreground mt-1">
-          Inline хранит сертификат и ключ прямо в конфигурации. File использует
-          пути к файлам на сервере и подходит, если сертификаты уже лежат в
-          управляемой директории.
+          `Inline` хранит сертификат и ключ прямо в конфигурации. `Файлы`
+          использует пути к файлам на сервере и подходит, если сертификаты уже
+          лежат в управляемой директории.
         </p>
       </div>
 
