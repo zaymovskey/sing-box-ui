@@ -126,14 +126,20 @@ export function FirewallListenPortChanger({
     name: "type",
   });
 
+  // After form.reset(...) uncontrolled fields can visually show initial values
+  // before useWatch receives the synced values. Fall back to initial edit values
+  // to avoid false "remove/add" firewall diffs on the first render.
+  const effectiveType = type ?? initialValues?.type;
+  const effectiveListenPort = listenPort ?? initialValues?.listen_port ?? 0;
+
   const firewallChanges = useMemo(() => {
     return getFirewallChanges({
       mode,
       initialValues,
-      currentType: type,
-      currentListenPort: listenPort,
+      currentType: effectiveType,
+      currentListenPort: effectiveListenPort,
     });
-  }, [initialValues, listenPort, mode, type]);
+  }, [effectiveListenPort, effectiveType, initialValues, mode]);
 
   const error = getFieldState("listen_port", formState).error;
   const message = error?.message?.toString() ?? "";
