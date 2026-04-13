@@ -13,16 +13,10 @@
     "baseUrl": "..",
     "incremental": false,
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "files": [
-    "./main.ts",
-    "./jobs/traffic-monitor/job.ts",
-    "./jobs/traffic-monitor/test-v2ray-api.ts"
-  ],
+  "files": ["./main.ts", "./jobs/traffic-monitor/job.ts"],
   "exclude": [
     "../node_modules",
     "../.next",
