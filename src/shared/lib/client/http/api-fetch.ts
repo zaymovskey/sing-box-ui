@@ -1,4 +1,3 @@
-import { clientEnv } from "../env-client";
 import { ApiError } from "./api-error.class";
 import { readErrorMessage } from "./read-error-message";
 
@@ -16,7 +15,7 @@ export async function apiFetch<T = unknown>(
   input: string,
   init?: ApiFetchOptions & { responseMode?: ResponseMode },
 ): Promise<T> {
-  if (clientEnv.NEXT_PUBLIC_NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development") {
     await sleep(800);
   }
 

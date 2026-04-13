@@ -2,7 +2,6 @@
 
 import { FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 
-import { clientEnv } from "@/shared/lib";
 import {
   ControlledSelectField,
   FormDebugPanel,
@@ -106,9 +105,7 @@ export function SecurityAssetForm({
         </section>
       </form>
 
-      {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
-        <FormDebugPanel form={form} />
-      )}
+      {process.env.NODE_ENV === "development" && <FormDebugPanel form={form} />}
     </FormProvider>
   );
 }

@@ -13,7 +13,6 @@ import {
   type InboundsListResponse,
   type StoredInbound,
 } from "@/shared/api/contracts";
-import { clientEnv } from "@/shared/lib";
 import {
   Button,
   Dialog,
@@ -186,7 +185,7 @@ export function CreateInboundDialog({
 
         <div className="bg-background sticky bottom-0 shrink-0 border-t px-6 py-4">
           <div className="flex justify-end gap-2">
-            {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+            {process.env.NODE_ENV === "development" && (
               <FormDebugPanel form={form} />
             )}
             <Button

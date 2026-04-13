@@ -87,7 +87,7 @@ export function InboundForm({
         </section>
       </form>
 
-      {/* {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+      {/* {process.env.NODE_ENV === "development" && (
         <FormDebugPanel form={form} />
       )} */}
     </FormProvider>

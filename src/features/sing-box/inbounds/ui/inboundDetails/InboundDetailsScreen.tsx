@@ -13,7 +13,6 @@ import {
   type InboundsListResponse,
   type StoredInbound,
 } from "@/shared/api/contracts";
-import { clientEnv } from "@/shared/lib";
 import {
   Alert,
   AlertDescription,
@@ -256,7 +255,7 @@ export function InboundDetailsScreen({
 
           <div className="bg-background/95 supports-backdrop-filter:bg-background/80 fixed right-0 bottom-0 left-0 z-20 border-t backdrop-blur md:left-(--sidebar-width)">
             <div className="flex justify-end gap-2 px-6 py-4">
-              {clientEnv.NEXT_PUBLIC_NODE_ENV === "development" && (
+              {process.env.NODE_ENV === "development" && (
                 <FormDebugPanel form={form} />
               )}
               <Button
