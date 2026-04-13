@@ -1,11 +1,6 @@
 services:
   sing-box:
-    build:
-      context: ..
-      dockerfile: docker/sing-box/Dockerfile
-      args:
-        SING_BOX_REF: v1.14.0-alpha.9
-    image: local/sing-box:v1.14.0-alpha.9-v2ray-api
+    image: ghcr.io/zaymovskey/sing-box:${IMAGE_TAG:-latest}
     container_name: sing-box
     restart: unless-stopped
     command: ["run", "-c", "/etc/sing-box/config.json"]
