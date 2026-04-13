@@ -16,7 +16,6 @@ import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
-import { EditInboundDialog } from "../dialogs/EditInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 import { InboundsTablePagination } from "./InboundsTablePagination";
 
@@ -149,14 +148,6 @@ export function InboundsTableScreen() {
           onPageChange={(page) => setGetParam({ page: page.toString() })}
         />
       </Card>
-
-      {inboundColumns.actions.edit.inbound && (
-        <EditInboundDialog
-          inbound={inboundColumns.actions.edit.inbound}
-          open={inboundColumns.actions.edit.isOpen}
-          onOpenChange={inboundColumns.actions.edit.setIsOpen}
-        />
-      )}
 
       {inboundColumns.actions.delete.inbound && (
         <DeleteInboundDialog

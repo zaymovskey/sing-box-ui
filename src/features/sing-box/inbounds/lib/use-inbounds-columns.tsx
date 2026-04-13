@@ -22,8 +22,6 @@ export function useInboundsColumns() {
   };
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-
   const [deletingInbound, setDeletingInbound] = useState<StoredInbound | null>(
     null,
   );
@@ -120,10 +118,6 @@ export function useInboundsColumns() {
   return {
     columns: inboundColumns,
     actions: {
-      edit: {
-        isOpen: isEditOpen,
-        setIsOpen: setIsEditOpen,
-      },
       delete: {
         isOpen: isDeleteOpen,
         inbound: deletingInbound,
