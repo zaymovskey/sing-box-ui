@@ -4,7 +4,6 @@ import {
   ListenPortSchema,
   ListenSchema,
   NonEmptyStringSchema,
-  SniffOverrideDestinationSchema,
   SniffSchema,
 } from "../core/inbounds.schema";
 
@@ -15,7 +14,6 @@ export const StoredBaseInboundSchema = z.object({
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
   sniff: SniffSchema,
-  sniff_override_destination: SniffOverrideDestinationSchema,
 });
 
 export const SaveBaseInboundSchema = z.object({
@@ -24,7 +22,6 @@ export const SaveBaseInboundSchema = z.object({
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema,
   sniff: SniffSchema,
-  sniff_override_destination: SniffOverrideDestinationSchema,
 });
 
 export const StoredBaseInboundUserSchema = z.object({

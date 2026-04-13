@@ -78,7 +78,6 @@ export function mapVlessFormToInbound(
     listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,
-    sniff_override_destination: values.sniff_override_destination,
     users: values.users.map((user) => ({
       display_name: user.display_name,
       uuid: user.uuid,

@@ -9,6 +9,5 @@ export const BaseInboundFormSchema = z.object({
     .min(1, "Минимум 1")
     .max(65535, "Максимум 65535"),
   sniff: z.boolean(),
-  sniff_override_destination: z.boolean(),
   listen: z.string().trim().min(1, "Укажите listen"),
 });

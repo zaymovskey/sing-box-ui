@@ -52,7 +52,6 @@ export function mapHy2FormToInbound(
     listen: values.listen,
     listen_port: values.listen_port,
     sniff: values.sniff,
-    sniff_override_destination: values.sniff_override_destination,
     up_mbps: values.ignore_client_bandwidth ? undefined : values.up_mbps,
     down_mbps: values.ignore_client_bandwidth ? undefined : values.down_mbps,
     ignore_client_bandwidth: values.ignore_client_bandwidth,

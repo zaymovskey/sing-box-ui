@@ -30,7 +30,6 @@ export const InboundRowSchema = z.object({
   listen: NullableStringSchema,
   listen_port: NullableNumberSchema,
   sniff: NullableSqliteBooleanSchema,
-  sniff_override_destination: NullableSqliteBooleanSchema,
 
   security_asset_id: NullableStringSchema,
 

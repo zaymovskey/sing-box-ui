@@ -35,7 +35,6 @@ export function getStoredInbounds(): StoredInbound[] {
           listen,
           listen_port,
           sniff,
-          sniff_override_destination,
           security_asset_id,
           created_at,
           updated_at
@@ -155,9 +154,6 @@ export function getStoredInbounds(): StoredInbound[] {
         listen: row.listen ?? undefined,
         listen_port: row.listen_port ?? undefined,
         sniff: sqliteBoolToBoolean(row.sniff),
-        sniff_override_destination: sqliteBoolToBoolean(
-          row.sniff_override_destination,
-        ),
         users: vlessUsers,
         tls: mapTlsFromSecurityAssetForVless(
           linkedAsset,
@@ -203,9 +199,6 @@ export function getStoredInbounds(): StoredInbound[] {
       listen: row.listen ?? undefined,
       listen_port: row.listen_port ?? undefined,
       sniff: sqliteBoolToBoolean(row.sniff),
-      sniff_override_destination: sqliteBoolToBoolean(
-        row.sniff_override_destination,
-      ),
       up_mbps: hysteria2Row?.up_mbps ?? undefined,
       down_mbps: hysteria2Row?.down_mbps ?? undefined,
       ignore_client_bandwidth: sqliteBoolToBoolean(

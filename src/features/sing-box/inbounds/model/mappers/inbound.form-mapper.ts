@@ -143,7 +143,6 @@ export function mapInboundToFormValues(
     listen: inbound.listen ?? "",
     listen_port: inbound.listen_port ?? 443,
     sniff: inbound.sniff ?? false,
-    sniff_override_destination: inbound.sniff_override_destination ?? false,
   };
 
   if (inbound.type === "vless") {

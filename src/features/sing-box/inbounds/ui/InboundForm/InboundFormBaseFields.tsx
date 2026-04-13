@@ -37,21 +37,15 @@ export function InboundFormBaseFields() {
 
       <div className="space-y-4">
         <SubsectionTitle
-          description="Определение протокола и подмена destination по распознанным данным."
+          description="Определение протокола и домена по данным входящего соединения."
           title="Sniffing"
         />
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3">
           <ControlledSwitchField<InboundFormValues>
             label="Sniff"
             name="sniff"
             placeholder="Автоопределение протокола / домена"
-          />
-
-          <ControlledSwitchField<InboundFormValues>
-            label="Override destination"
-            name="sniff_override_destination"
-            placeholder="Подменять destination по sniff"
           />
         </div>
       </div>

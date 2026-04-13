@@ -10,14 +10,12 @@ export const ListenPortSchema = z
   .max(65535, "Максимум 65535");
 
 export const SniffSchema = z.boolean().optional();
-export const SniffOverrideDestinationSchema = z.boolean().optional();
 
 export const SingBoxBaseInboundSchema = z.object({
   tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),
   listen_port: ListenPortSchema.optional(),
   sniff: SniffSchema,
-  sniff_override_destination: SniffOverrideDestinationSchema,
 });
 
 export const VlessFlowSchema = z.enum(["xtls-rprx-vision"]);

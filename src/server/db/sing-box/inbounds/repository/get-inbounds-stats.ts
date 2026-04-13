@@ -23,7 +23,6 @@ export function getInboundsStats(): InboundStats[] {
           listen,
           listen_port,
           sniff,
-          sniff_override_destination,
           security_asset_id,
           created_at,
           updated_at

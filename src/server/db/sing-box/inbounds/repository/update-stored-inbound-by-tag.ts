@@ -276,7 +276,6 @@ export function updateStoredInboundByDisplayTag(
             listen = ?,
             listen_port = ?,
             sniff = ?,
-            sniff_override_destination = ?,
             security_asset_id = ?,
             updated_at = ?
           WHERE id = ?
@@ -288,7 +287,6 @@ export function updateStoredInboundByDisplayTag(
         saveInput.listen ?? null,
         saveInput.listen_port ?? null,
         booleanToSqliteBool(saveInput.sniff),
-        booleanToSqliteBool(saveInput.sniff_override_destination),
         saveInput._security_asset_id ?? null,
         now,
         inboundId,

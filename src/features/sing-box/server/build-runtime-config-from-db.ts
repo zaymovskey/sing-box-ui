@@ -31,8 +31,29 @@ type ExperimentalConfig = {
   v2ray_api?: V2RayApiConfig;
 };
 
+type RuntimeRouteRule = {
+  inbound?: string;
+  action: "sniff";
+};
+
+type RuntimeRouteConfig = {
+  final?: string;
+  rules?: RuntimeRouteRule[];
+};
+
 function uniq(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+function buildRouteRulesFromStoredInbounds(
+  inbounds: StoredInbound[],
+): RuntimeRouteRule[] {
+  return inbounds
+    .filter((inbound) => inbound.sniff === true)
+    .map((inbound) => ({
+      inbound: inbound.internal_tag,
+      action: "sniff" as const,
+    }));
 }
 
 function mapHy2MasqueradeToRuntime(
@@ -102,6 +123,7 @@ export async function buildRuntimeConfigFromDb(): Promise<
   const dbInbounds = getStoredInbounds();
   const runtimeInbounds = mapStoredInboundsToSingBox(dbInbounds);
   const statsConfig = buildV2RayStatsFromStoredInbounds(dbInbounds);
+  const sniffRules = buildRouteRulesFromStoredInbounds(dbInbounds);
   const dbSecurityAssets = getSecurityAssets();
 
   const rawExperimental =
@@ -119,9 +141,22 @@ export async function buildRuntimeConfigFromDb(): Promise<
       ? rawV2RayApi.stats
       : undefined;
 
+  const rawRoute =
+    typeof rawDraft.route === "object" && rawDraft.route !== null
+      ? (rawDraft.route as RuntimeRouteConfig)
+      : undefined;
+
+  const rawRouteRules = Array.isArray(rawRoute?.rules)
+    ? rawRoute.rules
+    : undefined;
+
   const draftWithDbSources: Record<string, unknown> = {
     ...rawDraft,
     inbounds: runtimeInbounds,
+    route: {
+      ...(rawRoute ?? {}),
+      rules: [...sniffRules, ...(rawRouteRules ?? [])],
+    },
     experimental: {
       ...(rawExperimental ?? {}),
       v2ray_api: {
@@ -156,8 +191,6 @@ export function mapStoredInboundsToSingBox(
         tag: stored.internal_tag,
         listen: stored.listen,
         listen_port: stored.listen_port,
-        sniff: stored.sniff,
-        sniff_override_destination: stored.sniff_override_destination,
         multiplex: {
           enabled: stored.multiplex?.enabled ?? false,
           padding: stored.multiplex?.padding ?? false,
@@ -200,8 +233,6 @@ export function mapStoredInboundsToSingBox(
       tag: stored.internal_tag,
       listen: stored.listen,
       listen_port: stored.listen_port,
-      sniff: stored.sniff,
-      sniff_override_destination: stored.sniff_override_destination,
       up_mbps: stored.up_mbps,
       down_mbps: stored.down_mbps,
       ignore_client_bandwidth: stored.ignore_client_bandwidth,

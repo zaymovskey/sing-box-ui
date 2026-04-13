@@ -36,12 +36,11 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
           listen,
           listen_port,
           sniff,
-          sniff_override_destination,
           security_asset_id,
           created_at,
           updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
     ).run(
       inboundId,
@@ -51,7 +50,6 @@ export function createStoredInbound(input: SaveInboundInput): OkResponse {
       saveInput.listen ?? null,
       saveInput.listen_port ?? null,
       booleanToSqliteBool(saveInput.sniff),
-      booleanToSqliteBool(saveInput.sniff_override_destination),
       saveInput._security_asset_id ?? null,
       now,
       now,
