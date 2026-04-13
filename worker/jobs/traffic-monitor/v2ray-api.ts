@@ -8,6 +8,8 @@ import * as protoLoader from "@grpc/proto-loader";
 function resolveProtoPath(): string {
   const candidates = [
     // worker build output (see worker/tsconfig.worker.json outDir)
+    path.resolve(process.cwd(), ".worker-dist/worker/grpc/stats.proto"),
+    // legacy candidate kept as fallback for older layouts
     path.resolve(process.cwd(), ".worker-dist/server/worker/grpc/stats.proto"),
     // dev / source tree
     path.resolve(process.cwd(), "worker/grpc/stats.proto"),
