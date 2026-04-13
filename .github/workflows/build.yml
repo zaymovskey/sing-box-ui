@@ -71,7 +71,28 @@ jobs:
           build-args: |
             NEXT_PUBLIC_SINGBOX_CERTS_DIR=${{ secrets.NEXT_PUBLIC_SINGBOX_CERTS_DIR }}
 
+      - name: Extract sing-box Docker metadata
+        id: meta_sing_box
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/zaymovskey/sing-box
+          tags: |
+            type=raw,value=latest
+            type=raw,value=sha-${{ steps.vars.outputs.short_sha }}
+
+      - name: Build and push sing-box image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/sing-box/Dockerfile
+          push: true
+          tags: ${{ steps.meta_sing_box.outputs.tags }}
+          labels: ${{ steps.meta_sing_box.outputs.labels }}
+          build-args: |
+            SING_BOX_REF=v1.14.0-alpha.9
+
       - name: Show image tags
         run: |
           echo "UI_IMAGE_TAG=sha-${GITHUB_SHA::7}"
           echo "WORKER_IMAGE_TAG=sha-${GITHUB_SHA::7}"
+          echo "SING_BOX_IMAGE_TAG=sha-${GITHUB_SHA::7}"

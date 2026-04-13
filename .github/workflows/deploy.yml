@@ -50,8 +50,8 @@ jobs:
             echo "IMAGE_TAG=$IMAGE_TAG"
             docker compose config | grep image:
 
-            docker compose pull ui worker
-            docker compose up -d --force-recreate --remove-orphans ui worker
+            docker compose pull sing-box ui worker
+            docker compose up -d --force-recreate --remove-orphans sing-box ui worker
 
             echo "DEPLOY_ENV=${{ inputs.environment }}"
             echo "DEPLOY_PATH=${{ steps.vars.outputs.deploy_path }}"
