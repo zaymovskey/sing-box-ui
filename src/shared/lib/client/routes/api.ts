@@ -12,6 +12,7 @@ export const apiRoutes = {
       create: "/api/sing-box/inbounds",
       edit: (originalTag: string) => `/api/sing-box/inbounds/${originalTag}`,
       delete: (tag: string) => `/api/sing-box/inbounds/${tag}`,
+      get: (tag: string) => `/api/sing-box/inbounds/${tag}`,
       list: "/api/sing-box/inbounds",
       stats: "/api/sing-box/inbounds/stats",
     },

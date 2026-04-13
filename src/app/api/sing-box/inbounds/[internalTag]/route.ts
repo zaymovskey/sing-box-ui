@@ -4,16 +4,33 @@ import { applyInboundFirewallChanges } from "@/features/sing-box";
 import {
   deleteStoredInboundByInternalTag,
   getStoredInboundByInternalTag,
+  getStoredInboundDetailsByInternalTag,
   updateStoredInboundByDisplayTag,
 } from "@/server/db/sing-box/inbounds";
 import {
   OkResponseSchema,
   SaveInboundInputSchema,
+  StoredInboundSchema,
 } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/server";
 
 const TagParamsSchema = z.object({
   internalTag: z.string().min(1),
+});
+
+export const GET = withRoute({
+  auth: true,
+  paramsSchema: TagParamsSchema,
+  responseSchema: StoredInboundSchema,
+  handler: async ({ params }) => {
+    const inbound = getStoredInboundDetailsByInternalTag(params.internalTag);
+
+    if (!inbound) {
+      throw new ServerApiError(404, "INBOUND_NOT_FOUND", "Inbound not found");
+    }
+
+    return inbound;
+  },
 });
 
 export const PUT = withRoute({

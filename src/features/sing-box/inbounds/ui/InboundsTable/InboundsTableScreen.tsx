@@ -1,11 +1,14 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCcw, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { singBoxQueryKeys } from "@/features/sing-box/config-core";
 import { cn } from "@/shared/lib";
 import { Button, Card, Input, MultiSelect, Separator } from "@/shared/ui";
 
+import { subscribeToInboundsChanged } from "../../lib/inbounds-sync";
 import { mapInboundsListToRows } from "../../lib/map-inbounds-list-to-rows.mapper";
 import { useInboundsColumns } from "../../lib/use-inbounds-columns";
 import { useInboundsListState } from "../../lib/use-inbounds-list-state";
@@ -25,6 +28,7 @@ const inboundTypeOptions = [
 ];
 
 export function InboundsTableScreen() {
+  const qc = useQueryClient();
   const inboundColumns = useInboundsColumns();
 
   const { data: inboundsList } = useInboundsListQuery();
@@ -71,6 +75,13 @@ export function InboundsTableScreen() {
       types: null,
     });
   };
+
+  useEffect(() => {
+    return subscribeToInboundsChanged(() => {
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inbounds() });
+      void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inboundsStats() });
+    });
+  }, [qc]);
 
   return (
     <>
