@@ -31,7 +31,7 @@ export const InboundStatsSchema = z.object({
   internal_tag: z.string(),
 
   listen: z.string().nullable(),
-  listen_port: z.number().int().positive().nullable(),
+  listen_port: z.number().int().positive(),
 
   users: z.array(InboundUserStatsSchema),
 
