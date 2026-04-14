@@ -5,6 +5,7 @@ import { AlertCircle, LoaderCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import {
   InboundFormSchema,
   type InboundFormValues,
@@ -20,6 +21,9 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   FormDebugPanel,
   serverToast,
 } from "@/shared/ui";
@@ -34,8 +38,10 @@ import {
 import { useInboundQuery } from "../../model/inbound.query";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { useInboundsListQuery } from "../../model/inbounds-list.query";
+import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
 import { InboundForm } from "../InboundForm/InboundForm";
+import { InboundUserRow } from "../InboundsTable/InboundUserRow/InboundUserRow";
 
 interface InboundDetailsScreenProps {
   internalTag: string;
@@ -54,11 +60,21 @@ export function InboundDetailsScreen({
 }: InboundDetailsScreenProps) {
   const { data: inbound, error, isPending } = useInboundQuery(internalTag);
   const { data: inboundsListResponse } = useInboundsListQuery();
+  const { data: inboundsStats } = useInboundsStatsQuery();
+  const { data: securityAssets } = useSecurityAssetsListQuery();
 
   const rawInbounds = useMemo(
     () => getRawInbounds(inboundsListResponse),
     [inboundsListResponse],
   );
+
+  const inboundUsers = useMemo(() => inbound?.users ?? [], [inbound]);
+
+  const inboundStats = useMemo(() => {
+    return inboundsStats?.items.find(
+      (item) => item.internal_tag === internalTag,
+    );
+  }, [inboundsStats, internalTag]);
 
   const mappedInbound = useMemo(() => {
     if (!inbound) {
@@ -235,9 +251,49 @@ export function InboundDetailsScreen({
   }
 
   return (
-    <div className="space-y-4 pb-28">
+    <div className="space-y-4 pb-14">
       {initialValues && (
         <>
+          <Card className="gap-0 overflow-hidden py-0">
+            <div className="mx-auto w-full max-w-6xl px-6 py-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>Пользователи</CardTitle>
+                <CardDescription className="mb-2">
+                  {inboundUsers.length === 0
+                    ? "У этого инбаунда пока нет пользователей."
+                    : `Всего ${inboundUsers.length}, онлайн ${inboundStats?.online_users_count ?? 0}`}
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="px-0 pb-0">
+                {inboundUsers.length > 0 ? (
+                  <div className="space-y-4">
+                    {inboundUsers.map((user, index) => {
+                      const userStats = inboundStats?.users.find(
+                        (item) => item.internal_name === user.internal_name,
+                      );
+
+                      return (
+                        <InboundUserRow
+                          key={`${user.internal_name}-${index}`}
+                          inbound={inbound}
+                          securityAssets={securityAssets ?? []}
+                          user={user}
+                          userStats={userStats}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground bg-muted/30 rounded-lg border border-dashed px-4 py-8 text-center text-sm">
+                    Когда добавишь пользователя в конфиг инбаунда, он появится
+                    здесь.
+                  </div>
+                )}
+              </CardContent>
+            </div>
+          </Card>
+
           <Card className="gap-0 overflow-hidden py-0">
             <div className="mx-auto max-w-3xl px-6 py-6">
               <InboundFormProvider
