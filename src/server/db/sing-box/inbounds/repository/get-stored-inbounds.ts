@@ -152,7 +152,7 @@ export function getStoredInbounds(): StoredInbound[] {
         display_tag: row.display_tag ?? "",
         internal_tag: row.internal_tag ?? "",
         listen: row.listen ?? undefined,
-        listen_port: row.listen_port ?? undefined,
+        listen_port: row.listen_port,
         sniff: sqliteBoolToBoolean(row.sniff),
         users: vlessUsers,
         tls: mapTlsFromSecurityAssetForVless(
@@ -197,7 +197,7 @@ export function getStoredInbounds(): StoredInbound[] {
       display_tag: row.display_tag ?? "",
       internal_tag: row.internal_tag ?? "",
       listen: row.listen ?? undefined,
-      listen_port: row.listen_port ?? undefined,
+      listen_port: row.listen_port,
       sniff: sqliteBoolToBoolean(row.sniff),
       up_mbps: hysteria2Row?.up_mbps ?? undefined,
       down_mbps: hysteria2Row?.down_mbps ?? undefined,

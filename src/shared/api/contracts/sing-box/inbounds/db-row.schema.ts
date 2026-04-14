@@ -5,6 +5,7 @@ const DbTimestampSchema = z.iso.datetime();
 
 const NullableStringSchema = z.string().nullable();
 const NullableNumberSchema = z.number().nullable();
+const DbListenPortSchema = z.number().int().positive();
 
 /**
  * SQLite boolean обычно лежит как 0 / 1
@@ -28,7 +29,7 @@ export const InboundRowSchema = z.object({
   type: InboundDbTypeSchema,
 
   listen: NullableStringSchema,
-  listen_port: NullableNumberSchema,
+  listen_port: DbListenPortSchema,
   sniff: NullableSqliteBooleanSchema,
 
   security_asset_id: NullableStringSchema,

@@ -12,7 +12,7 @@ export const StoredBaseInboundSchema = z.object({
   display_tag: NonEmptyStringSchema,
   internal_tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),
-  listen_port: ListenPortSchema.optional(),
+  listen_port: ListenPortSchema,
   sniff: SniffSchema,
 });
 
