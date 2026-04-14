@@ -6,12 +6,11 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { type DiagnosticStatus } from "@/shared/api/contracts";
 import { cn } from "@/shared/lib";
 import { Button, Skeleton } from "@/shared/ui";
 
-type DemoDiagnosticStatus = "pass" | "warn" | "fail" | "unknown";
-
-function getTone(status: DemoDiagnosticStatus) {
+function getTone(status: DiagnosticStatus) {
   switch (status) {
     case "pass":
       return {
@@ -35,7 +34,7 @@ function getTone(status: DemoDiagnosticStatus) {
           "bg-amber-500/10 text-amber-600 flex size-8 shrink-0 items-center justify-center rounded-lg",
         messageIcon: <AlertTriangle className="size-4" />,
       };
-    case "fail":
+    case "error":
       return {
         label: "Failed",
         badgeClass:
@@ -70,16 +69,18 @@ export function DiagnosticCard({
   icon,
   actionLabel,
   isLoading = false,
+  onActionClick,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   message: string;
   description: string;
   details: string[];
-  status: DemoDiagnosticStatus;
+  status: DiagnosticStatus;
   icon: React.ReactNode;
   actionLabel: string;
   isLoading?: boolean;
+  onActionClick?: () => void;
 }) {
   const tone = getTone(status);
 
@@ -118,7 +119,11 @@ export function DiagnosticCard({
                   </span>
                 </div>
               ) : (
-                <div className="text-muted-foreground text-xs">{subtitle}</div>
+                subtitle && (
+                  <div className="text-muted-foreground text-xs">
+                    {subtitle}
+                  </div>
+                )
               )}
             </div>
           </div>
@@ -203,6 +208,7 @@ export function DiagnosticCard({
           size="sm"
           type="button"
           variant={isLoading ? "secondary" : "outline"}
+          onClick={onActionClick}
         >
           <RefreshCcw />
           {isLoading ? "Запуск..." : actionLabel}

@@ -1,4 +1,5 @@
-import { Activity, RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
+import { useEffect } from "react";
 
 import {
   Button,
@@ -9,9 +10,38 @@ import {
   CardTitle,
 } from "@/shared/ui";
 
-import { DiagnosticCard } from "./DiagnosticCard";
+import { mapPortListeningCardState } from "../../../lib/map-port-listening-card-state";
+import { useRunInboundDiagnosticMutation } from "../../../model/mutations/run-inbound-diagnostic.mutation";
+import { PortListeningInboundDiagnosticCard } from "./cards/PortListeningInboundDiagnosticCard";
 
-export function InboundDetailsDiagnosticsSection() {
+export function InboundDetailsDiagnosticsSection({
+  internalTag,
+}: {
+  internalTag: string;
+}) {
+  const {
+    mutate: runInboundDiagnostic,
+    isPending: diagnosticIsPending,
+    data: diagnostic,
+    error: diagnosticError,
+  } = useRunInboundDiagnosticMutation();
+
+  const portListeningDiagnostic = diagnostic?.find(
+    (item) => item.key === "port_listening",
+  );
+  const portListeningCardState = mapPortListeningCardState(
+    portListeningDiagnostic,
+    diagnosticError,
+  );
+
+  const handleRunPortListeningDiagnostic = () => {
+    runInboundDiagnostic({ internalTag, diagnostics: ["port_listening"] });
+  };
+
+  useEffect(() => {
+    runInboundDiagnostic({ internalTag, diagnostics: ["port_listening"] });
+  }, [runInboundDiagnostic, internalTag]);
+
   return (
     <Card className="gap-0 overflow-hidden py-0">
       <div className="mx-auto w-full max-w-6xl px-6 py-6">
@@ -35,30 +65,12 @@ export function InboundDetailsDiagnosticsSection() {
 
         <CardContent className="px-0 pb-0">
           <div className="grid gap-4 xl:grid-cols-3">
-            <DiagnosticCard
-              actionLabel="Запустить check"
-              description="Проверяет, что нужный порт реально слушается на хосте и доступен для входящих подключений."
-              details={[
-                "ss показал LISTEN на 0.0.0.0:443",
-                "Проверено только как демо-верстка",
-              ]}
-              icon={<Activity className="size-4" />}
-              message="Порт слушается и доступен на всех интерфейсах."
-              status="pass"
-              subtitle="Проверено 20 секунд назад"
-              title="Port listening"
-            />
-
-            <DiagnosticCard
-              isLoading
-              actionLabel="Запустить check"
-              description="Проверка bind-address в процессе, поэтому пока показываем мягкий loading-state без дерганья layout."
-              details={["", ""]}
-              icon={<Activity className="size-4" />}
-              message=""
-              status="unknown"
-              subtitle=""
-              title="Bind address"
+            <PortListeningInboundDiagnosticCard
+              details={portListeningCardState.details}
+              isLoading={diagnosticIsPending}
+              message={portListeningCardState.message}
+              status={portListeningCardState.status}
+              onRun={handleRunPortListeningDiagnostic}
             />
           </div>
         </CardContent>

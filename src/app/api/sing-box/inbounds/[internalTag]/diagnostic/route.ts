@@ -10,7 +10,7 @@ import { getStoredInboundDetailsByInternalTag } from "@/server/db/sing-box/inbou
 import {
   type InboundDiagnostic,
   InboundDiagnosticRequestSchema,
-  InboundDiagnosticSchema,
+  InboundDiagnosticResponseSchema,
   type RuntimeConfig,
 } from "@/shared/api/contracts";
 import { getServerEnv, ServerApiError, withRoute } from "@/shared/server";
@@ -22,7 +22,7 @@ const TagParamsSchema = z.object({
 export const POST = withRoute({
   auth: true,
   paramsSchema: TagParamsSchema,
-  responseSchema: z.array(InboundDiagnosticSchema),
+  responseSchema: InboundDiagnosticResponseSchema,
   requestSchema: InboundDiagnosticRequestSchema,
   handler: async ({ params, body }) => {
     const { internalTag } = params;
@@ -35,11 +35,11 @@ export const POST = withRoute({
     const { SINGBOX_CONFIG_PATH } = getServerEnv();
     const raw = await fs.readFile(SINGBOX_CONFIG_PATH, "utf-8");
     const config = JSON.parse(raw) as RuntimeConfig;
-    const inbound = config.inbounds?.find(
+    const runtimeInbound = config.inbounds?.find(
       (inbound) => inbound.tag === internalTag,
     );
 
-    if (!inbound) {
+    if (!runtimeInbound) {
       throw new ServerApiError(
         409,
         "INBOUND_NOT_APPLIED",
@@ -61,7 +61,9 @@ export const POST = withRoute({
 
     if (diagnostics.includes("port_listening")) {
       try {
-        const portListening = await isTcpPortListening(inbound.listen_port);
+        const portListening = await isTcpPortListening(
+          runtimeInbound.listen_port,
+        );
 
         diagnosticsResults.push({
           key: "port_listening",
@@ -73,7 +75,6 @@ export const POST = withRoute({
           checkedAt: new Date().toISOString(),
           source: "live",
           details: {
-            summary: portListening ? "ok" : "error",
             reason: portListening ? undefined : "not_listening",
           },
         });
@@ -86,7 +87,6 @@ export const POST = withRoute({
           checkedAt: new Date().toISOString(),
           source: "live",
           details: {
-            summary: "error",
             reason: "command_failed",
           },
         });

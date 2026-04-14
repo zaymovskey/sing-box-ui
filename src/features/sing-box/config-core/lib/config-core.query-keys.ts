@@ -9,4 +9,6 @@ export const singBoxQueryKeys = {
   securityAssets: (type?: "tls" | "reality") =>
     [...singBoxQueryKeys.all, "security-assets", type] as const,
   inboundsStats: () => [...singBoxQueryKeys.all, "inbounds", "stats"] as const,
+  inboundDiagnostic: (internalTag: string) =>
+    [...singBoxQueryKeys.inbounds(), "diagnostic", internalTag] as const,
 };

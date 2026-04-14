@@ -31,7 +31,7 @@ import {
   useCreateInbound,
 } from "../../model/commands/inbound-create.command";
 import { InboundFormProvider } from "../../model/inbound-form-ui.context";
-import { useInboundsListQuery } from "../../model/inbounds-list.query";
+import { useInboundsListQuery } from "../../model/queries/inbounds-list.query";
 import { InboundForm } from "../InboundForm/InboundForm";
 import { defaultsByType } from "../InboundForm/InboundForm.constants";
 

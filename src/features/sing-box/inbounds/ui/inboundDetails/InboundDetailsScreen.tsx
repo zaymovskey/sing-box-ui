@@ -23,10 +23,10 @@ import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
-import { useInboundQuery } from "../../model/inbound.query";
-import { useInboundsListQuery } from "../../model/inbounds-list.query";
-import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
+import { useInboundQuery } from "../../model/queries/inbound.query";
+import { useInboundsListQuery } from "../../model/queries/inbounds-list.query";
+import { useInboundsStatsQuery } from "../../model/queries/inbounds-stats.query";
 import { InboundDetailsActionsBar } from "./InboundDetailsActionsBar";
 import { InboundDetailsDiagnosticsSection } from "./InboundDetailsDiagnostic/InboundDetailsDiagnosticsSection";
 import { InboundDetailsFormSection } from "./InboundDetailsFormSection";
@@ -250,7 +250,7 @@ export function InboundDetailsScreen({
             securityAssets={securityAssets ?? []}
           />
 
-          <InboundDetailsDiagnosticsSection />
+          <InboundDetailsDiagnosticsSection internalTag={internalTag} />
 
           <InboundDetailsFormSection
             form={form}
