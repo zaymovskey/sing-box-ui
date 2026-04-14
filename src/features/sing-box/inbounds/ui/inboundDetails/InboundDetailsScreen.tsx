@@ -18,13 +18,8 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  Button,
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  FormDebugPanel,
   serverToast,
 } from "@/shared/ui";
 
@@ -36,12 +31,13 @@ import {
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
 import { useInboundQuery } from "../../model/inbound.query";
-import { InboundFormProvider } from "../../model/inbound-form-ui.context";
 import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
-import { InboundForm } from "../InboundForm/InboundForm";
-import { InboundUserRow } from "../InboundsTable/InboundUserRow/InboundUserRow";
+import { InboundDetailsActionsBar } from "./InboundDetailsActionsBar";
+import { InboundDetailsFormSection } from "./InboundDetailsFormSection";
+import { InboundDetailsSummaryHeader } from "./InboundDetailsSummaryHeader";
+import { InboundDetailsUsersSection } from "./InboundDetailsUsersSection";
 
 interface InboundDetailsScreenProps {
   internalTag: string;
@@ -254,86 +250,31 @@ export function InboundDetailsScreen({
     <div className="space-y-4 pb-14">
       {initialValues && (
         <>
-          <Card className="gap-0 overflow-hidden py-0">
-            <div className="mx-auto w-full max-w-6xl px-6 py-6">
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>Пользователи</CardTitle>
-                <CardDescription className="mb-2">
-                  {inboundUsers.length === 0
-                    ? "У этого инбаунда пока нет пользователей."
-                    : `Всего ${inboundUsers.length}, онлайн ${inboundStats?.online_users_count ?? 0}`}
-                </CardDescription>
-              </CardHeader>
+          <InboundDetailsSummaryHeader
+            inbound={inbound}
+            inboundStats={inboundStats}
+            usersCount={inboundUsers.length}
+          />
 
-              <CardContent className="px-0 pb-0">
-                {inboundUsers.length > 0 ? (
-                  <div className="space-y-4">
-                    {inboundUsers.map((user, index) => {
-                      const userStats = inboundStats?.users.find(
-                        (item) => item.internal_name === user.internal_name,
-                      );
+          <InboundDetailsUsersSection
+            inbound={inbound}
+            inboundStats={inboundStats}
+            securityAssets={securityAssets ?? []}
+          />
 
-                      return (
-                        <InboundUserRow
-                          key={`${user.internal_name}-${index}`}
-                          inbound={inbound}
-                          securityAssets={securityAssets ?? []}
-                          user={user}
-                          userStats={userStats}
-                        />
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground bg-muted/30 rounded-lg border border-dashed px-4 py-8 text-center text-sm">
-                    Когда добавишь пользователя в конфиг инбаунда, он появится
-                    здесь.
-                  </div>
-                )}
-              </CardContent>
-            </div>
-          </Card>
+          <InboundDetailsFormSection
+            form={form}
+            formId={FORM_ID}
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+          />
 
-          <Card className="gap-0 overflow-hidden py-0">
-            <div className="mx-auto max-w-3xl px-6 py-6">
-              <InboundFormProvider
-                contextValue={{ mode: "edit", initialValues }}
-              >
-                <InboundForm
-                  form={form}
-                  formId={FORM_ID}
-                  initialValues={initialValues}
-                  onSubmit={handleSubmit}
-                />
-              </InboundFormProvider>
-            </div>
-          </Card>
-
-          <div className="bg-background/95 supports-backdrop-filter:bg-background/80 fixed right-0 bottom-0 left-0 z-20 border-t backdrop-blur md:left-(--sidebar-width)">
-            <div className="flex justify-end gap-2 px-6 py-4">
-              {process.env.NODE_ENV === "development" && (
-                <FormDebugPanel form={form} />
-              )}
-              <Button
-                disabled={!form.formState.isDirty}
-                loading={isEditPending}
-                type="button"
-                variant="outline"
-                onClick={handleReset}
-              >
-                Сбросить
-              </Button>
-
-              <Button
-                disabled={!form.formState.isDirty}
-                form={FORM_ID}
-                loading={isEditPending}
-                type="submit"
-              >
-                Сохранить
-              </Button>
-            </div>
-          </div>
+          <InboundDetailsActionsBar
+            form={form}
+            formId={FORM_ID}
+            isPending={isEditPending}
+            onReset={handleReset}
+          />
         </>
       )}
     </div>
