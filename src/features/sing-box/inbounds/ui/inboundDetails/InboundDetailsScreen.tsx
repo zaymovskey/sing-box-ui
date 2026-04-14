@@ -35,6 +35,7 @@ import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { useInboundsStatsQuery } from "../../model/inbounds-stats.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
 import { InboundDetailsActionsBar } from "./InboundDetailsActionsBar";
+import { InboundDetailsDiagnosticsSection } from "./InboundDetailsDiagnostic/InboundDetailsDiagnosticsSection";
 import { InboundDetailsFormSection } from "./InboundDetailsFormSection";
 import { InboundDetailsSummaryHeader } from "./InboundDetailsSummaryHeader";
 import { InboundDetailsUsersSection } from "./InboundDetailsUsersSection";
@@ -261,6 +262,8 @@ export function InboundDetailsScreen({
             inboundStats={inboundStats}
             securityAssets={securityAssets ?? []}
           />
+
+          <InboundDetailsDiagnosticsSection />
 
           <InboundDetailsFormSection
             form={form}
