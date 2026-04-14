@@ -15,6 +15,8 @@ export const apiRoutes = {
       get: (tag: string) => `/api/sing-box/inbounds/${tag}`,
       list: "/api/sing-box/inbounds",
       stats: "/api/sing-box/inbounds/stats",
+      diagnostic: (internalTag: string) =>
+        `/api/sing-box/inbounds/${internalTag}/diagnostic`,
     },
   },
   securityAssets: {

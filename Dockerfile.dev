@@ -6,6 +6,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
 RUN apk add --no-cache docker-cli
 RUN apk add --no-cache iptables
+RUN apk add --no-cache iproute2
 
 WORKDIR /app
 

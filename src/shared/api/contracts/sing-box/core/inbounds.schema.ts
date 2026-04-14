@@ -14,7 +14,7 @@ export const SniffSchema = z.boolean().optional();
 export const SingBoxBaseInboundSchema = z.object({
   tag: NonEmptyStringSchema,
   listen: ListenSchema.optional(),
-  listen_port: ListenPortSchema.optional(),
+  listen_port: ListenPortSchema,
   sniff: SniffSchema,
 });
 

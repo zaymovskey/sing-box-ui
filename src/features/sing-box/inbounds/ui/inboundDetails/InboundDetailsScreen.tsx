@@ -1,10 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, LoaderCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { useSecurityAssetsListQuery } from "@/features/security-assets";
 import {
   InboundFormSchema,
   type InboundFormValues,
@@ -13,16 +14,7 @@ import {
   type InboundsListResponse,
   type StoredInbound,
 } from "@/shared/api/contracts";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Button,
-  Card,
-  CardContent,
-  FormDebugPanel,
-  serverToast,
-} from "@/shared/ui";
+import { Alert, AlertDescription, AlertTitle, serverToast } from "@/shared/ui";
 
 import { broadcastInboundsChanged } from "../../lib/inbounds-sync";
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
@@ -31,11 +23,16 @@ import {
   CONFIG_INVALID_AFTER_MAPPING,
   useEditInbound,
 } from "../../model/commands/inbound-edit.command";
-import { useInboundQuery } from "../../model/inbound.query";
-import { InboundFormProvider } from "../../model/inbound-form-ui.context";
-import { useInboundsListQuery } from "../../model/inbounds-list.query";
 import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper";
-import { InboundForm } from "../InboundForm/InboundForm";
+import { useInboundQuery } from "../../model/queries/inbound.query";
+import { useInboundsListQuery } from "../../model/queries/inbounds-list.query";
+import { useInboundsStatsQuery } from "../../model/queries/inbounds-stats.query";
+import { InboundDetailsActionsBar } from "./InboundDetailsActionsBar";
+import { InboundDetailsDiagnosticsSection } from "./InboundDetailsDiagnostic/InboundDetailsDiagnosticsSection";
+import { InboundDetailsFormSection } from "./InboundDetailsFormSection";
+import { InboundDetailsScreenSkeleton } from "./InboundDetailsScreenSkeleton";
+import { InboundDetailsSummaryHeader } from "./InboundDetailsSummaryHeader";
+import { InboundDetailsUsersSection } from "./InboundDetailsUsersSection";
 
 interface InboundDetailsScreenProps {
   internalTag: string;
@@ -54,11 +51,21 @@ export function InboundDetailsScreen({
 }: InboundDetailsScreenProps) {
   const { data: inbound, error, isPending } = useInboundQuery(internalTag);
   const { data: inboundsListResponse } = useInboundsListQuery();
+  const { data: inboundsStats } = useInboundsStatsQuery();
+  const { data: securityAssets } = useSecurityAssetsListQuery();
 
   const rawInbounds = useMemo(
     () => getRawInbounds(inboundsListResponse),
     [inboundsListResponse],
   );
+
+  const inboundUsers = useMemo(() => inbound?.users ?? [], [inbound]);
+
+  const inboundStats = useMemo(() => {
+    return inboundsStats?.items.find(
+      (item) => item.internal_tag === internalTag,
+    );
+  }, [inboundsStats, internalTag]);
 
   const mappedInbound = useMemo(() => {
     if (!inbound) {
@@ -202,14 +209,7 @@ export function InboundDetailsScreen({
   };
 
   if (isPending) {
-    return (
-      <Card>
-        <CardContent className="flex items-center gap-3">
-          <LoaderCircle className="text-muted-foreground size-4 animate-spin" />
-          <span>Загрузка инбаунда...</span>
-        </CardContent>
-      </Card>
-    );
+    return <InboundDetailsScreenSkeleton />;
   }
 
   if (error) {
@@ -235,49 +235,36 @@ export function InboundDetailsScreen({
   }
 
   return (
-    <div className="space-y-4 pb-28">
+    <div className="space-y-4 pb-14">
       {initialValues && (
         <>
-          <Card className="gap-0 overflow-hidden py-0">
-            <div className="mx-auto max-w-3xl px-6 py-6">
-              <InboundFormProvider
-                contextValue={{ mode: "edit", initialValues }}
-              >
-                <InboundForm
-                  form={form}
-                  formId={FORM_ID}
-                  initialValues={initialValues}
-                  onSubmit={handleSubmit}
-                />
-              </InboundFormProvider>
-            </div>
-          </Card>
+          <InboundDetailsSummaryHeader
+            inbound={inbound}
+            inboundStats={inboundStats}
+            usersCount={inboundUsers.length}
+          />
 
-          <div className="bg-background/95 supports-backdrop-filter:bg-background/80 fixed right-0 bottom-0 left-0 z-20 border-t backdrop-blur md:left-(--sidebar-width)">
-            <div className="flex justify-end gap-2 px-6 py-4">
-              {process.env.NODE_ENV === "development" && (
-                <FormDebugPanel form={form} />
-              )}
-              <Button
-                disabled={!form.formState.isDirty}
-                loading={isEditPending}
-                type="button"
-                variant="outline"
-                onClick={handleReset}
-              >
-                Сбросить
-              </Button>
+          <InboundDetailsUsersSection
+            inbound={inbound}
+            inboundStats={inboundStats}
+            securityAssets={securityAssets ?? []}
+          />
 
-              <Button
-                disabled={!form.formState.isDirty}
-                form={FORM_ID}
-                loading={isEditPending}
-                type="submit"
-              >
-                Сохранить
-              </Button>
-            </div>
-          </div>
+          <InboundDetailsDiagnosticsSection internalTag={internalTag} />
+
+          <InboundDetailsFormSection
+            form={form}
+            formId={FORM_ID}
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+          />
+
+          <InboundDetailsActionsBar
+            form={form}
+            formId={FORM_ID}
+            isPending={isEditPending}
+            onReset={handleReset}
+          />
         </>
       )}
     </div>

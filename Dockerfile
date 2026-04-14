@@ -47,6 +47,7 @@ ENV HOSTNAME=0.0.0.0
 RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
 RUN apk add --no-cache docker-cli
+RUN apk add --no-cache iproute2
 
 COPY --from=singbox /usr/local/bin/sing-box /usr/local/bin/sing-box
 

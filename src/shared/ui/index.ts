@@ -102,6 +102,7 @@ export {
   SidebarTrigger,
   useSidebar,
 } from "./sidebar";
+export { Skeleton } from "./skeleton";
 export { Toaster } from "./sonner/sonner";
 export { sonnerErrorCloseButton } from "./sonner/sonner-styles";
 export { clientToast, infraToast, serverToast } from "./sonner/toasters";

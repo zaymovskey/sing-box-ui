@@ -15,6 +15,7 @@ import { DeleteSecurityAssetDialog } from "../dialogs/DeleteSecurityAssetDialog"
 import { EditSecurityAssetDialog } from "../dialogs/EditSecurityAssetDialog";
 import { SecurityAssetsTable } from "./SecurityAssetsTable";
 import { SecurityAssetsTablePagination } from "./SecurityAssetsTablePagination";
+import { SecurityAssetsTableScreenSkeleton } from "./SecurityAssetsTableScreenSkeleton";
 
 const PER_PAGE = 10;
 
@@ -26,7 +27,8 @@ const securityAssetTypeOptions = [
 export function SecurityAssetsTableScreen() {
   const securityAssetsColumns = useSecurityAssetsColumns();
 
-  const { data: securityAssets } = useSecurityAssetsListQuery();
+  const { data: securityAssets, isPending: securityAssetsPending } =
+    useSecurityAssetsListQuery();
 
   const [createSecurityAssetDialogOpen, setCreateSecurityAssetDialogOpen] =
     useState(false);
@@ -70,6 +72,10 @@ export function SecurityAssetsTableScreen() {
       types: null,
     });
   };
+
+  if (securityAssetsPending) {
+    return <SecurityAssetsTableScreenSkeleton />;
+  }
 
   return (
     <>

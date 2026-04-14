@@ -217,7 +217,7 @@ export function InboundFormHy2Fields() {
             className="h-fit"
             label="Отладка brutal"
             name="brutal_debug"
-            placeholder="Включить подробный лог/отладку для brutal-режима"
+            placeholder="Включить подробный лог/отладку для brutal-режима "
           />
         </div>
       </div>
