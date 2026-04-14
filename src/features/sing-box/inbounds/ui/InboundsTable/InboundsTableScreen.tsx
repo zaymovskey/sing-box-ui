@@ -18,6 +18,7 @@ import { CreateInboundDialog } from "../dialogs/CreateInboundDialog";
 import { DeleteInboundDialog } from "../dialogs/DeleteInboundDialog";
 import { InboundsTable } from "./InboundsTable";
 import { InboundsTablePagination } from "./InboundsTablePagination";
+import { InboundsTableScreenSkeleton } from "./InboundsTableScreenSkeleton";
 
 const PER_PAGE = 10;
 
@@ -30,7 +31,8 @@ export function InboundsTableScreen() {
   const qc = useQueryClient();
   const inboundColumns = useInboundsColumns();
 
-  const { data: inboundsList } = useInboundsListQuery();
+  const { data: inboundsList, isPending: inboundsListPending } =
+    useInboundsListQuery();
   const { data: inboundsStats } = useInboundsStatsQuery();
 
   const [createInboundDialogOpen, setCreateInboundDialogOpen] = useState(false);
@@ -81,6 +83,10 @@ export function InboundsTableScreen() {
       void qc.invalidateQueries({ queryKey: singBoxQueryKeys.inboundsStats() });
     });
   }, [qc]);
+
+  if (inboundsListPending) {
+    return <InboundsTableScreenSkeleton />;
+  }
 
   return (
     <>
@@ -141,12 +147,14 @@ export function InboundsTableScreen() {
           inboundsStats={inboundsStats}
         />
 
-        <InboundsTablePagination
-          activePage={activePage}
-          count={tableRows.length}
-          perPage={PER_PAGE}
-          onPageChange={(page) => setGetParam({ page: page.toString() })}
-        />
+        {tableRows.length > PER_PAGE && (
+          <InboundsTablePagination
+            activePage={activePage}
+            count={tableRows.length}
+            perPage={PER_PAGE}
+            onPageChange={(page) => setGetParam({ page: page.toString() })}
+          />
+        )}
       </Card>
 
       {inboundColumns.actions.delete.inbound && (

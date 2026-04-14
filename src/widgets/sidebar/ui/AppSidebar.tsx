@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  CloudDownload,
-  DoorOpen,
-  FileCog,
-  PanelLeft,
-  Shield,
-} from "lucide-react";
+import { CloudDownload, DoorOpen, PanelLeft, Shield } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -30,11 +24,11 @@ import {
 import { ThemeToggle } from "./ThemeToggle";
 
 const items = [
-  {
-    title: "JSON Конфиг",
-    url: appRoutes.config,
-    icon: FileCog,
-  },
+  // {
+  //   title: "JSON Конфиг",
+  //   url: appRoutes.config,
+  //   icon: FileCog,
+  // },
   {
     title: "Инбаунды",
     url: appRoutes.inbounds,

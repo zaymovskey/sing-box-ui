@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, LoaderCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -14,14 +14,7 @@ import {
   type InboundsListResponse,
   type StoredInbound,
 } from "@/shared/api/contracts";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Card,
-  CardContent,
-  serverToast,
-} from "@/shared/ui";
+import { Alert, AlertDescription, AlertTitle, serverToast } from "@/shared/ui";
 
 import { broadcastInboundsChanged } from "../../lib/inbounds-sync";
 import { useInboundBindUniqueness } from "../../lib/use-inbound-bind-uniqueness";
@@ -37,6 +30,7 @@ import { mapInboundToFormValues } from "../../model/mappers/inbound.form-mapper"
 import { InboundDetailsActionsBar } from "./InboundDetailsActionsBar";
 import { InboundDetailsDiagnosticsSection } from "./InboundDetailsDiagnostic/InboundDetailsDiagnosticsSection";
 import { InboundDetailsFormSection } from "./InboundDetailsFormSection";
+import { InboundDetailsScreenSkeleton } from "./InboundDetailsScreenSkeleton";
 import { InboundDetailsSummaryHeader } from "./InboundDetailsSummaryHeader";
 import { InboundDetailsUsersSection } from "./InboundDetailsUsersSection";
 
@@ -215,14 +209,7 @@ export function InboundDetailsScreen({
   };
 
   if (isPending) {
-    return (
-      <Card>
-        <CardContent className="flex items-center gap-3">
-          <LoaderCircle className="text-muted-foreground size-4 animate-spin" />
-          <span>Загрузка инбаунда...</span>
-        </CardContent>
-      </Card>
-    );
+    return <InboundDetailsScreenSkeleton />;
   }
 
   if (error) {
