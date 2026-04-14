@@ -42,6 +42,10 @@ export function InboundDetailsDiagnosticsSection({
     runInboundDiagnostic({ internalTag, diagnostics: ["port_listening"] });
   }, [runInboundDiagnostic, internalTag]);
 
+  const handleRunAllDiagnostics = () => {
+    runInboundDiagnostic({ internalTag, diagnostics: ["port_listening"] });
+  };
+
   return (
     <Card className="gap-0 overflow-hidden py-0">
       <div className="mx-auto w-full max-w-6xl px-6 py-6">
@@ -50,12 +54,18 @@ export function InboundDetailsDiagnosticsSection({
             <div className="space-y-1">
               <CardTitle>Диагностика</CardTitle>
               <CardDescription>
-                Черновой вид секции с базовыми проверками инбаунда.
+                Быстрые runtime-проверки для этого инбаунда после применения
+                конфига.
               </CardDescription>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button disabled type="button" variant="outline">
+              <Button
+                loading={diagnosticIsPending}
+                type="button"
+                variant="outline"
+                onClick={handleRunAllDiagnostics}
+              >
                 <RefreshCcw />
                 Проверить заново
               </Button>
