@@ -1,153 +1,160 @@
 # sing-box-ui
 
-Административная панель для управления конфигурацией sing-box
+Веб-панель для управления `sing-box` через UI без ручного редактирования runtime JSON.
 
----
+Сейчас проект сфокусирован на понятных прикладных сценариях:
 
-## 🚀 Overview
+- управление `inbounds`
+- редактирование параметров через формы с валидацией
+- просмотр деталей инбаунда и runtime-диагностики
+- генерация клиентских ссылок и QR
+- работа с TLS / Reality asset'ами
+- применение конфигурации в живой `sing-box`
 
-Веб-интерфейс для управления VPN-конфигурациями sing-box.
+## Что умеет
 
-Позволяет:
+### Inbounds
 
-- удобно управлять inbound'ами
-- редактировать конфигурацию с валидацией
-- генерировать подключения для клиентов (ссылки + QR)
+- список инбаундов с поиском, фильтрацией и пагинацией
+- создание, редактирование и удаление
+- поддержка как минимум `VLESS` и `Hysteria2`
+- отдельный экран деталей инбаунда
+- генерация client links и QR для пользователей
+- отображение статистики и связанных пользователей
 
-Проект ориентирован на production-подход:
-UI управляет реальным running sing-box контейнером через Docker.
+### Runtime и диагностика
 
----
+- ручной reload `sing-box` из UI
+- статус сервиса и список runtime-check'ов
+- диагностика инбаунда, включая проверку listening port
+- чтение актуального runtime-конфига для проверок
+- интеграция с Docker через `docker.sock`
 
-## 🚀 Highlights
+### Security assets
 
-- Full-stack UI для управления sing-box конфигурацией
-- Генерация клиентских конфигов (links + QR)
-- Автоматическая генерация TLS-сертификатов (self-signed) и ключей (VLESS Reality)
-- Schema-based валидация через Zod
-- Production-ready CI/CD (GitHub Actions → GHCR → VPS)
-- Docker-based deployment (UI + sing-box)
-- Интеграция с runtime (управление живым контейнером)
+- хранение и управление TLS / Reality asset'ами
+- генерация self-signed TLS-сертификатов
+- генерация Reality key pair
+- переиспользование asset'ов в формах инбаундов
 
----
+### Трафик пользователей
 
-## ✨ Features
+- отдельный `worker`, который периодически читает статистику из `sing-box`
+- обновление uplink / downlink счетчиков пользователей в SQLite
 
-### 🧩 Config Management
+### Auth
 
-- CRUD для sing-box inbound'ов
-- Редактирование raw JSON-конфига
-- Schema-based валидация (Zod)
-- JSON editor с подсветкой ошибок
-- Синхронизация UI и реального конфига
+- login по JWT
+- сессия через HttpOnly cookie
 
-### 🔑 Crypto & Certificates
+## Что важно про текущее состояние
 
-- Генерация самоподписанных TLS-сертификатов для Hysteria2
-- Генерация ключевой пары для VLESS Reality (public/private)
+- UI больше не описывается как JSON editor
+- основной сценарий работы сейчас идет через формы и доменные экраны
+- runtime-конфиг используется на серверной стороне для применения и диагностик, а не как основной пользовательский интерфейс редактирования
 
-### 🔐 Auth & Security
+## Скриншоты
 
-- JWT auth с HttpOnly cookie
+### Inbounds
 
-### ⚙️ Runtime Integration
+<p align="center">
+  <img src="./screenshots/inbounds.png" width="100%" />
+</p>
 
-- Применение конфигурации с ручным reload
-- Отслеживание статуса применения
-- Парсинг и отображение ошибок sing-box
-- Интеграция с Docker API через docker.sock
+### Inbound details
 
-### 📡 Client Access
+<p align="center">
+  <img src="./screenshots/inbound-details.png" width="100%" />
+</p>
 
-- Генерация клиентских ссылок (Hysteria2, VLESS и др.)
-- Генерация QR-кодов
+## Архитектура
 
-### 🎨 UI/UX
+Проект разделен по доменам и работает как full-stack приложение на `Next.js`:
 
-- Динамические формы (React Hook Form + Zod)
-- Light / Dark тема
-- Анимированные переходы (`next-view-transitions`)
+- `UI` на `Next.js App Router`
+- серверные route handlers для auth, inbounds, reload, status, diagnostics и security assets
+- `SQLite` как локальное хранилище данных приложения
+- `sing-box` как отдельный runtime-сервис
+- `worker` для фонового сбора статистики трафика
 
-### 🚀 Infrastructure
+На практике поток такой:
 
-- Контейнеризация UI и sing-box через Docker Compose
-- CI/CD пайплайн через GitHub Actions + GHCR + SSH-деплой
-- Pull-based deployment (сервер не билдит, только запускает)
+1. Пользователь меняет данные через UI-формы.
+2. Данные сохраняются в локальное хранилище приложения.
+3. Серверная часть собирает runtime-конфиг и применяет его к `sing-box`.
+4. UI показывает статус, ошибки применения и runtime-диагностику.
 
----
+## Tech stack
 
-## 🖼 Screenshots
+- `Next.js`
+- `React`
+- `TypeScript`
+- `Tailwind CSS`
+- `shadcn/ui`
+- `TanStack Query`
+- `React Hook Form`
+- `Zod`
+- `better-sqlite3`
+- `Docker`
+- `sing-box`
 
-### 🚪 Inbounds management
+## Инфраструктура
 
-  <p align="center">
-    <img src="./screenshots/inbounds.png" width="100%" />
-  </p>
+В репозитории есть два compose-сценария:
 
----
+- `docker/docker-compose.dev.yml` - локальная разработка
+- `docker/docker-compose.yml` - запуск готовых образов
 
-### ✏️ Create / Edit inbound
+Сервисы:
 
-  <p align="center">
-    <img src="./screenshots/inbound-form.png" width="100%" />
-  </p>
+- `ui` - веб-приложение
+- `sing-box` - runtime
+- `worker` - фоновый сбор статистики
 
----
+`ui` монтирует:
 
-## 🧱 Architecture
+- конфиг `sing-box`
+- директорию с данными
+- `/var/run/docker.sock` для runtime-операций
 
-Проект построен с использованием feature-based архитектуры:
+## Переменные окружения
 
-- разделение по доменам (auth, inbound, config)
-- строгий public API между фичами
-- изоляция бизнес-логики
-- shared-слой для UI, утилит и хуков
-- минимизация связности между модулями
+Основные server env, которые ожидает приложение:
 
----
+- `AUTH_COOKIE_NAME`
+- `AUTH_JWT_SECRET`
+- `AUTH_DEMO_EMAIL`
+- `AUTH_DEMO_PASSWORD`
+- `SINGBOX_DRAFT_CONFIG_PATH`
+- `SINGBOX_CONFIG_PATH`
+- `SINGBOX_CERTS_DIR`
+- `SINGBOX_CONTAINER_NAME`
+- `SQLITE_DB_PATH`
+- `ENABLE_FIREWALL`
+- `USE_HTTPS`
 
-## ⚙️ Tech Stack
+Compose-файлы ожидают `.env` рядом с собой, то есть в директории `docker/`.
 
-- Next.js (App Router)
-- React 18
-- TypeScript (strict mode)
-- Tailwind CSS + shadcn/ui
-- React Query
-- React Hook Form
-- Zod
-- Docker
-- sing-box
+## Локальный запуск
 
----
-
-## 🐳 Infrastructure
-
-Приложение разворачивается через Docker Compose:
-
-- Next.js UI (frontend)
-- sing-box (отдельный контейнер)
-- volume для хранения конфигурации
-
-### Подход:
-
-- билд происходит в CI (GitHub Actions)
-- образы публикуются в GHCR
-- сервер делает только `pull + run`
-
-Это устраняет нагрузку на сервер и делает деплой предсказуемым.
-
----
-
-## 🧩 Code Quality
-
-- ESLint с архитектурными правилами (feature-based)
-- Prettier + EditorConfig
-- Husky + lint-staged (pre-commit проверки)
-
----
-
-## ▶️ Run locally
+Для разработки:
 
 ```bash
-docker compose up --build
+docker compose -f docker/docker-compose.dev.yml up --build
 ```
+
+Для запуска production-compose локально:
+
+```bash
+docker compose -f docker/docker-compose.yml up -d
+```
+
+После старта UI доступен на `http://localhost:3000`.
+
+## Качество кода
+
+- `ESLint`
+- `Stylelint`
+- `Prettier`
+- `Husky`
+- `lint-staged`
