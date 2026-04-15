@@ -7,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/shared/ui";
 
 import { mapPortListeningCardState } from "../../../lib/map-port-listening-card-state";
@@ -47,34 +46,33 @@ export function InboundDetailsDiagnosticsSection({
   };
 
   return (
-    <Card className="gap-0 overflow-hidden py-0">
-      <div className="mx-auto w-full max-w-6xl px-6 py-6">
-        <CardHeader className="px-0 pt-0">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-1">
-              <CardTitle>Диагностика</CardTitle>
-              <CardDescription>
-                Быстрые runtime-проверки для этого инбаунда после применения
-                конфига.
-              </CardDescription>
-            </div>
+    <div>
+      <Card className="w-full gap-0 overflow-hidden rounded-t-none py-0">
+        <div className="max-w-6xl px-6 pt-4 pb-6">
+          <CardHeader className="px-0 pt-0">
+            <div className="flex flex-col gap-4 lg:items-start lg:justify-between">
+              <div className="space-y-1">
+                <CardDescription>
+                  Быстрые runtime-проверки для этого инбаунда после применения
+                  конфига.
+                </CardDescription>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                loading={diagnosticIsPending}
-                type="button"
-                variant="outline"
-                onClick={handleRunAllDiagnostics}
-              >
-                <RefreshCcw />
-                Проверить заново
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  loading={diagnosticIsPending}
+                  type="button"
+                  variant="outline"
+                  onClick={handleRunAllDiagnostics}
+                >
+                  <RefreshCcw />
+                  Проверить заново
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
 
-        <CardContent className="px-0 pb-0">
-          <div className="grid gap-4 xl:grid-cols-3">
+          <CardContent className="flex flex-col gap-4 px-0 pb-0">
             <PortListeningInboundDiagnosticCard
               details={portListeningCardState.details}
               isLoading={diagnosticIsPending}
@@ -82,9 +80,9 @@ export function InboundDetailsDiagnosticsSection({
               status={portListeningCardState.status}
               onRun={handleRunPortListeningDiagnostic}
             />
-          </div>
-        </CardContent>
-      </div>
-    </Card>
+          </CardContent>
+        </div>
+      </Card>
+    </div>
   );
 }

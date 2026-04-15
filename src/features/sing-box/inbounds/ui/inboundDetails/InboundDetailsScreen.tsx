@@ -243,21 +243,37 @@ export function InboundDetailsScreen({
             inboundStats={inboundStats}
             usersCount={inboundUsers.length}
           />
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px] xl:items-start">
+            <div className="min-w-0 space-y-4">
+              <InboundDetailsUsersSection
+                inbound={inbound}
+                inboundStats={inboundStats}
+                securityAssets={securityAssets ?? []}
+              />
+              <InboundDetailsFormSection
+                form={form}
+                formId={FORM_ID}
+                initialValues={initialValues}
+                onSubmit={handleSubmit}
+              />
+            </div>
 
-          <InboundDetailsUsersSection
-            inbound={inbound}
-            inboundStats={inboundStats}
-            securityAssets={securityAssets ?? []}
-          />
+            <div className="min-w-0 self-start xl:sticky xl:top-16">
+              <div className="relative max-h-[calc(100vh-9rem)] overflow-y-auto">
+                <div className="bg-background sticky top-0 z-10 h-10 w-full"></div>
+                <div className="bg-background/95 sticky top-0 z-20 mt-[-40px] rounded-t-xl border border-b px-4 py-3 shadow-sm backdrop-blur">
+                  <div className="space-y-1">
+                    <div className="text-sm font-semibold">Диагностика</div>
+                    <div className="text-muted-foreground text-xs">
+                      Runtime-проверки для текущего инбаунда
+                    </div>
+                  </div>
+                </div>
 
-          <InboundDetailsDiagnosticsSection internalTag={internalTag} />
-
-          <InboundDetailsFormSection
-            form={form}
-            formId={FORM_ID}
-            initialValues={initialValues}
-            onSubmit={handleSubmit}
-          />
+                <InboundDetailsDiagnosticsSection internalTag={internalTag} />
+              </div>
+            </div>
+          </div>
 
           <InboundDetailsActionsBar
             form={form}
