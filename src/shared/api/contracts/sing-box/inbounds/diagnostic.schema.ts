@@ -20,6 +20,7 @@ export const InboundDiagnosticPortListeningSchema =
     details: z
       .object({
         reason: z.enum(["not_listening", "command_failed"]).optional(),
+        port: z.number(),
       })
       .optional(),
   });

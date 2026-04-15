@@ -13,6 +13,7 @@ export type PortListeningCardState = {
 export function mapPortListeningCardState(
   diagnostic: InboundDiagnosticPortListening | undefined,
   error: unknown,
+  port: number,
 ): PortListeningCardState {
   if (error instanceof ApiError) {
     if (error.code === "INBOUND_NOT_APPLIED") {
@@ -36,9 +37,9 @@ export function mapPortListeningCardState(
   if (diagnostic?.status === "pass") {
     return {
       status: "pass",
-      message: "Порт слушается",
+      message: `Порт ${port} слушается`,
       details: [
-        "Проверка подтвердила, что нужный порт находится в состоянии LISTEN.",
+        `Проверка подтвердила, что нужный порт ${port} находится в состоянии LISTEN.`,
       ],
     };
   }
@@ -50,7 +51,7 @@ export function mapPortListeningCardState(
     return {
       status: "error",
       message: "Порт не слушается",
-      details: ["На хосте не найден listening socket для этого inbound."],
+      details: [`На хосте не найден listening socket для порта ${port}.`],
     };
   }
 

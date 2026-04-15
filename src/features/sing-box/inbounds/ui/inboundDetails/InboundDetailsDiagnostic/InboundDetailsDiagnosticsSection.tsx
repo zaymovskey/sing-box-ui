@@ -31,6 +31,7 @@ export function InboundDetailsDiagnosticsSection({
   const portListeningCardState = mapPortListeningCardState(
     portListeningDiagnostic,
     diagnosticError,
+    portListeningDiagnostic?.details?.port ?? 0,
   );
 
   const handleRunPortListeningDiagnostic = () => {
@@ -66,7 +67,7 @@ export function InboundDetailsDiagnosticsSection({
                   onClick={handleRunAllDiagnostics}
                 >
                   <RefreshCcw />
-                  Проверить заново
+                  Проверить все проверки заново
                 </Button>
               </div>
             </div>
