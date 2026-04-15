@@ -6,6 +6,7 @@ const execFileAsync = promisify(execFile);
 
 import z from "zod";
 
+import { getNetworkProtocol } from "@/features/sing-box/inbounds";
 import { getStoredInboundDetailsByInternalTag } from "@/server/db/sing-box/inbounds";
 import {
   type InboundDiagnostic,
@@ -61,8 +62,9 @@ export const POST = withRoute({
 
     if (diagnostics.includes("port_listening")) {
       try {
-        const portListening = await isTcpPortListening(
+        const portListening = await isPortListening(
           runtimeInbound.listen_port,
+          getNetworkProtocol(runtimeInbound.type),
         );
 
         diagnosticsResults.push({
@@ -97,16 +99,24 @@ export const POST = withRoute({
   },
 });
 
-async function isTcpPortListening(port: number): Promise<boolean> {
+async function isPortListening(
+  port: number,
+  protocol: "tcp" | "udp" | "tcp-udp",
+): Promise<boolean> {
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error("Invalid port");
   }
-  const { stdout } = await execFileAsync(
-    "ss",
-    ["-H", "-ltn", `sport = :${port}`],
-    {
-      timeout: 2000,
-    },
-  );
+
+  const command =
+    protocol === "tcp"
+      ? ["-H", "-ltn", `sport = :${port}`]
+      : protocol === "udp"
+        ? ["-H", "-lun", `sport = :${port}`]
+        : ["-H", "-ltun", `sport = :${port}`];
+
+  const { stdout } = await execFileAsync("ss", command, {
+    timeout: 2000,
+  });
+
   return stdout.trim().length > 0;
 }
