@@ -261,7 +261,7 @@ export function InboundDetailsScreen({
             <div className="min-w-0 self-start xl:sticky xl:top-16">
               <div className="relative max-h-[calc(100vh-9rem)] overflow-y-auto">
                 <div className="bg-background sticky top-0 z-10 h-10 w-full"></div>
-                <div className="bg-background/95 sticky top-0 z-20 mt-[-40px] rounded-t-xl border border-b px-4 py-3 shadow-sm backdrop-blur">
+                <div className="bg-background/95 sticky top-0 z-20 -mt-10 rounded-t-xl border border-b px-4 py-3 shadow-sm backdrop-blur">
                   <div className="space-y-1">
                     <div className="text-sm font-semibold">Диагностика</div>
                     <div className="text-muted-foreground text-xs">
