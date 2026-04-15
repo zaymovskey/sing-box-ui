@@ -67,7 +67,7 @@ export function InboundDetailsDiagnosticsSection({
                   onClick={handleRunAllDiagnostics}
                 >
                   <RefreshCcw />
-                  Проверить все проверки заново
+                  Запустить все проверки заново
                 </Button>
               </div>
             </div>

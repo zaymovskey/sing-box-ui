@@ -50,7 +50,7 @@ export function mapPortListeningCardState(
   ) {
     return {
       status: "error",
-      message: "Порт не слушается",
+      message: `Порт ${port} не слушается`,
       details: [`На хосте не найден listening socket для порта ${port}.`],
     };
   }
