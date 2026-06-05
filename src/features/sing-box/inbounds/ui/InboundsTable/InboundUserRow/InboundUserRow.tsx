@@ -92,7 +92,7 @@ export function InboundUserRow({
   return (
     <>
       <div className="bg-background rounded-md border px-4 py-3">
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex items-center justify-between gap-6">
           <div className="grid min-w-0 flex-1 grid-cols-5 gap-x-6 gap-y-3">
             <OnlineStatus isOnline={userStats?.is_online ?? false} />
 

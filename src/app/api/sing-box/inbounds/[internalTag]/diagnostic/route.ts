@@ -78,6 +78,7 @@ export const POST = withRoute({
           source: "live",
           details: {
             reason: portListening ? undefined : "not_listening",
+            port: runtimeInbound.listen_port,
           },
         });
       } catch {
@@ -90,6 +91,7 @@ export const POST = withRoute({
           source: "live",
           details: {
             reason: "command_failed",
+            port: runtimeInbound.listen_port,
           },
         });
       }

@@ -19,7 +19,7 @@ export function PortListeningInboundDiagnosticCard({
 }) {
   return (
     <DiagnosticCard
-      actionLabel="Запустить check"
+      actionLabel="Запустить проверку"
       description="Проверяет, что нужный порт реально слушается на хосте и доступен для входящих подключений."
       details={details}
       icon={<Activity className="size-4" />}
