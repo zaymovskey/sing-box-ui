@@ -151,6 +151,10 @@ docker compose -f docker/docker-compose.yml up -d
 
 После старта UI доступен на `http://localhost:3000`.
 
+## Развёртывание на сервере
+
+Пошаговая инструкция для другого человека: [docs/deploy.md](./docs/deploy.md)
+
 ## Качество кода
 
 - `ESLint`
