@@ -7,6 +7,7 @@ services:
     volumes:
       - ../../data/sing-box:/etc/sing-box:ro
       - ../../data/sing-box-state:/var/lib/sing-box
+      - ../../data:/data:ro
     network_mode: host
     env_file:
       - .env
