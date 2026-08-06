@@ -2,7 +2,104 @@ import {
   type SecurityAsset,
   type StoredInbound,
   type StoredInboundUser,
+  type StoredVlessInbound,
 } from "@/shared/api/contracts";
+
+function getHeader(
+  headers: Record<string, string> | undefined,
+  name: string,
+): string | undefined {
+  if (!headers) {
+    return undefined;
+  }
+
+  const direct = headers[name];
+  if (direct?.trim()) {
+    return direct.trim();
+  }
+
+  const matchedKey = Object.keys(headers).find(
+    (key) => key.toLowerCase() === name.toLowerCase(),
+  );
+
+  const value = matchedKey ? headers[matchedKey] : undefined;
+  return value?.trim() || undefined;
+}
+
+function applyVlessTransportParams(
+  params: URLSearchParams,
+  transport: StoredVlessInbound["transport"],
+): void {
+  if (!transport) {
+    params.set("type", "tcp");
+    return;
+  }
+
+  params.set("type", transport.type);
+
+  if (transport.type === "ws") {
+    if (transport.path) {
+      params.set("path", transport.path);
+    }
+
+    const hostHeader = getHeader(transport.headers, "Host");
+    if (hostHeader) {
+      params.set("host", hostHeader);
+    }
+
+    if (transport.max_early_data !== undefined) {
+      params.set("ed", String(transport.max_early_data));
+    }
+
+    if (transport.early_data_header_name) {
+      params.set("eh", transport.early_data_header_name);
+    }
+
+    return;
+  }
+
+  if (transport.type === "grpc") {
+    params.set("serviceName", transport.service_name);
+    return;
+  }
+
+  if (transport.type === "http") {
+    if (transport.path) {
+      params.set("path", transport.path);
+    }
+
+    if (transport.host) {
+      const host = Array.isArray(transport.host)
+        ? transport.host.join(",")
+        : transport.host;
+      if (host) {
+        params.set("host", host);
+      }
+    }
+
+    const hostHeader = getHeader(transport.headers, "Host");
+    if (hostHeader && !params.has("host")) {
+      params.set("host", hostHeader);
+    }
+
+    return;
+  }
+
+  if (transport.type === "httpupgrade") {
+    if (transport.path) {
+      params.set("path", transport.path);
+    }
+
+    if (transport.host) {
+      params.set("host", transport.host);
+    }
+
+    const hostHeader = getHeader(transport.headers, "Host");
+    if (hostHeader && !params.has("host")) {
+      params.set("host", hostHeader);
+    }
+  }
+}
 
 export function buildInboundShareLink(
   inbound: StoredInbound,
@@ -34,8 +131,8 @@ export function buildInboundShareLink(
     const port = vlessInbound.listen_port;
     const params = new URLSearchParams();
 
-    params.set("type", "tcp");
     params.set("encryption", "none");
+    applyVlessTransportParams(params, vlessInbound.transport);
 
     if (vlessUser.flow) {
       params.set("flow", vlessUser.flow);
@@ -66,10 +163,10 @@ export function buildInboundShareLink(
       if (realityAsset.spiderX) {
         params.set("spx", realityAsset.spiderX);
       }
-    } else {
-      if (host !== "localhost") {
-        params.set("security", "none");
-      }
+    } else if (vlessInbound._tls_enabled) {
+      params.set("security", "tls");
+    } else if (host !== "localhost") {
+      params.set("security", "none");
     }
 
     let linkName = vlessInbound.display_tag + "_" + vlessUser.display_name;

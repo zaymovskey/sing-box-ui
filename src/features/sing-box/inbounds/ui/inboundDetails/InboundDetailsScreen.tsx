@@ -86,12 +86,19 @@ export function InboundDetailsScreen({
   const form = useForm<InboundFormValues>({
     resolver: zodResolver(InboundFormSchema),
     mode: "onSubmit",
-    shouldUnregister: true,
+    // Keep transport/path/etc. values on type toggles and remounts.
+    // With true, saving after a port-only edit can wipe nested WS fields.
+    shouldUnregister: false,
     defaultValues: initialValues,
   });
 
   useEffect(() => {
     if (!mappedInbound || !inbound) {
+      return;
+    }
+
+    // Don't clobber in-progress edits when query data refreshes.
+    if (form.formState.isDirty) {
       return;
     }
 

@@ -10,6 +10,9 @@ import {
   UncontrolledTextField,
 } from "@/shared/ui";
 
+type VlessFormValues = Extract<InboundFormValues, { type: "vless" }>;
+type VlessTransport = NonNullable<VlessFormValues["transport"]>;
+
 const transportTypeOptions: SelectFieldItem<string>[] = [
   { label: "Отключен", value: "disabled" },
   { label: "WebSocket", value: "ws" },
@@ -19,13 +22,70 @@ const transportTypeOptions: SelectFieldItem<string>[] = [
   { label: "QUIC", value: "quic" },
 ];
 
+function transportDefaults(type: VlessTransport["type"]): VlessTransport {
+  switch (type) {
+    case "ws":
+      return {
+        type: "ws",
+        path: "",
+        headers: "",
+        max_early_data: undefined,
+        early_data_header_name: "",
+      };
+    case "grpc":
+      return {
+        type: "grpc",
+        service_name: "",
+        idle_timeout: "",
+        ping_timeout: "",
+        permit_without_stream: false,
+      };
+    case "http":
+      return {
+        type: "http",
+        host: "",
+        path: "",
+        method: "",
+        headers: "",
+        idle_timeout: "",
+        ping_timeout: "",
+      };
+    case "httpupgrade":
+      return {
+        type: "httpupgrade",
+        host: "",
+        path: "",
+        headers: "",
+      };
+    case "quic":
+      return { type: "quic" };
+    default:
+      return { type: "disabled" };
+  }
+}
+
 export function VlessTransportField() {
-  const form = useFormContext<Extract<InboundFormValues, { type: "vless" }>>();
+  const form = useFormContext<VlessFormValues>();
 
   const transportType = useWatch({
     control: form.control,
     name: "transport.type",
   });
+
+  const handleTransportTypeChange = (nextType: string) => {
+    if (nextType === transportType) {
+      return;
+    }
+
+    form.setValue(
+      "transport",
+      transportDefaults(nextType as VlessTransport["type"]),
+      {
+        shouldDirty: true,
+        shouldValidate: form.formState.submitCount > 0,
+      },
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -36,6 +96,7 @@ export function VlessTransportField() {
         name="transport.type"
         placeholder="Выберите транспорт VLESS"
         showErrorMessage={false}
+        onValueChangeExternal={handleTransportTypeChange}
       />
 
       <div className="bg-muted/30 rounded-md border px-3 py-3 text-sm">
